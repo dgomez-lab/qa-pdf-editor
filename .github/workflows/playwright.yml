@@ -1,0 +1,144 @@
+name: Playwright
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'Suite a ejecutar (fast | full | visual)'
+        required: false
+        default: 'fast'
+
+jobs:
+  ci-fast:
+    name: CI fast (smokes + seo + dashboard route)
+    timeout-minutes: 25
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.profile == 'fast' || inputs.profile == 'full' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Tag parity check
+        run: npm run porting:tags
+
+      - name: Run fast suite
+        run: npm run test:ci-fast
+        env:
+          BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
+          APP: ${{ vars.PLAYWRIGHT_APP }}
+          MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
+          PDFHINT_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_BASE_URL }}
+          PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
+          QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
+          PLAYWRIGHT_MAILPIT_USER: ${{ secrets.PLAYWRIGHT_MAILPIT_USER }}
+          PLAYWRIGHT_MAILPIT_PASSWORD: ${{ secrets.PLAYWRIGHT_MAILPIT_PASSWORD }}
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-fast
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+  ci-full:
+    name: CI full (payment + users + emails + dashboard + pdfhint)
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.profile == 'full' }}
+    needs: ci-fast
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run full suite
+        run: npm run test:ci-full
+        env:
+          BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
+          APP: ${{ vars.PLAYWRIGHT_APP }}
+          MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
+          PDFHINT_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_BASE_URL }}
+          PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
+          QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
+          PLAYWRIGHT_PAYMENT_SMOKE: '1'
+          PLAYWRIGHT_TRANSACTIONAL_PAYMENT_CONFIRMATION: '1'
+          PLAYWRIGHT_PDFHINT_DASHBOARD_SMOKE: '1'
+          PLAYWRIGHT_CRM_USER: ${{ secrets.PLAYWRIGHT_CRM_USER }}
+          PLAYWRIGHT_CRM_PASSWORD: ${{ secrets.PLAYWRIGHT_CRM_PASSWORD }}
+          PLAYWRIGHT_MAILPIT_USER: ${{ secrets.PLAYWRIGHT_MAILPIT_USER }}
+          PLAYWRIGHT_MAILPIT_PASSWORD: ${{ secrets.PLAYWRIGHT_MAILPIT_PASSWORD }}
+          PLAYWRIGHT_QA_API_KEY: ${{ secrets.PLAYWRIGHT_QA_API_KEY }}
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-full
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+  ci-visual:
+    name: CI visual (toHaveScreenshot baselines)
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.profile == 'visual' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run visual suite (without --update-snapshots)
+        run: npm run test:ci-visual
+        env:
+          BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
+          APP: ${{ vars.PLAYWRIGHT_APP }}
+          MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
+          PDFHINT_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_BASE_URL }}
+          PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-visual
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
