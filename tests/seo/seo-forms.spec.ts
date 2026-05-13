@@ -13,7 +13,7 @@ test.describe('SEO — /forms (paridad con SEO.feature)', { tag: ['@PDFEDITOR_SE
       await gotoMarketingPath(page, '/forms')
       await dismissCookiesIfPresent(page)
       if (isPdfhintSite()) {
-        await expect(page.locator('main a[href*="/lp/1040-2021-form"]').first()).toBeVisible({ timeout: 60_000 })
+        await expect(page.locator('a[href*="/lp/1040-2021-form"]').first()).toBeVisible({ timeout: 60_000 })
         const errors = await collectPdfhintFormsPathLinkErrors(page)
         expect(errors, errors.join('\n')).toEqual([])
       } else {

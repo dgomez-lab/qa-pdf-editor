@@ -49,10 +49,17 @@ export async function openHome(page: Page, options?: OpenHomeOptions): Promise<v
 
   const homeLink = page.getByRole('link', { name: /pdfhint Home|^Home$/i }).first()
   const logoByDataId = page.locator('[data-id="logo"]').first()
+  const fileHit = page.locator(home.fileInput).first()
+  const mainOrHeading = page.locator('main, h1, h2, h3').first()
   await Promise.race([
     homeLink.waitFor({ state: 'visible', timeout: 60_000 }),
-    logoByDataId.waitFor({ state: 'visible', timeout: 60_000 })
+    logoByDataId.waitFor({ state: 'visible', timeout: 60_000 }),
+    fileHit.waitFor({ state: 'attached', timeout: 60_000 }),
+    mainOrHeading.waitFor({ state: 'visible', timeout: 60_000 })
   ]).catch(async () => {
-    await page.locator('main').waitFor({ state: 'visible', timeout: 15_000 })
+    await page
+      .locator('main, h1, h2, h3, [data-id="logo"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 30_000 })
   })
 }

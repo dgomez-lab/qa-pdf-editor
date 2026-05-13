@@ -28,7 +28,12 @@ export function resolvePlaywrightBaseUrl(): string {
     return stripTrailingSlashes(explicit)
   }
 
-  const app = (process.env.APP ?? process.env.PLAYWRIGHT_APP ?? 'pdfhint').toLowerCase()
+  // `??` no sustituye cadena vacía: en CI a veces `APP`/`PLAYWRIGHT_APP` llegan como "".
+  const appRaw =
+    process.env.APP?.trim() || process.env.PLAYWRIGHT_APP?.trim() || ''
+  const defaultApp =
+    !appRaw && process.env.GITHUB_ACTIONS === 'true' ? 'mergedpdf' : 'pdfhint'
+  const app = (appRaw || defaultApp).toLowerCase()
   if (app === 'mergedpdf' || app === 'mvps') {
     return buildMvpsWithToken()
   }

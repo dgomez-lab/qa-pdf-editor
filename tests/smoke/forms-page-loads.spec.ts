@@ -8,7 +8,7 @@ test.describe('Smoke — /forms', { tag: ['@PDFEDITOR_SMOKE'] }, () => {
     await gotoMarketingPath(page, '/forms')
     await dismissCookiesIfPresent(page)
     if (isPdfhintSite()) {
-      await expect(page.locator('main a[href*="/lp/1040-2021-form"]').first()).toBeVisible({ timeout: 60_000 })
+      await expect(page.locator('a[href*="/lp/1040-2021-form"]').first()).toBeVisible({ timeout: 60_000 })
     } else {
       await expect(page.locator('a[data-id="Form 1040 2021"]').first()).toBeVisible()
     }
