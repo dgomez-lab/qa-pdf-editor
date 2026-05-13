@@ -12,6 +12,8 @@
  * Exit code:
  *   0 si `missingFromPlaywright` está vacío.
  *   1 si quedan tags legacy sin spec en Playwright.
+ *   Si no existe `features/` del legacy: **1** salvo `SKIP_LEGACY_TAG_CHECK=1` (p. ej. CI sin clonar
+ *   `qai-pa-pdf-editor`) → **0** con aviso en stderr.
  */
 
 import * as fs from 'fs'
@@ -71,6 +73,27 @@ function main() {
   const legacyRoot = resolveLegacyRoot()
   const featuresDir = path.join(legacyRoot, 'features')
   if (!fs.existsSync(featuresDir)) {
+    const skip =
+      process.env.SKIP_LEGACY_TAG_CHECK === '1' ||
+      process.env.SKIP_LEGACY_TAG_CHECK === 'true' ||
+      process.env.SKIP_LEGACY_TAG_CHECK === 'yes'
+    if (skip) {
+      console.warn(
+        JSON.stringify(
+          {
+            warning: 'features_dir_missing_skipped',
+            message:
+              'No hay `features/` del legacy (p. ej. en CI sin clonar qai-pa-pdf-editor). Paridad de tags omitida. Para forzar la comprobación: clonar legacy junto al repo o `LEGACY_REPO=...` y no definir SKIP_LEGACY_TAG_CHECK.',
+            legacyRoot,
+            featuresDir
+          },
+          null,
+          2
+        )
+      )
+      process.exitCode = 0
+      return
+    }
     console.error(JSON.stringify({ error: 'features_dir_missing', legacyRoot, featuresDir }, null, 2))
     process.exitCode = 1
     return

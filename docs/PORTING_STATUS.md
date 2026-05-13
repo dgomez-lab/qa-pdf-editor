@@ -259,7 +259,7 @@ Se entregan 3 jobs en GitHub Actions:
 
 | Job | Trigger | Suite | Tiempo aprox. |
 |---|---|---|---|
-| `ci-fast` | `push` / `pull_request` y `workflow_dispatch=fast|full` | `npm run test:ci-fast` (smokes + seo + dashboard route + pdfhint-seo-smoke) + `npm run porting:tags` | <10 min |
+| `ci-fast` | `push` / `pull_request` y `workflow_dispatch=fast|full` | `npm run test:ci-fast` (smokes + seo + dashboard route + pdfhint-seo-smoke) + `npm run porting:tags` (`SKIP_LEGACY_TAG_CHECK=1` en Actions: no hay clone del legacy) | <10 min |
 | `ci-full` | `workflow_dispatch=full` (encadenado tras `ci-fast`) | `npm run test:ci-full` (payment + users + emails + dashboard + pdfhint) con `PLAYWRIGHT_PAYMENT_SMOKE=1` | ~30–60 min |
 | `ci-visual` | `workflow_dispatch=visual` | `npm run test:ci-visual` (public + products + forms `toHaveScreenshot`) | ~5 min |
 

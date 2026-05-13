@@ -32,8 +32,12 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
+      # El script compara con `../qai-pa-pdf-editor/features` (o `LEGACY_REPO`). En GitHub
+      # solo se clona este repo; sin skip el job fallaría siempre.
       - name: Tag parity check
         run: npm run porting:tags
+        env:
+          SKIP_LEGACY_TAG_CHECK: '1'
 
       - name: Run fast suite
         run: npm run test:ci-fast
@@ -55,6 +59,7 @@ jobs:
           path: |
             playwright-report/
             test-results/
+          if-no-files-found: ignore
           retention-days: 7
 
   ci-full:
@@ -103,6 +108,7 @@ jobs:
           path: |
             playwright-report/
             test-results/
+          if-no-files-found: ignore
           retention-days: 14
 
   ci-visual:
@@ -141,4 +147,5 @@ jobs:
           path: |
             playwright-report/
             test-results/
+          if-no-files-found: ignore
           retention-days: 14
