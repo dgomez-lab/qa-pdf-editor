@@ -1,9 +1,7 @@
 /**
  * data-id alineados con qai-pa-pdf-editor `src/pages/dashboard/elements.json`.
+ * Valores canónicos: [`dashboard/elements.json`](./dashboard/elements.json).
  */
-export const dashboard = {
-  getFullAccessButton: '[data-id="accountSubscribeButton"]',
-  onboardingCloseModal: '[data-id="ctaCloseModal"]',
-  uploadDocumentButton: '[data-id="ctaUploadDocument"]',
-  dashboardSubscribeBanner: '[data-id="dashboardCTASubscribeBanner"]'
-} as const
+import dashboardElements from './dashboard/elements.json'
+
+export const dashboard = dashboardElements

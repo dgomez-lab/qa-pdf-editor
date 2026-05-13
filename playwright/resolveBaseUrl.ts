@@ -4,14 +4,29 @@
  * Prioridad:
  * 1. `BASE_URL` si viene definida (control total).
  * 2. `APP=pdfhint` (o por defecto): staging pdfhint sin token QA.
- * 3. `APP=mergedpdf` (o `mvps`): `https://{red|redN}.mvps.website?x-token-qa=...`
+ * 3. `APP=mergedpdf` (o `mvps`): `https://{red|redN}.mvps.website` (sin query; el token
+ *    `x-token-qa` se añade en cada navegación vía `tests/helpers/mvpsUrl.ts`).
  *
  * Slots MVPS: `MVPS_SLOT` vacío o `0` → `red`; `1`…`10` → `red1`…`red10`.
  * También se admite `ENVIRONMENT=red3` estilo Cucumber (`projectVars.environment`).
  */
 export function resolvePlaywrightBaseUrl(): string {
   const explicit = process.env.BASE_URL?.trim()
-  if (explicit) return stripTrailingSlashes(explicit)
+  if (explicit) {
+    try {
+      const normalized = explicit.includes('://') ? explicit : `https://${explicit}`
+      const u = new URL(normalized)
+      if (u.hostname.includes('mvps.website') && u.search) {
+        if (!process.env.QAI_TOKEN_PARAM?.trim()) {
+          process.env.QAI_TOKEN_PARAM = u.search.slice(1).replace(/^\?/, '')
+        }
+        return stripTrailingSlashes(u.origin)
+      }
+    } catch {
+      /* usar explicit tal cual */
+    }
+    return stripTrailingSlashes(explicit)
+  }
 
   const app = (process.env.APP ?? process.env.PLAYWRIGHT_APP ?? 'pdfhint').toLowerCase()
   if (app === 'mergedpdf' || app === 'mvps') {
@@ -31,15 +46,12 @@ export function resolvePlaywrightBaseUrl(): string {
   return stripTrailingSlashes(o || 'https://staging.pdfhint.com')
 }
 
+/**
+ * Origen MVPS sin query de QA (el token va en `ensureMvpsMarketingUrl` al hacer `goto`).
+ */
 function buildMvpsWithToken(): string {
-  const token = process.env.QAI_TOKEN_PARAM?.trim() || 'x-token-qa=niGqCYH7McqERAB'
   const slug = resolveMvpsSlug()
-  const base = `https://${slug}.mvps.website`
-  if (process.env.APPEND_QA_TOKEN === '0' || process.env.APPEND_QA_TOKEN === 'false') {
-    return base
-  }
-  const sep = base.includes('?') ? '&' : '?'
-  return `${base}${sep}${token}`
+  return `https://${slug}.mvps.website`
 }
 
 function stripTrailingSlashes(url: string): string {

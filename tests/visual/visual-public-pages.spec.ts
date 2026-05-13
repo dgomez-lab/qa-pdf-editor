@@ -1,7 +1,9 @@
 import * as path from 'path'
 import { test, expect } from '@playwright/test'
 import { openHome, dismissCookiesIfPresent } from '../helpers/navigation'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 import { isPdfhintSite } from '../helpers/seoExpectations'
+import { marketingAboutPath } from '../helpers/siteContext'
 import { editor, home } from '../pages/editorSelectors'
 
 const samplePdf = path.join(__dirname, '..', 'fixtures', 'sample.pdf')
@@ -46,7 +48,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
       await loginLink.click()
       await page.waitForURL(/\/login/i, { timeout: 60_000 })
     } else {
-      await page.goto('/login', { waitUntil: 'domcontentloaded' })
+      await gotoMarketingPath(page, '/login', { waitUntil: 'domcontentloaded' })
     }
     await dismissCookiesIfPresent(page)
     await page.waitForLoadState('domcontentloaded')
@@ -56,7 +58,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('Forms', { tag: ['@PDFEDITOR_VISUAL_FORMS'] }, async ({ page }) => {
-    await page.goto('/forms', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/forms', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 })
     await page.waitForTimeout(2000)
@@ -64,7 +66,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('Contact', { tag: ['@PDFEDITOR_VISUAL_CONTACT'] }, async ({ page }) => {
-    await page.goto('/contact', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/contact', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -72,7 +74,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('About', { tag: ['@PDFEDITOR_VISUAL_ABOUT'] }, async ({ page }) => {
-    await page.goto('/about', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, marketingAboutPath(), { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -80,7 +82,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('FAQs', { tag: ['@PDFEDITOR_VISUAL_FAQS'] }, async ({ page }) => {
-    await page.goto('/faqs', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/faqs', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -88,7 +90,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('Privacy', { tag: ['@PDFEDITOR_VISUAL_PRIVACY'] }, async ({ page }) => {
-    await page.goto('/privacy', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/privacy', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -96,7 +98,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('Cookies', { tag: ['@PDFEDITOR_VISUAL_COOKIES'] }, async ({ page }) => {
-    await page.goto('/cookies', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/cookies', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -104,7 +106,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('Terms', { tag: ['@PDFEDITOR_VISUAL_TERMS'] }, async ({ page }) => {
-    await page.goto('/terms-and-conditions', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/terms-and-conditions', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -112,7 +114,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('LP merge PDF', { tag: ['@PDFEDITOR_VISUAL_LP_MERGE'] }, async ({ page }) => {
-    await page.goto('/lp/merge-pdf', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/lp/merge-pdf', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -120,7 +122,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('LP edit PDF', { tag: ['@PDFEDITOR_VISUAL_LP_EDIT'] }, async ({ page }) => {
-    await page.goto('/lp/edit-pdf', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/lp/edit-pdf', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -128,7 +130,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('LP sign PDF', { tag: ['@PDFEDITOR_VISUAL_LP_SIGN'] }, async ({ page }) => {
-    await page.goto('/lp/sign-pdf', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/lp/sign-pdf', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -136,7 +138,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('LP split PDF', { tag: ['@PDFEDITOR_VISUAL_LP_SPLIT'] }, async ({ page }) => {
-    await page.goto('/lp/split-pdf', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/lp/split-pdf', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -144,7 +146,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('LP compress PDF', { tag: ['@PDFEDITOR_VISUAL_LP_COMPRESS'] }, async ({ page }) => {
-    await page.goto('/lp/compress-pdf', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/lp/compress-pdf', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -152,7 +154,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('LP watermark', { tag: ['@PDFEDITOR_VISUAL_LP_WATERMARK'] }, async ({ page }) => {
-    await page.goto('/lp/watermark', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/lp/watermark', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -160,7 +162,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('LP rotate PDF', { tag: ['@PDFEDITOR_VISUAL_LP_ROTATE'] }, async ({ page }) => {
-    await page.goto('/lp/rotate-pdf', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/lp/rotate-pdf', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -192,7 +194,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('About Us (footer)', { tag: ['@PDFEDITOR_VISUAL_ABOUT_US'] }, async ({ page }) => {
-    await page.goto('/about', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, marketingAboutPath(), { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 }).catch(() => {})
     await page.waitForTimeout(2000)
@@ -200,7 +202,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('Downloads', { tag: ['@PDFEDITOR_VISUAL_DOWNLOADS'] }, async ({ page }) => {
-    await page.goto('/downloads', { waitUntil: 'domcontentloaded' }).catch(() => {})
+    await gotoMarketingPath(page, '/downloads', { waitUntil: 'domcontentloaded' }).catch(() => {})
     await dismissCookiesIfPresent(page)
     await page.locator('main, body').first().waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {})
     await page.waitForTimeout(1500)
@@ -208,7 +210,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('Terms of Use', { tag: ['@PDFEDITOR_VISUAL_TERMS_OF_USE'] }, async ({ page }) => {
-    await page.goto('/terms', { waitUntil: 'domcontentloaded' }).catch(() => {})
+    await gotoMarketingPath(page, '/terms', { waitUntil: 'domcontentloaded' }).catch(() => {})
     await dismissCookiesIfPresent(page)
     await page.locator('main').first().waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {})
     await page.waitForTimeout(1500)
@@ -216,7 +218,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('Privacy Policy', { tag: ['@PDFEDITOR_VISUAL_PRIVACY_POLICY'] }, async ({ page }) => {
-    await page.goto('/privacy', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/privacy', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').first().waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {})
     await page.waitForTimeout(1500)
@@ -224,7 +226,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('Terms and Conditions', { tag: ['@PDFEDITOR_VISUAL_TERMS_AND_CONDITIONS'] }, async ({ page }) => {
-    await page.goto('/terms-and-conditions', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/terms-and-conditions', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').first().waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {})
     await page.waitForTimeout(1500)
@@ -232,7 +234,7 @@ test.describe('Visual — páginas públicas', { tag: ['@PDFEDITOR_VISUAL'] }, (
   })
 
   test('404 page', { tag: ['@PDFEDITOR_VISUAL_404'] }, async ({ page }) => {
-    await page.goto('/this-page-should-not-exist', { waitUntil: 'domcontentloaded' }).catch(() => {})
+    await gotoMarketingPath(page, '/this-page-should-not-exist', { waitUntil: 'domcontentloaded' }).catch(() => {})
     await dismissCookiesIfPresent(page)
     await page.locator('body').waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {})
     await page.waitForTimeout(1500)

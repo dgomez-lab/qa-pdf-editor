@@ -13,6 +13,7 @@ import {
   isPdfhintSite,
   landingPathnamesForSite
 } from '../helpers/seoExpectations'
+import { isMvpsMergedStage } from '../helpers/siteContext'
 import { openHome } from '../helpers/navigation'
 
 test.describe('SEO — Home (paridad con SEO.feature)', { tag: ['@PDFEDITOR_SEO'] }, () => {
@@ -26,6 +27,7 @@ test.describe('SEO — Home (paridad con SEO.feature)', { tag: ['@PDFEDITOR_SEO'
     'PDFEDITOR_SEO_HOME_HEADER_ABSOLUTE_HREFS — cabecera y navegación',
     { tag: ['@PDFEDITOR_SEO_HOME_HEADER_ABSOLUTE_HREFS'] },
     async ({ page }) => {
+      test.skip(isMvpsMergedStage(), 'Cabecera con data-id pdfhint no aplica en *.mvps.website (mergedpdf)')
       const errors = isPdfhintSite()
         ? await collectPdfhintHeaderSeoErrors(page)
         : await collectHeaderAbsoluteHrefErrors(page, headerLinkChecksForBaseUrl(), { hrefPolicy: policy })

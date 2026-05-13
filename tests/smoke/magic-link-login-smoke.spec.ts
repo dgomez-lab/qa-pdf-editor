@@ -9,6 +9,7 @@ import {
   waitForMessageDetailSubjectMatchesOne
 } from '../helpers/mailpitClient'
 import { appUrl } from '../helpers/appUrl'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 
 function mailpitReady(): boolean {
   return isMailpitConfigured()
@@ -28,7 +29,7 @@ test.describe('Smoke — login por magic link', { tag: ['@PDFEDITOR_SMOKE'] }, (
     const rawEmail = process.env.PLAYWRIGHT_TEST_EMAIL ?? `qa${unique}+pdfeditor@catcher.1ecorp.net`
     const search = process.env.PLAYWRIGHT_MAILPIT_SEARCH_EMAIL?.trim() || toCatcherEmail(rawEmail)
 
-    await page.goto(appUrl('/en/login'), { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, appUrl('/en/login'), { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('[data-id="emailForm"]').waitFor({ state: 'visible', timeout: 60_000 })
     const afterMs = Date.now()
@@ -50,7 +51,7 @@ test.describe('Smoke — login por magic link', { tag: ['@PDFEDITOR_SMOKE'] }, (
     const magicUrl = isAccountCreated
       ? extractAccountCreatedGetStartedHref(message)
       : extractMagicLinkFromMessage(message)
-    await page.goto(magicUrl, { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, magicUrl, { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await expect(page).toHaveURL(/dashboard|editor|lp|account|upload|home|pdfhint|mvps/i, { timeout: 90_000 })
   })

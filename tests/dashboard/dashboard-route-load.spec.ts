@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 import { isPdfhintSite } from '../helpers/seoExpectations'
 import { editor } from '../pages/editorSelectors'
 import { appUrl } from '../helpers/appUrl'
@@ -11,7 +12,7 @@ import { appUrl } from '../helpers/appUrl'
 test.describe('Dashboard — ruta', { tag: ['@PDFEDITOR_DASHBOARD'] }, () => {
   test('carga ruta dashboard o login', { tag: ['@PDFEDITOR_DASHBOARD_ROUTE_LOAD'] }, async ({ page }) => {
     const path = isPdfhintSite() ? '/en/dashboard' : '/dashboard'
-    await page.goto(appUrl(path), { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, appUrl(path), { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
 
     const loginEmail = page.locator('[data-id="emailForm"]')

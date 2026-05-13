@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
 import { landingPathFor } from '../helpers/multiFormatUpload'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 
 function visualSnapshotsEnabled(): boolean {
   const v = process.env.PLAYWRIGHT_VISUAL_SNAPSHOTS?.trim()
@@ -53,7 +54,7 @@ test.describe('Visual — productos / LPs', { tag: ['@PDFEDITOR_VISUAL'] }, () =
 
   for (const p of products) {
     test(`Product LP ${p.pngBase}`, { tag: [p.tag] }, async ({ page }) => {
-      await page.goto(landingPathFor(p.slug), { waitUntil: 'domcontentloaded' }).catch(() => {})
+      await gotoMarketingPath(page, landingPathFor(p.slug), { waitUntil: 'domcontentloaded' }).catch(() => {})
       await dismissCookiesIfPresent(page)
       await page.locator('main, body').first().waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {})
       await page.waitForTimeout(2000)

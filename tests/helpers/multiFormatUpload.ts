@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import type { Page } from '@playwright/test'
 import { home } from '../pages/editorSelectors'
+import { gotoMarketingPath } from './mvpsUrl'
 
 const fixturesDir = path.join(__dirname, '..', 'fixtures')
 
@@ -70,7 +71,7 @@ export function landingPathFor(slug: string): string {
 }
 
 export async function gotoLanding(page: Page, slug: string): Promise<void> {
-  await page.goto(landingPathFor(slug), { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, landingPathFor(slug), { waitUntil: 'domcontentloaded' })
 }
 
 export async function uploadFromLanding(page: Page, slug: string, filePath: string): Promise<void> {

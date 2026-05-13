@@ -1,5 +1,6 @@
 import { test, type Page } from '@playwright/test'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 import { isPdfhintSite } from '../helpers/seoExpectations'
 import { toCatcherEmail, waitForMessageDetail } from '../helpers/mailpitClient'
 import {
@@ -14,7 +15,7 @@ function mailpitReady(): boolean {
 async function gotoLoginInLocale(page: Page, locale: string): Promise<void> {
   const loc = locale.toLowerCase()
   const path = isPdfhintSite() ? (loc === 'en' ? '/en/login' : `/${loc}/login`) : '/login'
-  await page.goto(path, { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, path, { waitUntil: 'domcontentloaded' })
   await dismissCookiesIfPresent(page)
 }
 

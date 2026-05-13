@@ -3,13 +3,14 @@ import { collectFormsPageAbsoluteHrefErrors } from '../helpers/seoAbsoluteHrefs'
 import { collectPdfhintFormsPathLinkErrors } from '../helpers/pdfhintFormsSeo'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
 import { hrefPolicyForSite, isPdfhintSite } from '../helpers/seoExpectations'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 
 test.describe('SEO — /forms (paridad con SEO.feature)', { tag: ['@PDFEDITOR_SEO'] }, () => {
   test(
     'PDFEDITOR_SEO_FORMS_MOST_USED_ABSOLUTE_HREFS — grid de formularios',
     { tag: ['@PDFEDITOR_SEO_FORMS_MOST_USED_ABSOLUTE_HREFS'] },
     async ({ page }) => {
-      await page.goto('/forms')
+      await gotoMarketingPath(page, '/forms')
       await dismissCookiesIfPresent(page)
       if (isPdfhintSite()) {
         await expect(page.locator('main a[href*="/lp/1040-2021-form"]').first()).toBeVisible({ timeout: 60_000 })

@@ -7,6 +7,7 @@ import { gotoAccount, closeOnboarding, selectors } from '../helpers/dashboardAct
 import { gotoMembership, cancelSubscriptionFromAccount, accountSelectors } from '../helpers/accountActions'
 import { editor } from '../pages/editorSelectors'
 import { appUrl } from '../helpers/appUrl'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 
 function visualSnapshotsEnabled(): boolean {
   const v = process.env.PLAYWRIGHT_VISUAL_SNAPSHOTS?.trim()
@@ -229,13 +230,13 @@ test.describe('Visual — auth & modales', { tag: ['@PDFEDITOR_VISUAL'] }, () =>
     test.skip(!isPdfhintSite(), 'Rutas localizadas pdfhint')
     const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
     const email = `playwright+vismagic+${unique}@example.com`
-    await page.goto(appUrl('/en/login'), { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, appUrl('/en/login'), { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     const afterMs = Date.now()
     await page.locator('[data-id="emailForm"]').fill(email)
     await page.locator('[data-id="loginBtnSubmit"]').click()
     const url = await waitForMagicLink({ search: toCatcherEmail(email), subjectIncludes: 'sign in', afterMs, timeoutMs: 120_000 })
-    await page.goto(url, { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, url, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
     await expect(page).toHaveScreenshot('visual-account-magic-redirect.png', screenshotOptions)
   })

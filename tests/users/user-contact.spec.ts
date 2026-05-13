@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 import { contact } from '../pages/contactSelectors'
 
 /**
@@ -11,7 +12,7 @@ test.describe('Users — contacto', { tag: ['@PDFEDITOR_USER'] }, () => {
       process.env.PLAYWRIGHT_CONTACT_EMAIL?.trim() ||
       `playwright-contact+${Date.now()}@example.com`
 
-    await page.goto('/contact', { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, '/contact', { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
 
     await page.locator(contact.firstName).waitFor({ state: 'visible', timeout: 60_000 })

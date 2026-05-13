@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
 import { isPdfhintSite } from '../helpers/seoExpectations'
 import { toCatcherEmail, waitForMessageDetail, subjectFragmentFor } from '../helpers/mailpitClient'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 
 function mailpitReady(): boolean {
   return !!process.env.PLAYWRIGHT_MAILPIT_URL?.trim()
@@ -37,7 +38,7 @@ test.describe('Transactional — magic link (Mailpit)', { tag: ['@PDFEDITOR_TRAN
       const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
       const email = process.env.PLAYWRIGHT_TEST_EMAIL ?? `playwright+ml${c.loc}+${unique}@example.com`
 
-      await page.goto(`/${c.loc}/login`, { waitUntil: 'domcontentloaded' })
+      await gotoMarketingPath(page, `/${c.loc}/login`, { waitUntil: 'domcontentloaded' })
       await dismissCookiesIfPresent(page)
       const afterMs = Date.now()
       await page.locator('[data-id="emailForm"]').waitFor({ state: 'visible', timeout: 60_000 })

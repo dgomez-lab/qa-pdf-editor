@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { gotoMarketingPath } from './mvpsUrl'
 
 /**
  * Equivalente Playwright a `BotPage.forceUrlWithParameters` (qai-pa-pdf-editor).
@@ -12,7 +13,7 @@ export async function forceUrlWithParameters(page: Page, params: Record<string, 
     if (v == null || v === '') continue
     current.searchParams.set(k, v)
   }
-  await page.goto(current.toString(), { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, current.toString(), { waitUntil: 'domcontentloaded' })
 }
 
 /**
@@ -20,6 +21,6 @@ export async function forceUrlWithParameters(page: Page, params: Record<string, 
  * y navega esperando 404 / fallback (`/this-route-does-not-exist`).
  */
 export async function forceWrongUrl(page: Page): Promise<void> {
-  const target = new URL('/this-route-does-not-exist', page.url()).toString()
-  await page.goto(target, { waitUntil: 'domcontentloaded' }).catch(() => {})
+  const raw = new URL('/this-route-does-not-exist', page.url()).toString()
+  await gotoMarketingPath(page, raw, { waitUntil: 'domcontentloaded' }).catch(() => {})
 }

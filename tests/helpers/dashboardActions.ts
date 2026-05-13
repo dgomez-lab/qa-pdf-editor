@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 import { dashboard } from '../pages/dashboardSelectors'
 import { appUrl, isPdfhintApp } from './appUrl'
+import { gotoMarketingPath } from './mvpsUrl'
 
 /**
  * Pasos atómicos del Dashboard (paridad con `DashboardPage` legacy).
@@ -55,17 +56,17 @@ export async function closeOnboardingOnce(page: Page): Promise<void> {
 
 export async function gotoDashboard(page: Page): Promise<void> {
   const path = isPdfhintApp() ? '/en/dashboard' : '/dashboard'
-  await page.goto(appUrl(path), { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, appUrl(path), { waitUntil: 'domcontentloaded' })
 }
 
 export async function gotoAccount(page: Page): Promise<void> {
   const path = isPdfhintApp() ? '/en/account' : '/account'
-  await page.goto(appUrl(path), { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, appUrl(path), { waitUntil: 'domcontentloaded' })
 }
 
 export async function gotoLogin(page: Page): Promise<void> {
   const path = isPdfhintApp() ? '/en/login' : '/login'
-  await page.goto(appUrl(path), { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, appUrl(path), { waitUntil: 'domcontentloaded' })
 }
 
 export async function expectUploadDocumentButton(page: Page): Promise<void> {

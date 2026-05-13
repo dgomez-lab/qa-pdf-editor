@@ -7,6 +7,7 @@ import {
   waitForMessageDetail,
   subjectFragmentFor
 } from '../helpers/mailpitClient'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 
 function mailpitReady(): boolean {
   return !!process.env.PLAYWRIGHT_MAILPIT_URL?.trim()
@@ -67,7 +68,7 @@ test.describe('Transactional — document sent (Mailpit)', { tag: ['@PDFEDITOR_T
       expect(downloadUrl).toBeTruthy()
       expect(code).toBeTruthy()
 
-      await page.goto(downloadUrl!, { waitUntil: 'domcontentloaded' })
+      await gotoMarketingPath(page, downloadUrl!, { waitUntil: 'domcontentloaded' })
       await page.locator('[data-id="downloadCodeInput"], [data-id="downloadCode"]').first().fill(code!).catch(() => {})
       await page.locator('[data-id="downloadCodeSubmit"], [data-id="ctaDownload"]').first().click({ timeout: 30_000 }).catch(() => {})
       expect(page.url()).toMatch(/download/i)

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 import { isPdfhintSite } from '../helpers/seoExpectations'
 import { toCatcherEmail, waitForMagicLink } from '../helpers/mailpitClient'
 import { appUrl } from '../helpers/appUrl'
@@ -39,7 +40,7 @@ test.describe('Visual — cuenta (sesión)', { tag: ['@PDFEDITOR_VISUAL'] }, () 
     const rawEmail = process.env.PLAYWRIGHT_TEST_EMAIL ?? `playwright+visacct+${unique}@example.com`
     const search = process.env.PLAYWRIGHT_MAILPIT_SEARCH_EMAIL?.trim() || toCatcherEmail(rawEmail)
 
-    await page.goto(appUrl('/en/login'), { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, appUrl('/en/login'), { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('[data-id="emailForm"]').waitFor({ state: 'visible', timeout: 60_000 })
     const afterMs = Date.now()
@@ -52,11 +53,11 @@ test.describe('Visual — cuenta (sesión)', { tag: ['@PDFEDITOR_VISUAL'] }, () 
       timeoutMs: 120_000,
       afterMs
     })
-    await page.goto(magicUrl, { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, magicUrl, { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.waitForTimeout(3000)
 
-    await page.goto(appUrl('/en/account'), { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, appUrl('/en/account'), { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
     await page.locator('main').waitFor({ state: 'visible', timeout: 60_000 })
     await page.waitForTimeout(2000)

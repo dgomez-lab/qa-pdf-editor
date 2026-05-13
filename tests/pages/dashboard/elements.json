@@ -1,0 +1,6 @@
+{
+  "getFullAccessButton": "[data-id=\"accountSubscribeButton\"]",
+  "onboardingCloseModal": "[data-id=\"ctaCloseModal\"]",
+  "uploadDocumentButton": "[data-id=\"ctaUploadDocument\"]",
+  "dashboardSubscribeBanner": "[data-id=\"dashboardCTASubscribeBanner\"]"
+}

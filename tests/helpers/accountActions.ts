@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import { appUrl, isPdfhintApp } from './appUrl'
+import { gotoMarketingPath } from './mvpsUrl'
 
 /**
  * Selectores de la página `account` y `account/membership`. El staging actual
@@ -57,7 +58,7 @@ export async function gotoMembership(page: Page): Promise<void> {
     }
   }
   const path = isPdfhintApp() ? '/en/account/membership' : '/account/membership'
-  await page.goto(appUrl(path), { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, appUrl(path), { waitUntil: 'domcontentloaded' })
 }
 
 /**

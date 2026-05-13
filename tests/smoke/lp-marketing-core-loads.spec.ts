@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
+import { marketingMainOrHero } from '../helpers/marketingPage'
 
 const lpCases: { tag: string; path: string; title: string }[] = [
   { tag: '@PDFEDITOR_SMOKE_LP_MERGE', path: '/lp/merge-pdf', title: '/lp/merge-pdf' },
@@ -14,9 +16,9 @@ const lpCases: { tag: string; path: string; title: string }[] = [
 test.describe('Smoke — LP herramientas (marketing)', { tag: ['@PDFEDITOR_SMOKE'] }, () => {
   for (const { tag, path, title } of lpCases) {
     test(`${title} carga`, { tag: [tag] }, async ({ page }) => {
-      await page.goto(path, { waitUntil: 'domcontentloaded' })
+      await gotoMarketingPath(page, path, { waitUntil: 'domcontentloaded' })
       await dismissCookiesIfPresent(page)
-      await expect(page.locator('main').first()).toBeVisible({ timeout: 60_000 })
+      await expect(marketingMainOrHero(page)).toBeVisible({ timeout: 60_000 })
     })
   }
 })

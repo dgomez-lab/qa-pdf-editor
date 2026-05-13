@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test'
 import { home } from '../pages/editorSelectors'
 import { isMvpsMergedStage } from './siteContext'
+import { gotoMarketingPath } from './mvpsUrl'
 
 /**
  * Cierra banners de consentimiento (CMP en marketing puede no usar solo data-id del editor).
@@ -31,7 +32,7 @@ export async function openHome(page: Page, options?: OpenHomeOptions): Promise<v
     options?.query && Object.keys(options.query).length > 0
       ? `/?${new URLSearchParams(options.query).toString()}`
       : '/'
-  await page.goto(path)
+  await gotoMarketingPath(page, path)
   await dismissCookiesIfPresent(page)
 
   if (isMvpsMergedStage()) {

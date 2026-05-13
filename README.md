@@ -21,15 +21,15 @@ La resolución está en [`playwright/resolveBaseUrl.ts`](playwright/resolveBaseU
 | Objetivo | Variables | URL resultante |
 |----------|-------------|----------------|
 | **pdfhint** staging (por defecto) | `APP=pdfhint` o omitir `APP` | `https://staging.pdfhint.com` (override con `PDFHINT_BASE_URL`) |
-| **mergedpdf** stage / dinámicos | `APP=mergedpdf` o `APP=mvps` | `https://red.mvps.website?x-token-qa=niGqCYH7McqERAB` |
-| Slot **red1…red10** | `APP=mergedpdf` + `MVPS_SLOT=1` … `10` | `https://red1.mvps.website?x-token-qa=...` |
-| Igual que `projectVars.environment` | `ENVIRONMENT=red3` | `https://red3.mvps.website?...` |
-| Control total | `BASE_URL=https://...` | Se usa tal cual (sin pasar por la tabla) |
+| **mergedpdf** stage / dinámicos | `APP=mergedpdf` o `APP=mvps` | `https://red.mvps.website` (origen **sin** query; el token `x-token-qa` se añade en cada navegación vía [`tests/helpers/mvpsUrl.ts`](tests/helpers/mvpsUrl.ts)) |
+| Slot **red1…red10** | `APP=mergedpdf` + `MVPS_SLOT=1` … `10` | `https://red1.mvps.website` (+ token en cada `goto`) |
+| Igual que `projectVars.environment` | `ENVIRONMENT=red3` | `https://red3.mvps.website` (+ token en cada `goto`) |
+| Control total | `BASE_URL=https://...` | Si es `*.mvps.website` **con** `?x-token-qa=…`, el host se normaliza y el query pasa a `QAI_TOKEN_PARAM` (Playwright pierde el query del `baseURL` al resolver rutas absolutas `/ruta`). |
 
 Parámetros opcionales:
 
-- `QAI_TOKEN_PARAM` — query del token QA (por defecto `x-token-qa=niGqCYH7McqERAB`, igual que en el repo Cucumber).
-- `APPEND_QA_TOKEN=false` — URLs mvps **sin** query de token.
+- `QAI_TOKEN_PARAM` — query del token QA (por defecto `x-token-qa=niGqCYH7McqERAB`). Si `BASE_URL` ya trae `?x-token-qa=…`, se reutiliza al normalizar el host.
+- `APPEND_QA_TOKEN=false` — no añadir token en [`gotoMarketingPath`](tests/helpers/mvpsUrl.ts) (casos excepcionales).
 - Tras resolver, se asigna `process.env.BASE_URL` para que helpers como `isPdfhintSite()` coincidan con el `baseURL` de Playwright.
 
 Ejemplos:
@@ -119,6 +119,8 @@ En GitHub: variable `PLAYWRIGHT_BASE_URL` y, si aplica, `PLAYWRIGHT_APP` / `MVPS
 | `npm run test:users-account` | `@PDFEDITOR_USER_ACCOUNT` — carga `/en/account` o `/account`. |
 | `npm run test:visual` | Regresión visual opcional (`PLAYWRIGHT_VISUAL_SNAPSHOTS=1`). |
 | `npm run test:visual-update` | Regenera PNG de referencia (`--update-snapshots`). |
+| `npm run test:visual-update-auth` | Solo `visual-auth-modals.spec.ts` (requiere `PLAYWRIGHT_PAYMENT_SMOKE=1` + Stripe). |
+| `npm run test:visual-update-account` | Solo `visual-account-session.spec.ts` (Mailpit + rutas pdfhint). |
 | `npm run test:visual-account` | `@PDFEDITOR_VISUAL_ACCOUNT` — captura `/en/account` tras magic link (Mailpit + `PLAYWRIGHT_VISUAL_SNAPSHOTS=1`). |
 | `npm run test:visual-products` | 22 tags `@PDFEDITOR_VISUAL_PRODUCT_*` (LPs `/lp/...`). |
 | `npm run test:visual-forms` | 18 tags `@PDFEDITOR_VISUAL_FORM_*` (formularios). |

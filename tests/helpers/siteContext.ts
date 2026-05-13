@@ -10,3 +10,8 @@ export function currentBaseUrl(): string {
 export function isMvpsMergedStage(): boolean {
   return currentBaseUrl().includes('mvps.website')
 }
+
+/** Ruta marketing “Quiénes somos”: en MVPS suele ser `/about-us`; en pdfhint `/about`. */
+export function marketingAboutPath(): string {
+  return isMvpsMergedStage() ? '/about-us' : '/about'
+}

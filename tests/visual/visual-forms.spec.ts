@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 
 function visualSnapshotsEnabled(): boolean {
   const v = process.env.PLAYWRIGHT_VISUAL_SNAPSHOTS?.trim()
@@ -50,7 +51,7 @@ test.describe('Visual — formularios (LP)', { tag: ['@PDFEDITOR_VISUAL'] }, () 
   for (const f of forms) {
     test(`Form ${f.pngBase}`, { tag: [f.tag] }, async ({ page }) => {
       const path = process.env[`PLAYWRIGHT_VISUAL_FORM_PATH_${f.pngBase.toUpperCase().replace(/-/g, '_')}`]?.trim() || f.path
-      const resp = await page.goto(path, { waitUntil: 'domcontentloaded' }).catch(() => null)
+      const resp = await gotoMarketingPath(page, path, { waitUntil: 'domcontentloaded' }).catch(() => null)
       if (resp && resp.status() >= 400) {
         test.skip(true, `Form LP ${path} → HTTP ${resp.status()} (legacy slug ausente en este entorno)`)
       }

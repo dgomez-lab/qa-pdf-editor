@@ -43,9 +43,11 @@ Ejemplos reales en el repo: [`tests/seo/seo-home.spec.ts`](../tests/seo/seo-home
 
 ## Qué reutilizar (paridad con page objects legacy)
 
-- Selectores editor / home: [`tests/pages/editorSelectors.ts`](../tests/pages/editorSelectors.ts) (equivalente a `src/pages/**/elements.json` del legacy).
-- Dashboard: [`tests/pages/dashboardSelectors.ts`](../tests/pages/dashboardSelectors.ts).
+- Selectores editor / home: [`tests/pages/editorSelectors.ts`](../tests/pages/editorSelectors.ts) + [`tests/pages/editor/elements.json`](../tests/pages/editor/elements.json) (equivalente a `src/pages/editor` + `home` del legacy).
+- Dashboard: [`tests/pages/dashboardSelectors.ts`](../tests/pages/dashboardSelectors.ts) + [`tests/pages/dashboard/elements.json`](../tests/pages/dashboard/elements.json).
 - Navegación y cookies: [`tests/helpers/navigation.ts`](../tests/helpers/navigation.ts) (`openHome(page)` o `openHome(page, { query: { utm_source: '…' } })` para UTM en la raíz).
+- Navegación marketing en **MVPS** (`*.mvps.website`): [`tests/helpers/mvpsUrl.ts`](../tests/helpers/mvpsUrl.ts) (`gotoMarketingPath`, `ensureMvpsMarketingUrl`) — el `baseURL` va **sin** `?x-token-qa=` para que no se pierda al hacer `goto('/forms')`. Sobre **About** en mergedpdf: [`marketingAboutPath()`](../tests/helpers/siteContext.ts) → `/about-us`.
+- Comprobar que una página marketing “cargó”: en smokes se usa [`marketingMainOrHero(page)`](../tests/helpers/marketingPage.ts) (`<main>` o primer `h1`–`h3`, por layouts sin `<main>`).
 - Pago Stripe: [`tests/helpers/stripePayment.ts`](../tests/helpers/stripePayment.ts).
 - URL base (`red` / `redN` / pdfhint): [`playwright/resolveBaseUrl.ts`](../playwright/resolveBaseUrl.ts) (ya aplicado en `playwright.config.ts`).
 

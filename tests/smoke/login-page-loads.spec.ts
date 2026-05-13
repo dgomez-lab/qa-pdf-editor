@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { dismissCookiesIfPresent } from '../helpers/navigation'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 import { isPdfhintSite } from '../helpers/seoExpectations'
 
 test.describe('Smoke — login', { tag: ['@PDFEDITOR_SMOKE'] }, () => {
@@ -7,7 +8,7 @@ test.describe('Smoke — login', { tag: ['@PDFEDITOR_SMOKE'] }, () => {
     const path = isPdfhintSite()
       ? (process.env.SEO_LOGIN_PATHNAME?.trim() || '/en/login')
       : '/login'
-    const res = await page.goto(path, { waitUntil: 'domcontentloaded' }).catch(() => null)
+    const res = await gotoMarketingPath(page, path, { waitUntil: 'domcontentloaded' }).catch(() => null)
     if (!res || res.status() >= 400) {
       test.skip(true, `login no disponible en esta baseURL (${path})`)
       return

@@ -5,6 +5,7 @@ import { fillStripePaymentLikeLegacy } from '../helpers/stripePayment'
 import { editor, home } from '../pages/editorSelectors'
 import { dashboard } from '../pages/dashboardSelectors'
 import { appUrl } from '../helpers/appUrl'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 import * as path from 'path'
 
 const samplePdf = path.join(__dirname, '..', 'fixtures', 'sample.pdf')
@@ -42,7 +43,7 @@ test.describe('PDF Hint — smoke Dashboard → editor → pago', { tag: ['@PDFE
     const rawEmail = process.env.PLAYWRIGHT_TEST_EMAIL ?? `playwright+dash+${unique}@example.com`
     const mailpitSearch = process.env.PLAYWRIGHT_MAILPIT_SEARCH_EMAIL?.trim() || toCatcherEmail(rawEmail)
 
-    await page.goto(appUrl('/login'), { waitUntil: 'domcontentloaded' })
+    await gotoMarketingPath(page, appUrl('/login'), { waitUntil: 'domcontentloaded' })
     await dismissCookiesIfPresent(page)
 
     await page.locator('[data-id="emailForm"]').waitFor({ state: 'visible', timeout: 60_000 })
@@ -57,7 +58,7 @@ test.describe('PDF Hint — smoke Dashboard → editor → pago', { tag: ['@PDFE
         timeoutMs: 120_000,
         afterMs
       })
-      await page.goto(magicUrl, { waitUntil: 'domcontentloaded' })
+      await gotoMarketingPath(page, magicUrl, { waitUntil: 'domcontentloaded' })
     } else {
       await page.waitForURL(/dashboard|editor|lp\//i, { timeout: 120_000 }).catch(() => {})
     }

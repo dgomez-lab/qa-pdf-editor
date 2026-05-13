@@ -18,6 +18,8 @@
     "test:transactional-account-created": "playwright test tests/emails/transactional-account-created.spec.ts",
     "test:visual": "PLAYWRIGHT_VISUAL_SNAPSHOTS=1 playwright test tests/visual",
     "test:visual-update": "PLAYWRIGHT_VISUAL_SNAPSHOTS=1 playwright test tests/visual --update-snapshots",
+    "test:visual-update-auth": "PLAYWRIGHT_VISUAL_SNAPSHOTS=1 PLAYWRIGHT_PAYMENT_SMOKE=1 playwright test tests/visual/visual-auth-modals.spec.ts --update-snapshots",
+    "test:visual-update-account": "PLAYWRIGHT_VISUAL_SNAPSHOTS=1 playwright test tests/visual/visual-account-session.spec.ts --update-snapshots",
     "test:visual-account": "PLAYWRIGHT_VISUAL_SNAPSHOTS=1 playwright test tests/visual/visual-account-session.spec.ts",
     "test:first-mastercard": "PLAYWRIGHT_PAYMENT_SMOKE=1 playwright test tests/payment/first-payment-mastercard.spec.ts",
     "test:first-amex": "PLAYWRIGHT_PAYMENT_SMOKE=1 playwright test tests/payment/first-payment-amex.spec.ts",

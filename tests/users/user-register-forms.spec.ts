@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { openHome, dismissCookiesIfPresent } from '../helpers/navigation'
+import { gotoMarketingPath } from '../helpers/mvpsUrl'
 import { runEditorUploadRegisterAndVisaPayment, openDashboardViaPaymentSuccessModal } from '../helpers/pdfhintEditorPaymentFlow'
 import { gotoAccount } from '../helpers/dashboardActions'
 import { gotoMembership, accountSelectors } from '../helpers/accountActions'
@@ -25,7 +26,7 @@ test.describe('Users — registro vía Forms', { tag: ['@PDFEDITOR_USER'] }, () 
     await openHome(page)
     await dismissCookiesIfPresent(page)
     // Llegada vía la página de formularios (equivalente a flow Forms del legacy).
-    await page.goto('/forms', { waitUntil: 'domcontentloaded' }).catch(() => {})
+    await gotoMarketingPath(page, '/forms', { waitUntil: 'domcontentloaded' }).catch(() => {})
 
     await runEditorUploadRegisterAndVisaPayment(page, { email })
     await openDashboardViaPaymentSuccessModal(page)

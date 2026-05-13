@@ -2,6 +2,8 @@
 
 Referencia: **qai-pa-pdf-editor** (Bitbucket). Tags listados como en los `.feature`.
 
+**Índice por archivo `.feature` legacy (equivalente a “qué tests tenemos” en Playwright):** [**docs/TEST_CATALOG_BY_LEGACY_FEATURE.md**](TEST_CATALOG_BY_LEGACY_FEATURE.md). **Mapa de carpetas Selenium → estructura de este repo:** [**docs/SELENIUM_FOLDER_MAP.md**](SELENIUM_FOLDER_MAP.md).
+
 ## Métrica oficial de paridad (%)
 
 > **Paridad de tags `@PDFEDITOR_*`: 211/211 = 100%** (`npm run porting:tags`, salida `missingFromPlaywright: []`).
@@ -271,12 +273,14 @@ Variables/secret necesarias en el repo:
 1. **Selectores Trustpilot / send-by-email** — Si el producto cambia los `data-id`
    (`reviewHappy`, `reviewNotHappy`, `sendByEmailButton`), actualizar
    [editorActions.ts](../tests/helpers/editorActions.ts) / `dashboardActions.ts`.
-2. **Visual baselines auth/session** — Cuando el equipo decida fijarlas, ejecutar
-   `PLAYWRIGHT_VISUAL_SNAPSHOTS=1 PLAYWRIGHT_PAYMENT_SMOKE=1 PLAYWRIGHT_MAILPIT_URL=… npm run test:visual-update`
-   y commitear `tests/visual/visual-auth-modals.spec.ts-snapshots/` y
-   `tests/visual/visual-account-session.spec.ts-snapshots/`.
+2. **Visual baselines auth/session** — Con `BASE_URL` (pdfhint staging), Stripe y Mailpit configurados:
+   - Modales editor + dashboard + flujos con pago: `npm run test:visual-update-auth` (equivale a
+     `PLAYWRIGHT_VISUAL_SNAPSHOTS=1 PLAYWRIGHT_PAYMENT_SMOKE=1 playwright test …/visual-auth-modals.spec.ts --update-snapshots`).
+   - Cuenta vía magic link (`PLAYWRIGHT_MAILPIT_URL`, etc.): `npm run test:visual-update-account`.
+   - Suite completa de PNG: `npm run test:visual-update`. Luego commit de `tests/visual/**/*-snapshots/`.
 3. **Reactivar `cancel-by-user/agent` y `first-payment-ip-*`** cuando el producto solucione
    los bugs documentados arriba (basta con quitar `PLAYWRIGHT_ALLOW_FLAKY_CANCEL=1` del entorno).
+4. **POM `elements.json`** — Editor y dashboard ya usan JSON bajo [`tests/pages/editor/elements.json`](../tests/pages/editor/elements.json) y [`tests/pages/dashboard/elements.json`](../tests/pages/dashboard/elements.json); otras páginas pueden seguir el mismo patrón (ver [SELENIUM_FOLDER_MAP.md](SELENIUM_FOLDER_MAP.md)).
 
 ## Variables Playwright (opcionales, CRM / Mailpit / Dashboard)
 
