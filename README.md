@@ -26,6 +26,10 @@ La resolución está en [`playwright/resolveBaseUrl.ts`](playwright/resolveBaseU
 | Igual que `projectVars.environment` | `ENVIRONMENT=red3` | `https://red3.mvps.website` (+ token en cada `goto`) |
 | Control total | `BASE_URL=https://...` | Si es `*.mvps.website` **con** `?x-token-qa=…`, el host se normaliza y el query pasa a `QAI_TOKEN_PARAM` (Playwright pierde el query del `baseURL` al resolver rutas absolutas `/ruta`). |
 
+Nota CI: en GitHub Actions, si `APP` / `PLAYWRIGHT_APP` llegan vacíos y no hay
+`BASE_URL`, el default es **`mergedpdf`** para mantener acceso al entorno MVPS.
+Fuera de Actions, omitir `APP` sigue resolviendo a **pdfhint**.
+
 Parámetros opcionales:
 
 - `QAI_TOKEN_PARAM` — query del token QA (por defecto `x-token-qa=niGqCYH7McqERAB`). Si `BASE_URL` ya trae `?x-token-qa=…`, se reutiliza al normalizar el host.
@@ -61,8 +65,13 @@ PLAYWRIGHT_PAYMENT_SMOKE=1 npm run test:tag -- @PDFEDITOR_PDFHINT_SMOKE_VISA
 | `STRIPE_TEST_CARD_NUMBER` / `EXP` / `CVC` | Tarjeta de prueba Stripe (por defecto 4242… / 1234 / 123). |
 | `SEO_LOGIN_PATHNAME` | Pathname esperado del Login en marketing pdfhint (por defecto `/en/login`). |
 | `PLAYWRIGHT_TRACE` | `1` fuerza `trace: 'on'` en toda la suite (útil para depurar Stripe). |
+| `HEADLESS` / `SLOWMO` | Depuración local del runner; ver [docs/PLAYWRIGHT_RUNNER.md](docs/PLAYWRIGHT_RUNNER.md). |
 
 En GitHub: variable `PLAYWRIGHT_BASE_URL` y, si aplica, `PLAYWRIGHT_APP` / `MVPS_SLOT` (ver workflow). El job **Tag parity** (`npm run porting:tags`) en Actions usa `SKIP_LEGACY_TAG_CHECK=1` porque no se clona `qai-pa-pdf-editor`; en local, con `../qai-pa-pdf-editor`, ejecuta `npm run porting:tags` sin esa variable para la comprobación completa.
+
+La configuración del runner carga `.env` y `.env.local`, define timeouts,
+artefactos, reintentos y diferencias CI/local en
+[docs/PLAYWRIGHT_RUNNER.md](docs/PLAYWRIGHT_RUNNER.md).
 
 ## Scripts
 
@@ -139,11 +148,12 @@ En GitHub: variable `PLAYWRIGHT_BASE_URL` y, si aplica, `PLAYWRIGHT_APP` / `MVPS
 | `npm run porting:tags` | Comparador legacy vs Playwright (sale `missingFromPlaywright: []` = 100% paridad). |
 | `npm run test:ui` | Playwright UI mode. |
 
-## Documentación de migración
+## Documentación técnica y de migración
 
 - [docs/MIGRATION_INVENTORY.md](docs/MIGRATION_INVENTORY.md) — inventario del repo Cucumber/Selenium.
 - [docs/PORTING_STATUS.md](docs/PORTING_STATUS.md) — escenarios por feature y estado del port.
 - [docs/ADDING_PLAYWRIGHT_TESTS.md](docs/ADDING_PLAYWRIGHT_TESTS.md) — **cómo añadir tests** (Playwright vs `.feature`, plantilla, tags, `grep`).
+- [docs/PLAYWRIGHT_RUNNER.md](docs/PLAYWRIGHT_RUNNER.md) — configuración del runner: `.env`, URL base, debug local, timeouts, artefactos y CI.
 
 ## Paridad con Bitbucket (resumen)
 
