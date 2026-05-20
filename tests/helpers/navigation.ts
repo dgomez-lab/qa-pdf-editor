@@ -3,6 +3,7 @@ import { home } from '../pages/editorSelectors'
 import { isMvpsMergedStage } from './siteContext'
 import { isPdfhintSite } from './seoExpectations'
 import { gotoMarketingPath } from './mvpsUrl'
+import { waitForMvpsHeaderHydration } from './seoAbsoluteHrefs'
 
 /**
  * Cierra banners de consentimiento (CMP en marketing puede no usar solo data-id del editor).
@@ -55,6 +56,7 @@ async function waitForMvpsHomeReady(page: Page, timeoutMs: number): Promise<bool
       fileHit.waitFor({ state: 'attached', timeout: timeoutMs }),
       main.waitFor({ state: 'visible', timeout: timeoutMs })
     ])
+    await waitForMvpsHeaderHydration(page, timeoutMs)
     return true
   } catch {
     return false

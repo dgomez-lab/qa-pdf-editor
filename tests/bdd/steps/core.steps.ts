@@ -63,7 +63,8 @@ import {
   collectHeaderAbsoluteHrefErrors,
   collectLandingAbsoluteHrefErrors,
   collectFooterAbsoluteHrefErrors,
-  collectFormsPageAbsoluteHrefErrors
+  collectFormsPageAbsoluteHrefErrors,
+  waitForMvpsFormsGridHydration
 } from '../../helpers/seoAbsoluteHrefs'
 import {
   headerLinkChecksForBaseUrl,
@@ -705,6 +706,7 @@ Then('every link in the Home page footer should have an absolute http or https U
 
 When('I open the forms page for SEO link checks', async ({ page }) => {
   await gotoMarketingPath(page, appUrl('/forms'), { waitUntil: 'domcontentloaded' })
+  await waitForMvpsFormsGridHydration(page)
 })
 
 Then('every most-used form link on the forms page should have an absolute http or https URL', async ({ page }) => {

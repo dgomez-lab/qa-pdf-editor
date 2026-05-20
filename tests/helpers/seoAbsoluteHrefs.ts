@@ -3,6 +3,7 @@
  * Comprueba que los <a href> de marketing/navegación sean URLs absolutas http(s).
  */
 import type { Page } from '@playwright/test'
+import { isMvpsMergedStage } from './siteContext'
 
 export type HeaderLinkCheck = { dataId: string; pathname: string }
 export type FormsLinkCheck = { dataId: string; pathname: string }
@@ -76,11 +77,44 @@ export const FORMS_PAGE_LINK_CHECKS: readonly FormsLinkCheck[] = [
 /** strictHttp: igual que Cucumber (solo href https?). relaxedPath: resuelve relativos con el origin de la página. */
 export type SeoHrefPolicy = 'strictHttp' | 'relaxedPath'
 
+function seoHydrationTimeoutMs(): number {
+  return process.env.CI ? 45_000 : 20_000
+}
+
+export async function waitForMvpsHeaderHydration(page: Page, timeoutMs?: number): Promise<void> {
+  if (!isMvpsMergedStage()) return
+  const t = timeoutMs ?? seoHydrationTimeoutMs()
+  await page.locator('a[data-id="logIn"]').first().waitFor({ state: 'visible', timeout: t })
+  await page.waitForFunction(
+    () => {
+      const anchor = document.querySelector('a[data-id="mostUsedForm"]')
+      const href = anchor?.getAttribute('href')
+      if (!href?.trim()) return false
+      try {
+        const p = new URL(href.trim(), window.location.origin).pathname.replace(/\/$/, '') || '/'
+        return p === '/forms'
+      } catch {
+        return href.includes('/forms') && !href.includes('most-used-forms')
+      }
+    },
+    { timeout: t }
+  )
+}
+
+export async function waitForMvpsFormsGridHydration(page: Page, timeoutMs?: number): Promise<void> {
+  if (!isMvpsMergedStage()) return
+  const t = timeoutMs ?? seoHydrationTimeoutMs()
+  const firstId = FORMS_PAGE_LINK_CHECKS[0]?.dataId
+  if (!firstId) return
+  await page.locator(`a[data-id=${JSON.stringify(firstId)}]`).first().waitFor({ state: 'visible', timeout: t })
+}
+
 export async function collectHeaderAbsoluteHrefErrors(
   page: Page,
   checks: readonly HeaderLinkCheck[] = HEADER_LINK_CHECKS,
   opts?: { hrefPolicy?: SeoHrefPolicy }
 ): Promise<string[]> {
+  await waitForMvpsHeaderHydration(page)
   const list = checks.map((c) => ({ ...c }))
   const policy = opts?.hrefPolicy ?? 'strictHttp'
   return page.evaluate(
@@ -259,6 +293,7 @@ export async function collectFormsPageAbsoluteHrefErrors(
   page: Page,
   opts?: { hrefPolicy?: SeoHrefPolicy }
 ): Promise<string[]> {
+  await waitForMvpsFormsGridHydration(page)
   const checks = FORMS_PAGE_LINK_CHECKS.map((c) => ({ ...c }))
   const policy = opts?.hrefPolicy ?? 'strictHttp'
   return page.evaluate(
