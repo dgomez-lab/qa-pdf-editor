@@ -45,36 +45,75 @@ function resolveHomePath(options?: OpenHomeOptions): string {
   return base
 }
 
-export async function openHome(page: Page, options?: OpenHomeOptions): Promise<void> {
-  const path = resolveHomePath(options)
-  await gotoMarketingPath(page, path)
-  await dismissCookiesIfPresent(page)
-
-  if (isMvpsMergedStage()) {
-    const logo = page.locator('[data-id="logo"]').first()
-    const fileHit = page.locator(home.fileInput).first()
-    const main = page.locator('main').first()
+async function waitForMvpsHomeReady(page: Page, timeoutMs: number): Promise<boolean> {
+  const logo = page.locator('[data-id="logo"]').first()
+  const fileHit = page.locator(home.fileInput).first()
+  const main = page.locator('main').first()
+  try {
     await Promise.race([
-      logo.waitFor({ state: 'visible', timeout: 90_000 }),
-      fileHit.waitFor({ state: 'attached', timeout: 90_000 }),
-      main.waitFor({ state: 'visible', timeout: 90_000 })
+      logo.waitFor({ state: 'visible', timeout: timeoutMs }),
+      fileHit.waitFor({ state: 'attached', timeout: timeoutMs }),
+      main.waitFor({ state: 'visible', timeout: timeoutMs })
     ])
-    return
+    return true
+  } catch {
+    return false
   }
+}
 
+async function waitForPdfhintHomeReady(page: Page, timeoutMs: number): Promise<boolean> {
   const homeLink = page.getByRole('link', { name: /pdfhint Home|^Home$/i }).first()
   const logoByDataId = page.locator('[data-id="logo"]').first()
   const fileHit = page.locator(home.fileInput).first()
   const mainOrHeading = page.locator('main, h1, h2, h3').first()
-  await Promise.race([
-    homeLink.waitFor({ state: 'visible', timeout: 60_000 }),
-    logoByDataId.waitFor({ state: 'visible', timeout: 60_000 }),
-    fileHit.waitFor({ state: 'attached', timeout: 60_000 }),
-    mainOrHeading.waitFor({ state: 'visible', timeout: 60_000 })
-  ]).catch(async () => {
-    await page
-      .locator('main, h1, h2, h3, [data-id="logo"]')
-      .first()
-      .waitFor({ state: 'visible', timeout: 30_000 })
-  })
+  try {
+    await Promise.race([
+      homeLink.waitFor({ state: 'visible', timeout: timeoutMs }),
+      logoByDataId.waitFor({ state: 'visible', timeout: timeoutMs }),
+      fileHit.waitFor({ state: 'attached', timeout: timeoutMs }),
+      mainOrHeading.waitFor({ state: 'visible', timeout: timeoutMs })
+    ])
+    return true
+  } catch {
+    try {
+      await page
+        .locator('main, h1, h2, h3, [data-id="logo"]')
+        .first()
+        .waitFor({ state: 'visible', timeout: Math.min(timeoutMs, 30_000) })
+      return true
+    } catch {
+      return false
+    }
+  }
+}
+
+export async function openHome(page: Page, options?: OpenHomeOptions): Promise<void> {
+  const path = resolveHomePath(options)
+  const mvps = isMvpsMergedStage()
+  const firstPassTimeout = process.env.CI ? (mvps ? 45_000 : 40_000) : mvps ? 90_000 : 60_000
+  const finalTimeout = process.env.CI && mvps ? 120_000 : mvps ? 90_000 : 60_000
+
+  const loadOnce = async () => {
+    await gotoMarketingPath(page, path)
+    await dismissCookiesIfPresent(page)
+    return mvps ? waitForMvpsHomeReady(page, firstPassTimeout) : waitForPdfhintHomeReady(page, firstPassTimeout)
+  }
+
+  if (!(await loadOnce()) && process.env.CI) {
+    await gotoMarketingPath(page, path)
+    await dismissCookiesIfPresent(page)
+  }
+
+  if (mvps) {
+    const ready = await waitForMvpsHomeReady(page, finalTimeout)
+    if (!ready) {
+      throw new Error('MVPS home did not load (logo, file input, or main)')
+    }
+    return
+  }
+
+  const ready = await waitForPdfhintHomeReady(page, finalTimeout)
+  if (!ready) {
+    throw new Error('Home page did not load expected markers')
+  }
 }

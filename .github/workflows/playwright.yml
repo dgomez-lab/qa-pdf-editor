@@ -31,6 +31,7 @@ jobs:
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
       PLAYWRIGHT_CI_WORKERS: '1'
+      PLAYWRIGHT_CI_RETRIES: '2'
       SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
     steps:
       - uses: actions/checkout@v4

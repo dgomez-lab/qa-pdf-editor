@@ -4,11 +4,21 @@ import type { Page } from '@playwright/test'
  * Sustituye la comprobación por data-id mostUsedForm/logIn (UI Astro de marketing pdfhint).
  * Mantiene la intención del smoke SEO: login accesible con URL absoluta y enlace a /forms.
  */
+async function resolvePdfhintLoginLink(page: Page) {
+  const byRole = page.getByRole('link', { name: /^log\s*in$/i }).first()
+  if (await byRole.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    return byRole
+  }
+  const byDataId = page.locator('a[data-id="logIn"]').first()
+  await byDataId.waitFor({ state: 'visible', timeout: 15_000 })
+  return byDataId
+}
+
 export async function collectPdfhintHeaderSeoErrors(page: Page): Promise<string[]> {
   const errors: string[] = []
-  const login = page.getByRole('link', { name: /^log\s*in$/i }).first()
+  let login
   try {
-    await login.waitFor({ state: 'visible', timeout: 15_000 })
+    login = await resolvePdfhintLoginLink(page)
   } catch {
     errors.push('missing visible Login link in main navigation')
     return errors
