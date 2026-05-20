@@ -7,7 +7,7 @@ Guía para ejecutar en remoto (sin usar tu máquina) la misma cobertura que un `
 | Run | Commit | Evento | Qué esperar |
 |-----|--------|--------|-------------|
 | Antes de `ac33d95` (p. ej. `4439503`) | Viejo workflow | `workflow_dispatch` / push | **ci-fast** ~24 min y fallo (dashboard + `/en/login`). **ci-regression** no corre (0s) porque fast falló o el perfil no existía. **Ignorar.** |
-| `ac33d95`+ push | [run push](https://github.com/dgomez-lab/qa-pdf-editor/actions) | `push` | Solo **ci-fast** ~1 min, 5 tests SEO. |
+| `ac33d95`+ push a `main` | Actions | `push` | **ci-fast** ~1 min, luego **6 shards + visual**. |
 | `ac33d95`+ `profile: regression` | Manual | `workflow_dispatch` | **ci-fast** → **regression-setup** → **6 shards** + **visual** en paralelo. |
 | PR a `main` | `pull_request` | PR | Igual que regresión manual (6 shards + visual). |
 
@@ -99,7 +99,7 @@ Si hay flakes en pago/Mailpit, baja workers en el workflow: `PLAYWRIGHT_CI_WORKE
 
 Cada **pull request** hacia `main` o `master` ejecuta **ci-fast** y luego la regresión paralela (6 shards + visual).
 
-Los **push** a `main` solo ejecutan **ci-fast**.
+Los **push** a `main`/`master` ejecutan **ci-fast** y luego la regresión completa (6 shards + visual), igual que un merge de PR.
 
 Los PR desde **forks** no reciben secrets del repo base.
 

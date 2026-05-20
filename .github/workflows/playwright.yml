@@ -10,7 +10,7 @@ on:
       profile:
         description: 'Suite (fast | full | visual | regression)'
         required: false
-        default: 'fast'
+        default: 'regression'
 
 concurrency:
   group: playwright-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -134,6 +134,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       ${{ github.event_name == 'pull_request' ||
+      (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')) ||
       (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression') }}
     needs: ci-fast
     steps:
@@ -163,6 +164,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       ${{ github.event_name == 'pull_request' ||
+      (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')) ||
       (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression') }}
     needs: regression-setup
     strategy:
@@ -230,6 +232,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       ${{ github.event_name == 'pull_request' ||
+      (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')) ||
       (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression') }}
     needs: regression-setup
     env:

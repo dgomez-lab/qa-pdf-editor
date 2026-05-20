@@ -112,7 +112,7 @@ Equivalente remoto a un `allTests` en QAI Dogs: un solo disparo con suite funcio
 3. Tras **ci-fast**: **regression-setup** → **6 jobs funcionales en paralelo** (shards, estilo QAI Dogs) + **visual** en paralelo.
 4. Informes en fallo: **`playwright-report-shard-1`** … **`shard-6`** o **`playwright-report-regression-visual`**.
 
-Cada **PR** a `main` ejecuta **fast** y luego regresión paralela (6 shards + visual). Push a `main` solo **fast** (~1 min). Ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md).
+Cada **PR** o **push/merge a `main`/`master`** ejecuta **fast** (~1 min) y luego regresión paralela (6 shards + visual). Manual: **Run workflow** con perfil **`regression`** (por defecto). Ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md).
 
 Si staging exige allowlist de IP, los runners `ubuntu-latest` de GitHub pueden necesitar excepción en infra o un runner self-hosted (ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md)).
 
