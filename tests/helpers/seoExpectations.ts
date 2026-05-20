@@ -9,12 +9,9 @@ export function isPdfhintSite(): boolean {
   return u.includes('pdfhint')
 }
 
-/**
- * Cabecera: en pdfhint el login suele ir a la app con prefijo de idioma (/en/login).
- */
 export function headerLinkChecksForBaseUrl(): HeaderLinkCheck[] {
   if (isPdfhintSite()) {
-    const loginPath = process.env.SEO_LOGIN_PATHNAME?.trim() || '/en/login'
+    const loginPath = process.env.SEO_LOGIN_PATHNAME?.trim() || '/login'
     return [
       { dataId: 'mostUsedForm', pathname: '/forms' },
       { dataId: 'logIn', pathname: loginPath }

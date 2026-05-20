@@ -11,6 +11,18 @@ Guía para ejecutar en remoto (sin usar tu máquina) la misma cobertura que un `
 
 ## Configuración en GitHub
 
+### Automático (recomendado)
+
+Con un [Personal Access Token](https://github.com/settings/tokens) (`repo` + acceso a secrets del repo) y `.env` rellenado (al menos Mailpit):
+
+```bash
+GH_TOKEN=ghp_xxxxxxxx npm run setup:github-actions
+```
+
+El script [`scripts/setup-github-actions-env.py`](../scripts/setup-github-actions-env.py) crea/actualiza secrets y variables en `dgomez-lab/qa-pdf-editor`. CRM, token MVPS y API key usan valores de `.env` si existen; si no, los mismos defaults que en `tests/helpers/*` (staging).
+
+### Manual
+
 **Settings → Secrets and variables → Actions**
 
 ### Variables (repository o environment)
@@ -22,8 +34,13 @@ Guía para ejecutar en remoto (sin usar tu máquina) la misma cobertura que un `
 | `PLAYWRIGHT_MVPS_SLOT` | Slot `1`–`10` o vacío para `red` |
 | `PLAYWRIGHT_PDFHINT_BASE_URL` | Marketing pdfhint |
 | `PLAYWRIGHT_PDFHINT_APP_BASE_URL` | App pdfhint si difiere |
+| `SEO_LOGIN_PATHNAME` | Login cabecera pdfhint (default `/login`) |
 
-Si no defines variables, en CI se aplica [`config/configuration.json`](../config/configuration.json) (`environment: red`, `app: mergedpdf`).
+Si no defines variables, en CI se aplica [`config/configuration.json`](../config/configuration.json) (`environment: red`, `app: mergedpdf`). Los jobs fijan `APP=mergedpdf`.
+
+### Job **ci-fast** (push / PR gate)
+
+Solo `@PDFEDITOR_SEO` y `@PDFEDITOR_PDFHINT_SMOKE_SEO` (~5 tests). Sin dashboard ni pago. Mínimo: secret **`QAI_TOKEN_PARAM`** para MVPS.
 
 ### Secrets
 
@@ -59,7 +76,7 @@ El job **regression** activa además (sin secret): `PLAYWRIGHT_PAYMENT_SMOKE=1`,
 
 Cada **pull request** hacia `main` o `master` ejecuta:
 
-1. **ci-fast** — SEO + smoke pdfhint SEO + dashboard (~25 min).
+1. **ci-fast** — SEO + smoke pdfhint SEO (~15 min máx.).
 2. **ci-regression** — regresión completa tras pasar ci-fast (hasta ~150 min).
 
 Los **push** directos a `main`/`master` siguen ejecutando solo **ci-fast** (sin regresión completa), para no alargar cada merge.

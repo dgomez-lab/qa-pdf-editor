@@ -7,6 +7,7 @@ type SavedPdfhintEnv = {
   appendQaToken?: string
   emailSubjectBrandPrefix?: string
   app?: string
+  seoLoginPathname?: string
 }
 
 let savedPdfhintEnv: SavedPdfhintEnv | null = null
@@ -25,13 +26,17 @@ export function activatePdfhintScenarioEnv(): void {
     baseUrl: process.env.BASE_URL,
     appendQaToken: process.env.APPEND_QA_TOKEN,
     emailSubjectBrandPrefix: process.env.EMAIL_SUBJECT_BRAND_PREFIX,
-    app: process.env.APP
+    app: process.env.APP,
+    seoLoginPathname: process.env.SEO_LOGIN_PATHNAME
   }
   setPdfhintScenarioActive(true)
   process.env.BASE_URL = PDFHINT_STAGING_BASE_URL
   process.env.APPEND_QA_TOKEN = 'false'
   process.env.EMAIL_SUBJECT_BRAND_PREFIX = 'pdfhint'
   process.env.APP = 'pdfhint'
+  if (!process.env.SEO_LOGIN_PATHNAME?.trim()) {
+    process.env.SEO_LOGIN_PATHNAME = '/login'
+  }
 }
 
 export function deactivatePdfhintScenarioEnv(): void {
@@ -49,5 +54,7 @@ export function deactivatePdfhintScenarioEnv(): void {
   }
   if (s.app !== undefined) process.env.APP = s.app
   else delete process.env.APP
+  if (s.seoLoginPathname !== undefined) process.env.SEO_LOGIN_PATHNAME = s.seoLoginPathname
+  else delete process.env.SEO_LOGIN_PATHNAME
   savedPdfhintEnv = null
 }

@@ -96,7 +96,7 @@ PLAYWRIGHT_PAYMENT_SMOKE=1 npm run test:tag -- @PDFEDITOR_PDFHINT_SMOKE_VISA
 | `PLAYWRIGHT_PAYMENT_SMOKE` | `1` / `true` para ejecutar escenarios de pago (tags `@PDFEDITOR_PAYMENT_*` y smoke de pago). |
 | `PLAYWRIGHT_TEST_EMAIL` | Email fijo para el test de pago. |
 | `STRIPE_TEST_CARD_NUMBER` / `EXP` / `CVC` | Tarjeta de prueba Stripe (por defecto 4242… / 1234 / 123). |
-| `SEO_LOGIN_PATHNAME` | Pathname esperado del Login en marketing pdfhint (por defecto `/en/login`). |
+| `SEO_LOGIN_PATHNAME` | Pathname esperado del Login en marketing pdfhint (por defecto `/login`; `@PDFHINT` lo fija si falta). |
 | `PLAYWRIGHT_TRACE` | `1` fuerza `trace: 'on'` en toda la suite (útil para depurar Stripe). |
 | `BDD_LOG_LEVEL` | Por defecto **local:** `DEBUG` (logs de página/elemento estilo legacy). **CI:** `INFO`. Override: `SILENT` / `INFO` / `DEBUG`. |
 | `BDD_TERMINAL_STEPS` | Por defecto **local:** `✔`/`✖` por paso Gherkin en terminal. **CI:** desactivado. Desactivar local: `BDD_TERMINAL_STEPS=0`. |
@@ -130,7 +130,7 @@ gh workflow run playwright.yml -f profile=regression --ref main
 | `npm run test:pdfhint-smoke` | Pdfhint (`configuration.pdfhint.json`) + tags `@PDFEDITOR_PDFHINT_SMOKE*` (hook `@PDFHINT` en el feature). |
 | `npm run sync:legacy-elements` | Copia selectores desde `../qai-pa-pdf-editor` a `tests/bdd/legacy-elements/`. |
 | `npm run test:pdfhint-tag -- @TAG` | Igual con perfil pdfhint y tag arbitrario. |
-| `npm run test:ci-fast` | Suite rápida de CI (SEO + smoke SEO pdfhint + dashboard). |
+| `npm run test:ci-fast` | Gate rápido CI: SEO mergedpdf + smoke SEO pdfhint (sin dashboard/pago). |
 | `npm run test:ci-full` | Suite funcional CI (excluye `@MANUAL_SCREEN_CAPTURE`). |
 | `npm run test:ci-regression` | Funcional + visual (`@PDFEDITOR_VISUAL*`) para regresión GitHub. |
 | `npm run test:ci-visual` | Solo visual por tag `@PDFEDITOR_VISUAL*`. |

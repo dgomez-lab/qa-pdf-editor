@@ -26,7 +26,7 @@ Requiere pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y CRM/Mailpit donde
 | Gherkin | [`features/Dashboard.feature`](../features/Dashboard.feature) |
 | Pasos | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) |
 | POM | [`tests/pages/dashboard/`](../tests/pages/dashboard/) |
-| Ejecutar | `npm run test:tag -- @PDFEDITOR_DASHBOARD_*`; incluido en `npm run test:ci-fast` |
+| Ejecutar | `npm run test:tag -- @PDFEDITOR_DASHBOARD_*`; incluido en `npm run test:ci-full` / regression |
 
 ---
 
