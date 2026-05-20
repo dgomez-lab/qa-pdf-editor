@@ -12,6 +12,10 @@ on:
         required: false
         default: 'fast'
 
+concurrency:
+  group: playwright-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci-fast:
     name: CI fast (SEO + pdfhint SEO smoke)
@@ -123,7 +127,7 @@ jobs:
 
   ci-regression:
     name: CI regression (functional + visual)
-    timeout-minutes: 150
+    timeout-minutes: 180
     runs-on: ubuntu-latest
     if: >-
       ${{ github.event_name == 'pull_request' ||

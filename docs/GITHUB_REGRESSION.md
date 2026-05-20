@@ -2,6 +2,17 @@
 
 Guía para ejecutar en remoto (sin usar tu máquina) la misma cobertura que un `allTests` en QAI Dogs: suite funcional + visual, excluyendo captura manual (`@MANUAL_SCREEN_CAPTURE`).
 
+## Cómo leer varias ejecuciones seguidas
+
+| Run | Commit | Evento | Qué esperar |
+|-----|--------|--------|-------------|
+| Antes de `ac33d95` (p. ej. `4439503`) | Viejo workflow | `workflow_dispatch` / push | **ci-fast** ~24 min y fallo (dashboard + `/en/login`). **ci-regression** no corre (0s) porque fast falló o el perfil no existía. **Ignorar.** |
+| `ac33d95`+ push | [run push](https://github.com/dgomez-lab/qa-pdf-editor/actions) | `push` | Solo **ci-fast** ~1 min, 5 tests SEO. |
+| `ac33d95`+ `profile: regression` | Manual | `workflow_dispatch` | **ci-fast** → **ci-regression** (hasta ~3 h). |
+| PR a `main` | `pull_request` | PR | **ci-fast** → **ci-regression** automático. |
+
+Si lanzaste **regression** dos veces antes del push, ambas usaron el workflow antiguo: solo cuenta la ejecución sobre **`ac33d95` o posterior**.
+
 ## Requisitos previos
 
 1. Repositorio en GitHub con **Actions** habilitado.

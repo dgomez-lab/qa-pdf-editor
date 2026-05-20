@@ -112,7 +112,7 @@ Equivalente remoto a un `allTests` en QAI Dogs: un solo disparo con suite funcio
 3. Tras **ci-fast**, el job **ci-regression** ejecuta `npm run test:ci-regression` (excluye `@MANUAL_SCREEN_CAPTURE`, incluye `@PDFEDITOR_VISUAL*`).
 4. Informes: artefacto **`playwright-report-regression`** (`cucumber-report/index.html`, Playwright HTML, traces).
 
-Cada **PR** hacia `main`/`master` ejecuta **fast** y, en paralelo tras el gate, **regression** (funcional + visual). Push a `main` solo ejecuta **fast**; la regresión manual sigue disponible con `workflow_dispatch` → profile `regression`.
+Cada **PR** hacia `main`/`master` ejecuta **fast** y luego **regression** (funcional + visual). Push a `main` solo ejecuta **fast** (~1 min). Regresión completa: **Actions → Run workflow → `regression`** o abrir un PR. Ejecuciones en commits anteriores a `ac33d95` usaban el workflow antiguo (fallos de 24 min) — ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md).
 
 Si staging exige allowlist de IP, los runners `ubuntu-latest` de GitHub pueden necesitar excepción en infra o un runner self-hosted (ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md)).
 
