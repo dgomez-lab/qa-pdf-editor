@@ -40,7 +40,7 @@ El script [`scripts/setup-github-actions-env.py`](../scripts/setup-github-action
 
 | Variable | Descripción |
 |----------|-------------|
-| `PLAYWRIGHT_BASE_URL` | URL base opcional (si no usas solo `configuration.json` vía vars) |
+| `PLAYWRIGHT_BASE_URL` | URL base opcional. **Recomendado: dejarla sin definir** para que CI use `red.mvps.website` y el token QA en query (`?x-token-qa=…`). Solo configúrala si quieres otro host explícito. |
 | `PLAYWRIGHT_APP` | `mergedpdf` o `pdfhint` |
 | `PLAYWRIGHT_MVPS_SLOT` | Slot `1`–`10` o vacío para `red` |
 | `PLAYWRIGHT_PDFHINT_BASE_URL` | Marketing pdfhint |
@@ -51,13 +51,18 @@ Si no defines variables, en CI se aplica [`config/configuration.json`](../config
 
 ### Job **ci-fast** (push / PR gate)
 
-Solo `@PDFEDITOR_SEO` y `@PDFEDITOR_PDFHINT_SMOKE_SEO` (~5 tests). Sin dashboard ni pago. Mínimo: secret **`QAI_TOKEN_PARAM`** para MVPS.
+Solo `@PDFEDITOR_SEO` y `@PDFEDITOR_PDFHINT_SMOKE_SEO` (~5 tests). Sin dashboard ni pago.
+
+- **Push a `main`:** solo corre **ci-fast** (~1–2 min). La regresión completa (214 tests) no se lanza en push; usa **Run workflow** con profile **`regression`** o un PR.
+- Antes de los tests, **Verify MVPS QA token access** hace `curl` a `https://red.mvps.website/?x-token-qa=…` (MVPS exige token en la URL para ver staging).
+- Si un test falla, el **Summary** del job lista los fallos desde `playwright-report/results.json`.
+- Secret **`QAI_TOKEN_PARAM`**: obligatorio en GitHub para CI estable. Si falta, el workflow usa el default de staging (`x-token-qa=niGqCYH7McqERAB`). Configúralo con `npm run setup:github-actions` (ver abajo).
 
 ### Secrets
 
 | Secret | Uso |
 |--------|-----|
-| `QAI_TOKEN_PARAM` | Token QA en URLs MVPS |
+| `QAI_TOKEN_PARAM` | Token QA en URLs MVPS (formato `x-token-qa=…`). Sin este secret, ci-fast/regresión usan el default de staging del repo. |
 | `PLAYWRIGHT_CRM_USER` / `PLAYWRIGHT_CRM_PASSWORD` | CRM staging |
 | `PLAYWRIGHT_MAILPIT_USER` / `PLAYWRIGHT_MAILPIT_PASSWORD` | Emails transaccionales |
 | `PLAYWRIGHT_QA_API_KEY` | API recurrencias |
@@ -144,7 +149,17 @@ Cada shard sube siempre (aunque pase):
 
 Ya no se suben informes HTML de 1+ GB por shard. En CI, `messages.ndjson` usa `skipAttachments: true` (tamaño típico: pocos MB, no GB).
 
-### Solución de problemas (informe no publicado)
+### Solución de problemas
+
+#### CI fast en push (fallo ~1 min)
+
+| Síntoma | Causa habitual | Qué hacer |
+|---------|----------------|-----------|
+| **Verify MVPS QA token access** en rojo | MVPS no responde con token desde IP de GitHub | Comprobar secret `QAI_TOKEN_PARAM` (`npm run setup:github-actions`); si el token es correcto y sigue fallando, allowlist IP de GitHub Actions o runner self-hosted |
+| **Run fast suite** en rojo, preflight verde | Test SEO/pdfhint (ver **Summary** del job) | Revisar lista de fallos en el Summary; artefacto `playwright-report-fast` |
+| Variable `PLAYWRIGHT_BASE_URL` mal puesta | Apunta a pdfhint u otro host sin token MVPS | Dejar la variable **sin definir** |
+
+#### Informe de regresión (GitHub Pages)
 
 Si el job **Publish regression report** falla o no hay enlace al dashboard:
 
@@ -224,6 +239,8 @@ gh run list --workflow=playwright.yml --limit 3
 
 ## Primera ejecución — checklist
 
+- [ ] `GH_TOKEN=… npm run setup:github-actions` (crea `QAI_TOKEN_PARAM` y el resto de secrets).
+- [ ] **No** definir `PLAYWRIGHT_BASE_URL` salvo que quieras otro host.
 - [ ] Variables y secrets configurados (tablas arriba).
 - [ ] `gh workflow run … profile=regression` o Run workflow en la UI.
 - [ ] Revisar logs: `bddgen` y recuento de tests.

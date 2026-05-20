@@ -11,6 +11,8 @@
     "test:pdfhint-smoke": "QAI_PA_CONFIGURATION_PATH=config/configuration.pdfhint.json npm run bddgen && QAI_PA_CONFIGURATION_PATH=config/configuration.pdfhint.json playwright test --grep @PDFEDITOR_PDFHINT_SMOKE",
     "test:pdfhint-tag": "QAI_PA_CONFIGURATION_PATH=config/configuration.pdfhint.json npm run test:tag --",
     "test:ci-fast": "npm run bddgen && playwright test --grep \"@PDFEDITOR_SEO|@PDFEDITOR_PDFHINT_SMOKE_SEO\"",
+    "test:ci-fast-run": "playwright test --grep \"@PDFEDITOR_SEO|@PDFEDITOR_PDFHINT_SMOKE_SEO\"",
+    "report:ci-fast-summary": "node scripts/ci-fast-summary.mjs",
     "test:ci-full": "npm run bddgen && playwright test --grep-invert @MANUAL_SCREEN_CAPTURE",
     "test:ci-regression-functional": "playwright test --grep-invert \"@MANUAL_SCREEN_CAPTURE|@PDFEDITOR_VISUAL\"",
     "test:ci-regression-functional-shard": "playwright test --grep-invert \"@MANUAL_SCREEN_CAPTURE|@PDFEDITOR_VISUAL\"",

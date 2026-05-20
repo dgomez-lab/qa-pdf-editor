@@ -6,7 +6,7 @@ import type { Page } from '@playwright/test'
  */
 export async function collectPdfhintHeaderSeoErrors(page: Page): Promise<string[]> {
   const errors: string[] = []
-  const login = page.getByRole('link', { name: /^Login$/i }).first()
+  const login = page.getByRole('link', { name: /^log\s*in$/i }).first()
   try {
     await login.waitFor({ state: 'visible', timeout: 15_000 })
   } catch {

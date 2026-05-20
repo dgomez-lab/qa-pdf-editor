@@ -54,14 +54,27 @@ jobs:
       - name: Generate tests from features
         run: npm run bddgen
 
+      - name: Verify MVPS QA token access
+        run: |
+          export QAI_TOKEN_PARAM="${QAI_TOKEN_PARAM:-x-token-qa=niGqCYH7McqERAB}"
+          curl -sfI "https://red.mvps.website/?${QAI_TOKEN_PARAM#*=}" | head -1
+        env:
+          QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
+
       - name: Run fast suite
-        run: npm run test:ci-fast
+        run: |
+          export QAI_TOKEN_PARAM="${QAI_TOKEN_PARAM:-x-token-qa=niGqCYH7McqERAB}"
+          npm run test:ci-fast-run
         env:
           BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
           MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
           PDFHINT_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_BASE_URL }}
           PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
           QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
+
+      - name: Fast suite failure summary
+        if: failure()
+        run: npm run report:ci-fast-summary
 
       - name: Upload report on failure
         if: failure()
@@ -237,7 +250,9 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run functional shard
-        run: npm run test:ci-regression-functional-shard -- --shard=${{ matrix.shard }}/${{ env.REGRESSION_SHARD_TOTAL }}
+        run: |
+          export QAI_TOKEN_PARAM="${QAI_TOKEN_PARAM:-x-token-qa=niGqCYH7McqERAB}"
+          npm run test:ci-regression-functional-shard -- --shard=${{ matrix.shard }}/${{ env.REGRESSION_SHARD_TOTAL }}
         env:
           BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
           MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
