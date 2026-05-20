@@ -1,0 +1,7 @@
+{
+  "customersFirstAccountIdLink": "[data-id=\"customerUUID-0\"]",
+  "customersSecondAccountIdLink": "[data-id=\"customerUUID-1\"]",
+  "customersEmailSearchInput": "[data-id=\"emailFilterCustomers\"]",
+  "customersSearchButton": "[data-id=\"searchButton\"]",
+  "customersSubscriptionStatus": ".ant-tag.ant-tag-blue"
+}

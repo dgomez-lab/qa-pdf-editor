@@ -1,0 +1,14 @@
+{
+  "customers menu button": {
+    "finder": { "data-id": "menuCustomer" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "crm loaders": {
+    "finder": { "className": "ant-spin" },
+    "actions": [
+      { "name": "click" }
+    ]
+  }
+}

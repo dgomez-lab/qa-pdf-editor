@@ -1,0 +1,92 @@
+{
+  "customer account id": {
+    "finder": { "data-id" : "accountId" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "customer domain": {
+    "finder": { "data-id" : "domain" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "subscription account id": {
+    "finder": { "data-id" : "subscriptionId" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "customer subscription status": {
+    "finder": { "data-id": "subscriptionStatus" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "customer subscription type": {
+    "finder": { "data-id": "subscriptionType" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "customer utm source": {
+    "finder": { "data-id": "utmSource" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "customer utm medium": {
+    "finder": { "data-id": "utmMedium" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "refund button": {
+    "finder": { "data-id": "refundButton-0" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "refund select": {
+    "finder": { "data-id": "refundSelect" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "refund qa option": {
+    "finder": { "data-id": "refundOption-8" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "refund ok button": {
+    "finder": { "data-id": "refundModalOk" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "unsubscribe button": {
+    "finder": { "data-id": "unsubscribeButton" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "ok unsubscribe button": {
+    "finder": { "className": "ant-btn css-30dkou ant-btn-primary ant-btn-dangerous" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "success message": {
+    "finder": { "className": "ant-notification-notice-message" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "first transaction row": {
+    "finder": { "data-id": "transactionRow-0" },
+    "actions": [
+      { "name": "click" }
+    ]
+  }
+}

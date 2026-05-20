@@ -1,0 +1,10 @@
+{
+  "download code input": {
+    "finder": {
+      "xpath": "//*[@data-id='downloadCodeForm']//input | //input[@data-id='downloadCodeForm']"
+    }
+  },
+  "cta download button": {
+    "finder": { "data-id": "ctaDownload" }
+  }
+}

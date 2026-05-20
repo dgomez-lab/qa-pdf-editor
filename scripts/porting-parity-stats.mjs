@@ -43,7 +43,15 @@ function countPdfeditorTags(content) {
 
 function main() {
   const legacyRoot = resolveLegacyRoot()
-  const featuresDir = path.join(legacyRoot, 'features')
+  let featuresDir = path.join(legacyRoot, 'features')
+  let relBase = legacyRoot
+  if (!fs.existsSync(featuresDir)) {
+    const vendored = path.join(repoRoot, 'features')
+    if (fs.existsSync(vendored)) {
+      featuresDir = vendored
+      relBase = repoRoot
+    }
+  }
 
   if (!fs.existsSync(featuresDir)) {
     console.error(JSON.stringify({ error: 'features_dir_missing', legacyRoot, featuresDir }, null, 2))
@@ -58,7 +66,7 @@ function main() {
   let visualCaptureScenarios = 0
 
   for (const file of files.sort()) {
-    const rel = path.relative(legacyRoot, file)
+    const rel = path.relative(relBase, file)
     const content = fs.readFileSync(file, 'utf8')
     const scenarios = countScenarioLines(content)
     const tags = countPdfeditorTags(content)
@@ -72,6 +80,8 @@ function main() {
 
   const payload = {
     legacyRoot,
+    featuresDir,
+    relBase,
     generatedAt: new Date().toISOString(),
     counts: {
       featureFiles: files.length,

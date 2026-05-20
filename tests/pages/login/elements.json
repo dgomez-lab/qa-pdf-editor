@@ -1,0 +1,6 @@
+{
+  "emailInput": "[data-id=\"emailForm\"]",
+  "passwordInput": "[data-id=\"passwordForm\"]",
+  "loginCtaButton": "[data-id=\"loginBtnSubmit\"]",
+  "blockedUserMessageValidation": "[data-id=\"loginValidationError\"]"
+}

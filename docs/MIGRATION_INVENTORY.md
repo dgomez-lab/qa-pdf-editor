@@ -49,25 +49,27 @@ En **qa-pdf-editor**, [`playwright/resolveBaseUrl.ts`](../playwright/resolveBase
 | `configuration.pdfhint.json` | Variables de entorno (`BASE_URL`, opcionales para pago) |
 | `executeScript` SEO | `page.evaluate()` con los mismos scripts que `src/steps/seoSteps.ts` |
 | Subidas `QA.pdf` desde paquete | `tests/fixtures/sample.pdf` en el repo |
-| Pagos Stripe en iframes | `tests/pdfhint/payment-smoke.spec.ts` (opcional, `PLAYWRIGHT_PAYMENT_SMOKE=1`) |
+| Pagos Stripe en iframes | Escenarios en `features/payment/FirstPayment.feature` + pasos BDD (opcional, `PLAYWRIGHT_PAYMENT_SMOKE=1`) |
+| Steps Cucumber | [`tests/bdd/steps/`](../tests/bdd/steps/) (`playwright-bdd`) |
+| `.feature` ejecutables | `features/**/*.feature` → `npm run bddgen` → `.features-gen/` |
 
-## Cobertura portada en Playwright (v2 — paridad 100%)
+## Cobertura portada en Playwright-BDD (paridad 100%)
 
-`npm run porting:tags` reporta **`missingFromPlaywright: []`** sobre los 211 tags `@PDFEDITOR_*` del legacy. Cobertura por feature:
+`npm run porting:tags` reporta **`missingFromPlaywright: []`** sobre los **215** tags `@PDFEDITOR_*` del legacy (o de `features/` vendored). Cobertura por feature (Gherkin en `features/`, pasos en `tests/bdd/steps/`):
 
-- `SEO.feature` — header / landing / footer / forms (`tests/seo/*`).
-- `PDFhint.feature` — `_SMOKE_VISA`, `_SMOKE_REFUND`, `_SMOKE_DASHBOARD`, `_SMOKE_SEO` (`tests/pdfhint/*`).
-- `payment/FirstPayment.feature` — tarjetas (Visa/MC/Amex/Discover/Diners/JCB/UnionPay), errores (wrong card / insufficient / expired / lost / stolen / cvc), refund por tarjeta (6), IP (5), cancel (user/agent), UTM (9) y UTM register (8). `tests/payment/*`.
-- `Recurrences.feature` — 14056 success + soft decline (`tests/payment/recurrences-14056-*.spec.ts`).
-- `Users.feature` — 25 tags `_USER_*` (14 specs en `tests/users/`).
-- `Dashboard.feature` — 7 tags `_DASHBOARD_*` (`tests/dashboard/*`).
-- `TransactionalEmails.feature` — 62 tags (account-created x12, payment-confirmation: smoke + currency x5 + locale x12, magic-link x10, document-sent x11, subscription-cancellation x12).
-- `Visual.feature` — 68 tags (`tests/visual/visual-public-pages.spec.ts`, `visual-products.spec.ts`, `visual-forms.spec.ts`, `visual-auth-modals.spec.ts`, `visual-account-session.spec.ts`).
-- `VisualCapture.feature` — flujo de captura manual, no contabilizado en paridad de tags (`@PDFEDITOR_*` no presentes).
+- `SEO.feature` — header / landing / footer / forms.
+- `PDFhint.feature` — `_SMOKE_VISA`, `_SMOKE_REFUND`, `_SMOKE_DASHBOARD`, `_SMOKE_SEO`.
+- `payment/FirstPayment.feature` — tarjetas, errores, refund x6, IP x5, cancel x2, UTM x9, UTM register x8.
+- `Recurrences.feature` — 14056 success + soft decline.
+- `Users.feature` — 25 tags `_USER_*`.
+- `Dashboard.feature` — 7 tags `_DASHBOARD_*`.
+- `TransactionalEmails.feature` — 62 tags Mailpit.
+- `Visual.feature` — 68 tags; baselines en `tests/visual/baseline/`.
+- `VisualCapture.feature` — captura manual (`@MANUAL_SCREEN_CAPTURE`), fuera del gate CI estándar.
 
 ## Cierre de paridad y backlog técnico
 
-- **Paridad de tags:** 211/211 (ver `npm run porting:tags`).
-- **Ejecución real:** todos los specs ejecutan contra staging cuando se exportan las credenciales (Stripe / CRM / Mailpit / Recurrences API). Sin credenciales se aplica `test.skip` con motivo descriptivo (no se reporta como fallo).
-- **Baselines visuales:** se generan en el primer run con `PLAYWRIGHT_VISUAL_SNAPSHOTS=1 npx playwright test tests/visual --update-snapshots` y se commitean a `tests/visual/**/*-snapshots/`.
-- **Fixtures binarios DOCX/XLSX/PPTX/JPG/JPEG/PNG:** no incluidos por defecto. Configurar `PLAYWRIGHT_FIXTURE_<FORMAT>` o copiar a `tests/fixtures/sample.<ext>` (helper [tests/helpers/multiFormatUpload.ts](../tests/helpers/multiFormatUpload.ts)).
+- **Paridad de tags:** 215/215 (ver `npm run porting:tags`).
+- **Ejecución real:** escenarios BDD contra staging cuando se exportan credenciales (Stripe / CRM / Mailpit / Recurrences API). Sin credenciales, `test.skip` con motivo descriptivo.
+- **Baselines visuales:** `tests/visual/baseline/`; regresión con `PLAYWRIGHT_VISUAL_SNAPSHOTS=1 npm run test:ci-visual`.
+- **Fixtures binarios DOCX/XLSX/PPTX/JPG/JPEG/PNG:** configurar `PLAYWRIGHT_FIXTURE_<FORMAT>` o copiar a `tests/fixtures/sample.<ext>` ([`tests/helpers/multiFormatUpload.ts`](../tests/helpers/multiFormatUpload.ts)).

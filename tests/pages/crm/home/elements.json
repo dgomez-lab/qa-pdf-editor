@@ -1,0 +1,5 @@
+{
+  "loginEmailInput": "[data-id=\"loginEmail\"]",
+  "loginPasswordInput": "[data-id=\"loginPassword\"]",
+  "loginButton": "[data-id=\"loginSubmit\"]"
+}

@@ -1,0 +1,35 @@
+{
+  "first name input": {
+    "finder": { "data-id": "firstNameForm" }
+  },
+  "last name input": {
+    "finder": { "data-id": "lastNameForm" }
+  },
+  "email input": {
+    "finder": { "data-id": "emailForm" }
+  },
+  "transaction id input": {
+    "finder": { "data-id": "transactionId" }
+  },
+  "subject select": {
+    "finder": { "data-id": "subjectForm" }
+  },
+  "unsubscribe option": {
+    "finder": { "data-id": "Unsubscribe Request" }
+  },
+  "message input": {
+    "finder": { "data-id": "messageForm" }
+  },
+  "accept terms checkbox": {
+    "finder": { "data-id": "acceptTermsCheck" }
+  },
+  "send message button": {
+    "finder": { "data-id": "ctaContinueSend" }
+  },
+  "success text": {
+    "finder": { "data-id": "successContact" }
+  },
+  "loader spinner": {
+    "finder": { "className": "Spinner-sc-7d83e348-0 hFHxjC" }
+  }
+}

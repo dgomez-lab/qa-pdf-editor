@@ -85,6 +85,7 @@ async function realisticClick(page: Page, locator: ReturnType<Page['locator']>):
 }
 
 export async function cancelSubscriptionFromAccount(page: Page): Promise<void> {
+  await gotoMembership(page)
   const cancelCandidates = [
     page.locator(accountSelectors.cancelSubscriptionLink).first(),
     page.getByRole('button', { name: /cancel\s+subscription|cancel\s+membership|unsubscribe/i }).first(),
@@ -104,7 +105,12 @@ export async function cancelSubscriptionFromAccount(page: Page): Promise<void> {
   for (const y of yesCandidates) {
     if (await y.isVisible({ timeout: 8_000 }).catch(() => false)) {
       await realisticClick(page, y)
-      return
+      break
     }
+  }
+  await page.locator(accountSelectors.yesUnsubscribeButton).first().waitFor({ state: 'hidden', timeout: 60_000 }).catch(() => {})
+  const price = page.locator(accountSelectors.transactionPriceText).first()
+  if (!(await price.isVisible({ timeout: 5_000 }).catch(() => false))) {
+    await gotoMembership(page)
   }
 }

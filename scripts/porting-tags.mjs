@@ -47,8 +47,7 @@ function extractTags(content) {
   return out
 }
 
-function collectLegacyTags(legacyRoot) {
-  const featuresDir = path.join(legacyRoot, 'features')
+function collectLegacyTags(featuresDir) {
   const files = walkFiles(featuresDir, (p) => p.endsWith('.feature'))
   const tags = new Set()
   for (const f of files) {
@@ -58,9 +57,25 @@ function collectLegacyTags(legacyRoot) {
   return tags
 }
 
+function resolveFeaturesDir(legacyRoot, repoRoot) {
+  const legacyFeatures = path.join(legacyRoot, 'features')
+  if (fs.existsSync(legacyFeatures)) {
+    return { featuresDir: legacyFeatures, featuresSource: 'legacy_clone' }
+  }
+  const vendored = path.join(repoRoot, 'features')
+  if (fs.existsSync(vendored)) {
+    return { featuresDir: vendored, featuresSource: 'vendored_repo_root' }
+  }
+  return { featuresDir: legacyFeatures, featuresSource: 'missing' }
+}
+
 function collectPlaywrightTags(repoRoot) {
-  const testsDir = path.join(repoRoot, 'tests')
-  const files = walkFiles(testsDir, (p) => /\.spec\.ts$/.test(p))
+  const featuresDir = path.join(repoRoot, 'features')
+  const generatedDir = path.join(repoRoot, '.features-gen')
+  const files = [
+    ...walkFiles(featuresDir, (p) => p.endsWith('.feature')),
+    ...walkFiles(generatedDir, (p) => p.endsWith('.spec.ts'))
+  ]
   const tags = new Set()
   for (const f of files) {
     const c = fs.readFileSync(f, 'utf8')
@@ -71,8 +86,8 @@ function collectPlaywrightTags(repoRoot) {
 
 function main() {
   const legacyRoot = resolveLegacyRoot()
-  const featuresDir = path.join(legacyRoot, 'features')
-  if (!fs.existsSync(featuresDir)) {
+  const { featuresDir, featuresSource } = resolveFeaturesDir(legacyRoot, repoRoot)
+  if (featuresSource === 'missing') {
     const skip =
       process.env.SKIP_LEGACY_TAG_CHECK === '1' ||
       process.env.SKIP_LEGACY_TAG_CHECK === 'true' ||
@@ -83,7 +98,7 @@ function main() {
           {
             warning: 'features_dir_missing_skipped',
             message:
-              'No hay `features/` del legacy (p. ej. en CI sin clonar qai-pa-pdf-editor). Paridad de tags omitida. Para forzar la comprobación: clonar legacy junto al repo o `LEGACY_REPO=...` y no definir SKIP_LEGACY_TAG_CHECK.',
+              'No hay `features/` en el clon legacy ni en la raíz de este repo. Paridad de tags omitida. Clona qai-pa-pdf-editor junto al repo, define LEGACY_REPO, o commitea `features/` vendored.',
             legacyRoot,
             featuresDir
           },
@@ -99,7 +114,7 @@ function main() {
     return
   }
 
-  const legacy = collectLegacyTags(legacyRoot)
+  const legacy = collectLegacyTags(featuresDir)
   const ours = collectPlaywrightTags(repoRoot)
 
   const missing = [...legacy].filter((t) => !ours.has(t)).sort()
@@ -107,6 +122,8 @@ function main() {
 
   const payload = {
     legacyRoot,
+    featuresDir,
+    featuresSource,
     generatedAt: new Date().toISOString(),
     legacyTotal: legacy.size,
     playwrightTotal: ours.size,

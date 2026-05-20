@@ -1,71 +1,92 @@
-# Añadir pruebas: Playwright frente a `.feature` (Gherkin)
+# Añadir pruebas: Playwright-BDD y `.feature` (Gherkin)
 
 En **qai-pa-pdf-editor** el contrato legible por negocio vive en `features/*.feature` y los pasos en `src/steps/*.ts`.
 
-En **qa-pdf-editor** no hay parser Gherkin: cada flujo se implementa en **TypeScript** en archivos `tests/**/*.spec.ts`. Eso equivale a *feature + escenarios + glue* en un solo artefacto.
+En **qa-pdf-editor** los mismos `.feature` están en [`features/`](../features/) (vendored). **Playwright ejecuta Gherkin** vía [playwright-bdd](https://github.com/vitalets/playwright-bdd): `bddgen` genera specs en `.features-gen/` y los pasos viven en [`tests/bdd/steps/`](../tests/bdd/steps/). La lógica reutilizable sigue en [`tests/helpers/`](../tests/helpers/) y [`tests/pages/`](../tests/pages/).
 
-## Dónde crear el archivo
+## Dónde tocar cada capa
 
-| Área | Carpeta sugerida | Referencia legacy |
-|------|------------------|-------------------|
-| SEO | `tests/seo/` | `features/SEO.feature` |
-| Smokes carga / editor | `tests/smoke/` | pasos home/editor en legacy |
-| PDFhint staging | `tests/pdfhint/` | `features/PDFhint.feature` (SEO, pago, dashboard, refund, [qa-api-base-smoke](../tests/pdfhint/qa-api-base-smoke.spec.ts) opcional) |
-| Pago / FirstPayment | `tests/payment/` | `features/payment/FirstPayment.feature` |
-| Dashboard | `tests/dashboard/` | `features/Dashboard.feature` |
-| Visual | `tests/visual/` | `features/Visual.feature`: páginas en [`visual-public-pages.spec.ts`](../tests/visual/visual-public-pages.spec.ts); cuenta con sesión + Mailpit en [`visual-account-session.spec.ts`](../tests/visual/visual-account-session.spec.ts) (`npm run test:visual-account`). |
-| Usuarios | `tests/users/` | `features/Users.feature` |
-| Emails | `tests/emails/` | `features/TransactionalEmails.feature` — `npm run test:emails-all` o specs sueltos ([`transactional-account-created.spec.ts`](../tests/emails/transactional-account-created.spec.ts), [`transactional-payment-confirmation.spec.ts`](../tests/emails/transactional-payment-confirmation.spec.ts)). |
-| Smokes Mailpit | `tests/smoke/` | p. ej. [`magic-link-login-smoke.spec.ts`](../tests/smoke/magic-link-login-smoke.spec.ts) (`npm run test:smoke-magic-link`). |
-| Recurrencias API | `tests/payment/` | [`recurrences-api-smoke.spec.ts`](../tests/payment/recurrences-api-smoke.spec.ts) si existe `PLAYWRIGHT_RECURRENCE_API_BASE_URL`. |
+| Capa | Ubicación | Cuándo editarla |
+|------|-----------|-----------------|
+| Escenario / tag | `features/<área>.feature` | Nuevo comportamiento de negocio o nuevo tag `@PDFEDITOR_*` |
+| Paso Gherkin | Mismo `.feature` | Frase que aún no existe en ningún step |
+| Implementación del paso | `tests/bdd/steps/*.ts` | Traducir la frase a Playwright (`Given` / `When` / `Then` desde [`tests/bdd/fixtures.ts`](../tests/bdd/fixtures.ts)) |
+| Selectores legacy | `tests/bdd/legacy-elements/**/elements.json` | Nuevo `data-id` o finder del POM Selenium |
+| POM / helpers | `tests/pages/`, `tests/helpers/` | Flujos largos (pago, CRM, Mailpit) reutilizables entre pasos |
 
-Convención de nombre: `kebab-case.spec.ts` (por ejemplo `seo-home.spec.ts`).
+| Área | `.feature` | Pasos típicos |
+|------|------------|---------------|
+| SEO | `features/SEO.feature` | `core.steps.ts` |
+| PDFhint | `features/PDFhint.feature` | `core.steps.ts` |
+| Pago | `features/payment/FirstPayment.feature` | `core.steps.ts` + helpers Stripe/CRM |
+| Dashboard | `features/Dashboard.feature` | `core.steps.ts` |
+| Visual | `features/Visual.feature` | `core.steps.ts` → baselines en `tests/visual/baseline/` |
+| Usuarios | `features/Users.feature` | `core.steps.ts` |
+| Emails | `features/TransactionalEmails.feature` | `core.steps.ts` + Mailpit |
+| Recurrencias | `features/Recurrences.feature` | `core.steps.ts` |
+| Captura manual | `features/VisualCapture.feature` | Manual (`@MANUAL_SCREEN_CAPTURE`); no es paridad CI |
 
-## Plantilla mínima (tags como en Cucumber)
+## Flujo para un escenario nuevo
 
-Los tags `@PDFEDITOR_*` deben alinearse con el escenario o tag del `.feature` legacy para que `playwright test --grep` y CI coincidan con Cucumber.
-
-Hay un archivo copiable (no se ejecuta en la suite): [`docs/snippets/minimal-playwright.spec.ts`](../docs/snippets/minimal-playwright.spec.ts).
-
-```typescript
-import { test, expect } from '@playwright/test'
-import { openHome } from '../helpers/navigation'
-
-test.describe('Mi área — breve descripción', { tag: ['@PDFEDITOR_MI_GRUPO'] }, () => {
-  test('comportamiento concreto', { tag: ['@PDFEDITOR_MI_ESCENARIO_TAG'] }, async ({ page }) => {
-    await openHome(page)
-    await expect(page.locator('main')).toBeVisible()
-  })
-})
-```
-
-Ejemplos reales en el repo: [`tests/seo/seo-home.spec.ts`](../tests/seo/seo-home.spec.ts), [`tests/smoke/home-loads.spec.ts`](../tests/smoke/home-loads.spec.ts).
-
-## Qué reutilizar (paridad con page objects legacy)
-
-- Selectores editor / home: [`tests/pages/editorSelectors.ts`](../tests/pages/editorSelectors.ts) + [`tests/pages/editor/elements.json`](../tests/pages/editor/elements.json) (equivalente a `src/pages/editor` + `home` del legacy).
-- Dashboard: [`tests/pages/dashboardSelectors.ts`](../tests/pages/dashboardSelectors.ts) + [`tests/pages/dashboard/elements.json`](../tests/pages/dashboard/elements.json).
-- Navegación y cookies: [`tests/helpers/navigation.ts`](../tests/helpers/navigation.ts) (`openHome(page)` o `openHome(page, { query: { utm_source: '…' } })` para UTM en la raíz).
-- Navegación marketing en **MVPS** (`*.mvps.website`): [`tests/helpers/mvpsUrl.ts`](../tests/helpers/mvpsUrl.ts) (`gotoMarketingPath`, `ensureMvpsMarketingUrl`) — el `baseURL` va **sin** `?x-token-qa=` para que no se pierda al hacer `goto('/forms')`. Sobre **About** en mergedpdf: [`marketingAboutPath()`](../tests/helpers/siteContext.ts) → `/about-us`.
-- Comprobar que una página marketing “cargó”: en smokes se usa [`marketingMainOrHero(page)`](../tests/helpers/marketingPage.ts) (`<main>` o primer `h1`–`h3`, por layouts sin `<main>`).
-- Pago Stripe: [`tests/helpers/stripePayment.ts`](../tests/helpers/stripePayment.ts).
-- URL base (`red` / `redN` / pdfhint): [`playwright/resolveBaseUrl.ts`](../playwright/resolveBaseUrl.ts) (ya aplicado en `playwright.config.ts`).
-
-Para portar un escenario nuevo, abre el `.feature` y los **steps** asociados en `qai-pa-pdf-editor` (`src/steps/*Steps.ts`) y traduce cada paso a `await page...` / `expect(...)`.
-
-## Después de escribir el test
-
-1. Actualiza la tabla correspondiente en [`PORTING_STATUS.md`](PORTING_STATUS.md) (Hecho / Parcial / Pendiente y enlace al `.spec.ts`).
-2. Ejecuta filtrado por tag contra el entorno deseado:
+1. Añade o extiende el escenario en el `.feature` con el tag `@PDFEDITOR_*` alineado al legacy.
+2. Si la frase Gherkin ya existe en otro escenario, no hace falta código nuevo.
+3. Si la frase es nueva, implementa el paso en `tests/bdd/steps/` (reutiliza [`stepHelpers.ts`](../tests/bdd/stepHelpers.ts), [`pageFactory.ts`](../tests/bdd/pageFactory.ts), [`elementRegistry.ts`](../tests/bdd/elementRegistry.ts)).
+4. Regenera y ejecuta:
 
 ```bash
-APP=mergedpdf npm run test:tag -- @PDFEDITOR_MI_ESCENARIO_TAG
-# o pdfhint staging por defecto:
+npm run bddgen
 npm run test:tag -- @PDFEDITOR_MI_ESCENARIO_TAG
 ```
 
-3. Conteos del repo legacy (opcional): `npm run porting:stats` (requiere `qai-pa-pdf-editor` en `../qai-pa-pdf-editor` o `LEGACY_REPO`).
+5. Actualiza [`PORTING_STATUS.md`](PORTING_STATUS.md) si cambia el alcance del port.
+6. Verifica paridad de tags: `npm run porting:tags` (esperado `missingFromPlaywright: []`).
 
-## Si necesitáis archivos `.feature` otra vez
+## Ejemplo mínimo de paso
 
-Hoy el repo **no** integra Cucumber ni generación desde Gherkin. Opciones a largo plazo (evaluación de equipo): herramientas BDD tipo **playwright-bdd** / cucumber con segundo pipeline. El camino mantenido aquí es **solo Playwright** + tags + `PORTING_STATUS.md` como trazabilidad.
+```typescript
+import { Given } from '../fixtures'
+import { openHome } from '../../helpers/navigation'
+
+Given('I am on the home page', async ({ page }) => {
+  await openHome(page)
+})
+```
+
+Los escenarios se escriben en Gherkin; no hace falta crear `tests/**/*.spec.ts` (retirados en la migración BDD).
+
+## Qué reutilizar (paridad con page objects legacy)
+
+- Registro de elementos: [`tests/bdd/elementRegistry.ts`](../tests/bdd/elementRegistry.ts) + JSON en [`tests/bdd/legacy-elements/`](../tests/bdd/legacy-elements/).
+- POM TypeScript: [`tests/pages/`](../tests/pages/) (`*Page.ts` + `elements.json` donde aplique).
+- Navegación: [`tests/helpers/navigation.ts`](../tests/helpers/navigation.ts).
+- MVPS / marketing: [`tests/helpers/mvpsUrl.ts`](../tests/helpers/mvpsUrl.ts), [`tests/helpers/marketingPage.ts`](../tests/helpers/marketingPage.ts).
+- Pago Stripe: [`tests/helpers/stripePayment.ts`](../tests/helpers/stripePayment.ts).
+- URL base: [`playwright/resolveBaseUrl.ts`](../playwright/resolveBaseUrl.ts).
+
+Para portar un escenario del legacy, abre el `.feature` y `qai-pa-pdf-editor/src/steps/*Steps.ts`; busca si la frase ya está cubierta en [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) antes de añadir bindings.
+
+## Tags y CI
+
+Los tags `@PDFEDITOR_*` en los `.feature` son los que filtra `playwright test --grep` (vía `npm run test:tag`). La CI ejecuta `npm run bddgen` antes de los jobs de test (ver [`.github/workflows/playwright.yml`](../.github/workflows/playwright.yml)).
+
+Pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y credenciales CRM/Mailpit donde el escenario lo requiera).
+
+## Dónde ver los tests generados
+
+Tras `npm run bddgen`, los archivos ejecutables aparecen bajo [`.features-gen/`](../.features-gen/) (gitignored). La fuente de verdad sigue siendo `features/**/*.feature`.
+
+## Logs e informes de fallo (paridad con qai-pa-pdf-editor)
+
+| Necesidad | Cómo |
+|-----------|------|
+| Resumen `✔`/`✖` por paso Gherkin | `npm run test:report` → [`cucumber-report/index.html`](../cucumber-report/index.html) (generado en cada `playwright test`) |
+| Pasos en terminal en vivo | Por defecto en local (`npm run test:tag`); desactivar con `BDD_TERMINAL_STEPS=0` |
+| Logs de acciones (página/elemento) | Por defecto `DEBUG` en local; ver [`tests/bdd/bddLogger.ts`](../tests/bdd/bddLogger.ts) |
+| URL al fallar | Automático en [`tests/bdd/steps/hooks.steps.ts`](../tests/bdd/steps/hooks.steps.ts) |
+| Trace / screenshot Playwright | `npx playwright show-report` y `test-results/**` |
+
+El informe Cucumber es el equivalente al resumen final y a `results/dogReport.html` del legacy Selenium.
+
+## Snippet histórico (specs manuales)
+
+El archivo [`docs/snippets/minimal-playwright.spec.ts`](snippets/minimal-playwright.spec.ts) documenta el patrón antiguo `*.spec.ts`; **no** forma parte de la suite actual. Usar Gherkin + pasos BDD.

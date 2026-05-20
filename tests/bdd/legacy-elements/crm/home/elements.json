@@ -1,0 +1,22 @@
+{
+  "login email input": {
+    "finder": { "data-id": "loginEmail" },
+    "actions": [
+      { "name": "wait for" },
+      { "name": "fill", "args": [] }
+    ]
+  },
+  "login password input": {
+    "finder": { "data-id": "loginPassword" },
+    "actions": [
+      { "name": "wait for" },
+      { "name": "fill", "args": [] }
+    ]
+  },
+  "login button": {
+    "finder": { "data-id": "loginSubmit" },
+    "actions": [
+      { "name": "click" }
+    ]
+  }
+}

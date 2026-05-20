@@ -1,0 +1,4 @@
+{
+  "downloadCodeInput": "[data-id='downloadCodeForm'], [data-id='downloadCodeForm'] input",
+  "ctaDownloadButton": "[data-id=\"ctaDownload\"]"
+}

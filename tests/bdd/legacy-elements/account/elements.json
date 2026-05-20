@@ -1,0 +1,50 @@
+{
+  "membership link": {
+    "finder": { "data-id": "sidebarMembershipLink" }
+  },
+  "cancel subscription link": {
+    "finder": { "data-id": "cancelSubscription" }
+  },
+  "yes unsubscribe button": {
+    "finder": { "data-id": "unsubscribeAccount" }
+  },
+  "return account button": {
+    "finder": { "data-id": "returnAccount" }
+  },
+  "active status": {
+    "finder": { "data-id": "statusActive" }
+  },
+  "inactive status": {
+    "finder": { "data-id": "statusInactive" }
+  },
+  "new password input": {
+    "finder": { "data-id": "newPasswordForm" }
+  },
+  "confirm password input": {
+    "finder": { "data-id": "confirmPasswordForm" }
+  },
+  "continue button": {
+    "finder": { "data-id": "ctaContinueChangePassword" }
+  },
+  "login button": {
+    "finder": { "data-id": "ctaLogin" }
+  },
+  "membership ending": {
+    "finder": { "data-id": "membershipEnding" }
+  },
+  "transaction price text": {
+    "finder": { "data-id": "transactionPriceAccount" }
+  },
+  "first name input": {
+    "finder": { "data-id": "firstNameForm" }
+  },
+  "last name input": {
+    "finder": { "data-id": "lastNameForm" }
+  },
+  "second last name input": {
+    "finder": { "data-id": "secondLastForm" }
+  },
+  "cta save changes": {
+    "finder": { "data-id": "ctaSaveChanges" }
+  }
+}

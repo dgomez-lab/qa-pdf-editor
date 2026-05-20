@@ -1,0 +1,14 @@
+{
+  "email input": {
+    "finder": { "data-id": "emailForm" }
+  },
+  "password input": {
+    "finder": { "data-id": "passwordForm" }
+  },
+  "login cta button": {
+    "finder": { "data-id": "loginBtnSubmit" }
+  },
+  "blocked user message validation": {
+    "finder": { "data-id": "loginValidationError" }
+  }
+}

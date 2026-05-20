@@ -1,0 +1,32 @@
+{
+  "customers first account id link": {
+    "finder": { "data-id": "customerUUID-0" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "customers second account id link": {
+    "finder": { "data-id": "customerUUID-1" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "customers email search input": {
+    "finder": { "data-id": "emailFilterCustomers" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "customers search button": {
+    "finder": { "data-id": "searchButton" },
+    "actions": [
+      { "name": "click" }
+    ]
+  },
+  "customers subscription status": {
+    "finder": { "className": "ant-tag ant-tag-blue css-30dkou" },
+    "actions": [
+      { "name": "click" }
+    ]
+  }
+}

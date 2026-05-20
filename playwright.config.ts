@@ -1,12 +1,14 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
+import { defineBddConfig, cucumberReporter } from 'playwright-bdd'
+import { isConfigurationJsonEnvKey, loadConfiguration } from './playwright/loadConfiguration'
 import { resolvePlaywrightBaseUrl } from './playwright/resolveBaseUrl'
 
 /**
  * Carga `.env` y `.env.local` (en ese orden) en `process.env` antes de
  * construir la config. UI Mode (`playwright test --ui`) usa esto para que las
- * env vars (APP, HEADLESS, PLAYWRIGHT_PAYMENT_SMOKE, etc.) estén siempre
+ * env vars (secretos, PLAYWRIGHT_PAYMENT_SMOKE, etc.) estén siempre
  * disponibles aunque el shell que lanzó el watcher no las haya exportado.
  */
 function loadEnvFile(filename: string): void {
@@ -18,6 +20,7 @@ function loadEnvFile(filename: string): void {
     const eq = line.indexOf('=')
     if (eq <= 0) continue
     const key = line.slice(0, eq).trim()
+    if (isConfigurationJsonEnvKey(key)) continue
     if (process.env[key] !== undefined) continue
     let val = line.slice(eq + 1).trim()
     if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
@@ -28,6 +31,13 @@ function loadEnvFile(filename: string): void {
 }
 loadEnvFile('.env')
 loadEnvFile('.env.local')
+loadConfiguration()
+
+if (process.argv.includes('--headed')) {
+  console.warn(
+    '[qa-pdf-editor] --headed en la CLI fuerza navegador visible; driver.headless en config/configuration.json se ignora. Quita --headed para usar solo el JSON.'
+  )
+}
 
 const baseURL = resolvePlaywrightBaseUrl()
 if (!process.env.BASE_URL?.trim()) {
@@ -35,9 +45,8 @@ if (!process.env.BASE_URL?.trim()) {
 }
 
 /**
- * Equivalente a `driver.headless` del legacy `qai-pa-pdf-editor/config/configuration.json`.
- * `HEADLESS=0` / `false` / `no` / `off` → navegador visible (paridad con el flag --headed).
- * Por defecto headless en CI y visible en local si exportas `HEADLESS=0`.
+ * Equivalente a `driver.headless` en `config/configuration.json` (legacy `qai-pa-pdf-editor`).
+ * `HEADLESS=0` / `false` / `no` / `off` → navegador visible (paridad con `--headed`).
  */
 function resolveHeadless(): boolean {
   const v = process.env.HEADLESS?.trim().toLowerCase()
@@ -55,13 +64,41 @@ function resolveSlowMo(): number {
   return Number.isFinite(v) && v >= 0 ? v : 0
 }
 
+const bddTestDir = defineBddConfig({
+  features: 'features/**/*.feature',
+  steps: ['tests/bdd/fixtures.ts', 'tests/bdd/steps/**/*.ts'],
+  outputDir: '.features-gen'
+})
+
+const reporters: Parameters<typeof defineConfig>[0]['reporter'] = [
+  ['list'],
+  cucumberReporter('html', { outputFile: 'cucumber-report/index.html' }),
+  ['html', { open: 'never' }]
+]
+
+const terminalStepsOff =
+  process.env.BDD_TERMINAL_STEPS === '0' ||
+  process.env.BDD_TERMINAL_STEPS?.toLowerCase() === 'false'
+const terminalStepsOn =
+  !terminalStepsOff && (process.env.BDD_TERMINAL_STEPS === '1' || !process.env.CI)
+
+if (terminalStepsOn) {
+  reporters.splice(
+    1,
+    0,
+    cucumberReporter('./tests/bdd/reporters/terminalStepsFormatter.ts') as (typeof reporters)[number]
+  )
+}
+
 export default defineConfig({
-  testDir: './tests',
+  testDir: bddTestDir,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined,
   timeout: 180_000,
+  snapshotDir: path.join(__dirname, 'tests', 'visual', 'baseline'),
+  snapshotPathTemplate: '{snapshotDir}/{arg}{-projectName}{-snapshotSuffix}{ext}',
   expect: {
     timeout: 30_000,
     toHaveScreenshot: {
@@ -70,7 +107,7 @@ export default defineConfig({
       scale: 'css'
     }
   },
-  reporter: [['html', { open: 'never' }], ['list']],
+  reporter: reporters,
   use: {
     baseURL,
     headless: resolveHeadless(),

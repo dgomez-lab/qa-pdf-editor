@@ -1,8 +1,8 @@
 # Catálogo de pruebas por `.feature` legacy (qai-pa-pdf-editor)
 
-Vista rápida: **qué hay en Playwright** (`qa-pdf-editor`) agrupado como en Cucumber. Para paridad tag a tag y estados, ver [**PORTING_STATUS.md**](PORTING_STATUS.md). Para el mapa de carpetas Selenium → Playwright, ver [**SELENIUM_FOLDER_MAP.md**](SELENIUM_FOLDER_MAP.md).
+Vista rápida: **qué hay en Playwright-BDD** (`qa-pdf-editor`) agrupado como en Cucumber. Los mismos `.feature` están en [`features/`](../features/). Para paridad tag a tag, ver [**PORTING_STATUS.md**](PORTING_STATUS.md). Para el mapa de carpetas Selenium → Playwright, ver [**SELENIUM_FOLDER_MAP.md**](SELENIUM_FOLDER_MAP.md).
 
-Convención Playwright: escenarios en `tests/**/*.spec.ts` con `test.describe` / `test` y `tag: ['@PDFEDITOR_…']` cuando aplica.
+Convención actual: escenarios en `features/**/*.feature`, pasos en [`tests/bdd/steps/`](../tests/bdd/steps/), generación con `npm run bddgen` → [`.features-gen/`](../.features-gen/).
 
 ---
 
@@ -10,8 +10,10 @@ Convención Playwright: escenarios en `tests/**/*.spec.ts` con `test.describe` /
 
 | Qué | Dónde |
 |-----|--------|
-| Specs | [`tests/payment/`](../tests/payment/) (tarjetas, errores, refund, UTM, IP, cancel, índice [`first-payment-port.spec.ts`](../tests/payment/first-payment-port.spec.ts)), [`tests/pdfhint/payment-smoke.spec.ts`](../tests/pdfhint/payment-smoke.spec.ts) |
-| Comandos útiles | `npm run test:first-payment-all`, `npm run test:payment`, `npm run test:first-mastercard`, `npm run test:first-amex`, `npm run test:first-wrong-card`, `npm run test:first-utm`, `npm run test:first-ip`, `npm run test:cancel-user`, `npm run test:cancel-agent`, `npm run test:utm-register`, scripts `test:first-*` / `test:refund-*` en [`package.json`](../package.json) |
+| Gherkin | [`features/payment/FirstPayment.feature`](../features/payment/FirstPayment.feature) |
+| Pasos | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) |
+| Helpers | [`tests/helpers/stripePayment.ts`](../tests/helpers/stripePayment.ts), [`pdfhintEditorPaymentFlow.ts`](../tests/helpers/pdfhintEditorPaymentFlow.ts), [`crmStaging.ts`](../tests/helpers/crmStaging.ts) |
+| Ejecutar | `npm run test:tag -- @PDFEDITOR_PAYMENT_FIRST_VISA` (ejemplo); suite completa: `npm run test:ci-full` |
 
 Requiere pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y CRM/Mailpit donde aplica).
 
@@ -21,8 +23,10 @@ Requiere pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y CRM/Mailpit donde
 
 | Qué | Dónde |
 |-----|--------|
-| Specs | [`tests/dashboard/`](../tests/dashboard/) — índice [`dashboard-port.spec.ts`](../tests/dashboard/dashboard-port.spec.ts) |
-| Comandos útiles | `npm run test:dashboard-route`, `npm run test:dashboard-paid`, `npm run test:ci-full` (incluye `tests/dashboard`) |
+| Gherkin | [`features/Dashboard.feature`](../features/Dashboard.feature) |
+| Pasos | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) |
+| POM | [`tests/pages/dashboard/`](../tests/pages/dashboard/) |
+| Ejecutar | `npm run test:tag -- @PDFEDITOR_DASHBOARD_*`; incluido en `npm run test:ci-fast` |
 
 ---
 
@@ -30,8 +34,9 @@ Requiere pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y CRM/Mailpit donde
 
 | Qué | Dónde |
 |-----|--------|
-| Specs | [`tests/pdfhint/`](../tests/pdfhint/) (`pdfhint-seo-smoke`, `payment-smoke`, `pdfhint-refund-smoke`, `pdfhint-dashboard-smoke`, `qa-api-base-smoke`) |
-| Comandos útiles | `npm run test:pdfhint-all`, `npm run test:pdfhint-smoke`, `npm run test:payment`, `npm run test:refund-smoke`, `npm run test:pdfhint-dashboard`, `npm run test:qa-api-smoke` |
+| Gherkin | [`features/PDFhint.feature`](../features/PDFhint.feature) |
+| Pasos | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) |
+| Ejecutar | `npm run test:pdfhint-smoke` (tags `@PDFEDITOR_PDFHINT_SMOKE*`) |
 
 ---
 
@@ -39,8 +44,10 @@ Requiere pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y CRM/Mailpit donde
 
 | Qué | Dónde |
 |-----|--------|
-| Specs | [`recurrences-14056-success.spec.ts`](../tests/payment/recurrences-14056-success.spec.ts), [`recurrences-14056-soft.spec.ts`](../tests/payment/recurrences-14056-soft.spec.ts), [`recurrences-api-smoke.spec.ts`](../tests/payment/recurrences-api-smoke.spec.ts), [`recurrences-port.spec.ts`](../tests/payment/recurrences-port.spec.ts) |
-| Comandos útiles | `npm run test:recurrences-legacy`, `npm run test:recurrences-api` |
+| Gherkin | [`features/Recurrences.feature`](../features/Recurrences.feature) |
+| Pasos | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) |
+| Helpers | [`tests/helpers/recurrencesApi.ts`](../tests/helpers/recurrencesApi.ts) |
+| Ejecutar | `npm run test:tag -- @PDFEDITOR_RECURRENCES_*` |
 
 ---
 
@@ -48,8 +55,9 @@ Requiere pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y CRM/Mailpit donde
 
 | Qué | Dónde |
 |-----|--------|
-| Specs | [`tests/seo/seo-home.spec.ts`](../tests/seo/seo-home.spec.ts), [`tests/seo/seo-forms.spec.ts`](../tests/seo/seo-forms.spec.ts) |
-| Comandos útiles | `npm run test:seo`, `npm run test:ci-fast` |
+| Gherkin | [`features/SEO.feature`](../features/SEO.feature) |
+| Pasos | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) |
+| Ejecutar | `npm run test:tag -- @PDFEDITOR_SEO_*`; subconjunto CI: `npm run test:ci-fast` |
 
 ---
 
@@ -57,8 +65,10 @@ Requiere pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y CRM/Mailpit donde
 
 | Qué | Dónde |
 |-----|--------|
-| Specs | [`tests/emails/`](../tests/emails/) (account-created, payment-confirmation, magic-link, document-sent, subscription-cancellation, variantes currency/locale) |
-| Comandos útiles | `npm run test:emails-all`, `npm run test:transactional-account-created`, `npm run test:transactional-magic-link`, `npm run test:transactional-document-sent`, `npm run test:transactional-subscription-cancellation`, `npm run test:transactional-payment-confirmation`, etc. (ver `package.json`) |
+| Gherkin | [`features/TransactionalEmails.feature`](../features/TransactionalEmails.feature) |
+| Pasos | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) |
+| Helpers | [`tests/helpers/mailpitClient.ts`](../tests/helpers/mailpitClient.ts), [`paymentConfirmationEmailStrictAssertions.ts`](../tests/helpers/paymentConfirmationEmailStrictAssertions.ts) |
+| Ejecutar | `npm run test:tag -- @PDFEDITOR_TRANSACTIONAL_*` |
 
 ---
 
@@ -66,8 +76,10 @@ Requiere pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y CRM/Mailpit donde
 
 | Qué | Dónde |
 |-----|--------|
-| Specs | [`tests/users/`](../tests/users/) — índice [`users-port.spec.ts`](../tests/users/users-port.spec.ts) |
-| Comandos útiles | `npm run test:users-contact`, `npm run test:users-account`, `npm run test:ci-full` (incluye `tests/users`) |
+| Gherkin | [`features/Users.feature`](../features/Users.feature) |
+| Pasos | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) |
+| POM | [`tests/pages/account/`](../tests/pages/account/), [`contact/`](../tests/pages/contact/) |
+| Ejecutar | `npm run test:tag -- @PDFEDITOR_USER_*` |
 
 ---
 
@@ -75,32 +87,22 @@ Requiere pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y CRM/Mailpit donde
 
 | Qué | Dónde |
 |-----|--------|
-| Specs | [`tests/visual/visual-public-pages.spec.ts`](../tests/visual/visual-public-pages.spec.ts), [`visual-products.spec.ts`](../tests/visual/visual-products.spec.ts), [`visual-forms.spec.ts`](../tests/visual/visual-forms.spec.ts), [`visual-auth-modals.spec.ts`](../tests/visual/visual-auth-modals.spec.ts), [`visual-account-session.spec.ts`](../tests/visual/visual-account-session.spec.ts) |
-| Baselines PNG | `tests/visual/*.spec.ts-snapshots/` (convención Playwright) |
-| Comandos útiles | `PLAYWRIGHT_VISUAL_SNAPSHOTS=1 npm run test:visual`, `npm run test:visual-update`, `npm run test:visual-update-auth`, `npm run test:visual-update-account`, `npm run test:ci-visual`, `npm run test:visual-products`, `npm run test:visual-forms`, `npm run test:visual-auth-modals`, `npm run test:visual-account` |
+| Gherkin | [`features/Visual.feature`](../features/Visual.feature) |
+| Pasos | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts) |
+| Baselines PNG | [`tests/visual/baseline/`](../tests/visual/baseline/) (`snapshotDir` en `playwright.config.ts`) |
+| Ejecutar | `PLAYWRIGHT_VISUAL_SNAPSHOTS=1 npm run test:ci-visual` |
 
-**Comparación vs captura de referencias**
-
-- **Ejecutar regresión visual (comparar con baselines del repo):** `PLAYWRIGHT_VISUAL_SNAPSHOTS=1 npm run test:visual` (o subconjuntos en `package.json`).
-- **Regenerar / capturar baselines** (equivalente operativo a un flujo tipo `VisualCapture` + subida de PNG): `npm run test:visual-update` (toda la carpeta `tests/visual`), o solo auth/pago: `npm run test:visual-update-auth`, o solo cuenta/Mailpit: `npm run test:visual-update-account`. Luego commit de los PNG bajo `*-snapshots/`.
-
-Modales que requieren pago: `PLAYWRIGHT_PAYMENT_SMOKE=1` (ver PORTING_STATUS y scripts `test:visual-auth-modals`).
+Modales que requieren pago: `PLAYWRIGHT_PAYMENT_SMOKE=1`.
 
 ---
 
 ## `VisualCapture.feature` (solo legacy Cucumber)
 
-| Qué | En Playwright |
-|-----|----------------|
-| Rol legacy | Escenarios de **captura manual** de referencias para la suite visual; en muchos equipos **no** van a CI. |
-| Equivalente | No hay un `.feature` dedicado: usar **`npm run test:visual-update`** con el `BASE_URL` deseado y commitear snapshots en este repo. |
-| `qai-pa-pdf-editor-resources` | Sigue usándose como **fixtures** (PDF, Office, imágenes de prueba), no como almacén de baselines `toHaveScreenshot`. Ver [MIGRATION_INVENTORY.md](MIGRATION_INVENTORY.md). |
-
----
-
-## Smokes y rutas añadidas en Playwright (sin `.feature` homónimo en legacy)
-
-Varios specs en [`tests/smoke/`](../tests/smoke/) amplían cobertura de carga rápida (home, forms, FAQs, legal, magic link, LPs, etc.). Resumen en PORTING_STATUS, sección *Smokes añadidos*.
+| Qué | En Playwright-BDD |
+|-----|-------------------|
+| Gherkin | [`features/VisualCapture.feature`](../features/VisualCapture.feature) (`@MANUAL_SCREEN_CAPTURE`) |
+| Rol legacy | Captura manual de referencias; no es gate de CI estándar |
+| Equivalente operativo | Actualizar PNG en `tests/visual/baseline/` con escenarios `@PDFEDITOR_VISUAL*` y `PLAYWRIGHT_VISUAL_SNAPSHOTS=1` |
 
 ---
 
@@ -110,3 +112,5 @@ Varios specs en [`tests/smoke/`](../tests/smoke/) amplían cobertura de carga r�
 npm run porting:tags
 npm run porting:stats
 ```
+
+`porting:tags` compara tags `@PDFEDITOR_*` del legacy (o `features/` vendored) con tags presentes en `features/` + `.features-gen` tras `bddgen`.

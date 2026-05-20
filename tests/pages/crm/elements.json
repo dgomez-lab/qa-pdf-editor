@@ -1,0 +1,4 @@
+{
+  "customersMenuButton": "[data-id=\"menuCustomer\"]",
+  "crmLoaders": ".ant-spin"
+}

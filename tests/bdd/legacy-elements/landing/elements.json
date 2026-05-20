@@ -1,0 +1,80 @@
+{
+  "upload document button": {
+    "finder": { "css": ".dropzone > input" }
+  },
+  "upload loader": {
+    "finder": { "className": "LinearLoader__Line-sc-b80cdf49-0 hwQvSV line-loader" }
+  },
+  "upload button": {
+    "finder": { "data-id": "ctaUploadDocument" }
+  },
+  "compressPDF": {
+    "finder": { "css": "img[alt='compressPDF']" }
+  },
+  "editPDF": {
+    "finder": { "css": "img[alt='editPDF']" }
+  },
+  "editFillPDF": {
+    "finder": { "css": "img[alt='editFillPDF']" }
+  },
+  "editScannedPDF": {
+    "finder": { "css": "img[alt='editScannedPDF']" }
+  },
+  "insertImage": {
+    "finder": { "css": "img[alt='insertImage']" }
+  },
+  "watermark": {
+    "finder": { "css": "img[alt='watermark']" }
+  },
+  "rotatePDF": {
+    "finder": { "css": "img[alt='rotatePDF']" }
+  },
+  "deletePdfPages": {
+    "finder": { "css": "img[alt='deletePdfPages']" }
+  },
+  "pdfReader": {
+    "finder": { "css": "img[alt='pdfReader']" }
+  },
+  "pdfConverter": {
+    "finder": { "css": "img[alt='pdfConverter']" }
+  },
+  "wordToPDF": {
+    "finder": { "css": "img[alt='wordToPDF']" }
+  },
+  "jpgToPDF": {
+    "finder": { "css": "img[alt='jpgToPDF']" }
+  },
+  "pngToPDF": {
+    "finder": { "css": "img[alt='pngToPDF']" }
+  },
+  "pwpToPDF": {
+    "finder": { "css": "img[alt='pwpToPDF']" }
+  },
+  "excelToPDF": {
+    "finder": { "css": "img[alt='excelToPDF']" }
+  },
+  "signPdf": {
+    "finder": { "css": "img[alt='signPdf']" }
+  },
+  "howToConvertPdfWord": {
+    "finder": { "css": "img[alt='howToConvertPdfWord']" }
+  },
+  "pdfToJpg": {
+    "finder": { "css": "img[alt='pdfToJpg']" }
+  },
+  "pdfToPng": {
+    "finder": { "css": "img[alt='pdfToPng']" }
+  },
+  "pdfToPwp": {
+    "finder": { "css": "img[alt='pdfToPwp']" }
+  },
+  "pdfToExcel": {
+    "finder": { "css": "img[alt='pdfToExcel']" }
+  },
+  "splitPdf": {
+    "finder": { "css": "img[alt='splitPdf']" }
+  },
+  "mergePDF": {
+    "finder": { "css": "img[alt='mergePDF']" }
+  }
+}

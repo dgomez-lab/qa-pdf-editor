@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test'
 import { home } from '../pages/editorSelectors'
 import { isMvpsMergedStage } from './siteContext'
+import { isPdfhintSite } from './seoExpectations'
 import { gotoMarketingPath } from './mvpsUrl'
 
 /**
@@ -25,13 +26,27 @@ export async function dismissCookiesIfPresent(page: Page): Promise<void> {
 export type OpenHomeOptions = {
   /** Query string en la raíz (p. ej. UTM: `{ utm_source: 'x', utm_medium: 'y' }`). */
   query?: Record<string, string>
+  /** Paridad `HomePage.loadPageWithLocale` (pdfhint: `/es/`, `/fr/`, …; `en` → `/`). */
+  locale?: string
+}
+
+function resolveHomePath(options?: OpenHomeOptions): string {
+  const loc = options?.locale?.trim().toLowerCase()
+  let base = '/'
+  if (loc && isPdfhintSite() && loc !== 'en') {
+    base = `/${loc}/`
+  }
+  const q = options?.query
+  if (q && Object.keys(q).length > 0) {
+    const qs = new URLSearchParams(q).toString()
+    if (base === '/') return `/?${qs}`
+    return `${base}?${qs}`
+  }
+  return base
 }
 
 export async function openHome(page: Page, options?: OpenHomeOptions): Promise<void> {
-  const path =
-    options?.query && Object.keys(options.query).length > 0
-      ? `/?${new URLSearchParams(options.query).toString()}`
-      : '/'
+  const path = resolveHomePath(options)
   await gotoMarketingPath(page, path)
   await dismissCookiesIfPresent(page)
 

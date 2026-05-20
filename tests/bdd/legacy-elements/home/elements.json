@@ -1,0 +1,130 @@
+{
+  "contact top bar": {
+    "finder": { "css": ".top-bar" }
+  },
+  "header logo": {
+    "finder": { "data-id": "headerLogo" }
+  },
+  "upload document button": {
+    "finder": { "css": ".dropzone > input" }
+  },
+  "upload document hero input": {
+    "finder": { "css": "input.co-upload-hitlayer[data-id='ctaUploadDocumentHero']" }
+  },
+  "upload loading overlay": {
+    "finder": { "css": ".cross-origin-upload .loading-overlay" }
+  },
+  "upload loader": {
+    "finder": { "className": "LinearLoader__Line-sc-b80cdf49-0 hwQvSV line-loader" }
+  },
+  "forms header link": {
+    "finder": { "data-id": "mostUsedForm" }
+  },
+  "try now button": {
+    "finder": { "data-id": "ctaTryNow" }
+  },
+  "compress pdf product link": {
+    "finder": { "css": "a[href*='/lp/compress-pdf']" }
+  },
+  "edit pdf product link": {
+    "finder": { "css": "a[href*='/lp/edit-pdf']" }
+  },
+  "edit fill pdf product link": {
+    "finder": { "css": "a[href*='/lp/edit-fill-pdf']" }
+  },
+  "edit scanned pdf product link": {
+    "finder": { "css": "a[href*='/lp/edit-scanned-pdf']" }
+  },
+  "insert image pdf product link": {
+    "finder": { "css": "a[href*='/lp/insert-image']" }
+  },
+  "watermark pdf product link": {
+    "finder": { "css": "a[href*='/lp/watermark']" }
+  },
+  "rotate pdf product link": {
+    "finder": { "css": "a[href*='/lp/rotate-pdf']" }
+  },
+  "delete pages pdf product link": {
+    "finder": { "css": "a[href*='/lp/delete-pdf-pages']" }
+  },
+  "pdf reader product link": {
+    "finder": { "css": "a[href*='/lp/pdf-reader']" }
+  },
+  "word to pdf product link": {
+    "finder": { "css": "a[href*='/lp/word-to-pdf']" }
+  },
+  "jpg to pdf product link": {
+    "finder": { "css": "a[href*='/lp/jpg-to-pdf']" }
+  },
+  "png to pdf product link": {
+    "finder": { "css": "a[href*='/lp/png-to-pdf']" }
+  },
+  "powerpoint to pdf product link": {
+    "finder": { "css": "a[href*='/lp/powerpoint-to-pdf']" }
+  },
+  "excel to pdf product link": {
+    "finder": { "css": "a[href*='/lp/excel-to-pdf']" }
+  },
+  "sign pdf product link": {
+    "finder": { "css": "a[href*='/lp/sign-pdf']" }
+  },
+  "pdf to word product link": {
+    "finder": { "css": "a[href*='/lp/pdf-to-word']" }
+  },
+  "pdf to jpg product link": {
+    "finder": { "css": "a[href*='/lp/pdf-to-jpg']" }
+  },
+  "pdf to png product link": {
+    "finder": { "css": "a[href*='/lp/pdf-to-png']" }
+  },
+  "pdf to powerpoint product link": {
+    "finder": { "css": "a[href*='/lp/pdf-to-powerpoint']" }
+  },
+  "pdf to excel product link": {
+    "finder": { "css": "a[href*='/lp/pdf-to-excel']" }
+  },
+  "split pdf product link": {
+    "finder": { "css": "a[href*='/lp/split-pdf']" }
+  },
+  "merge pdf product link": {
+    "finder": { "css": "a[href*='/lp/merge-pdf']" }
+  },
+  "upload button": {
+    "finder": { "data-id": "ctaUploadDocument" }
+  },
+  "cta close modal": {
+    "finder": { "data-id": "ctaCloseModal" }
+  },
+  "downloads footer link": {
+    "finder": { "css": "[href$='/downloads']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "about us footer link": {
+    "finder": { "css": "[href$='/about-us']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "terms of use footer link": {
+    "finder": { "css": "[href$='/terms-of-use']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "privacy policy footer link": {
+    "finder": { "css": "[href$='/privacy-policy']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "terms and conditions footer link": {
+    "finder": { "css": "[href$='/terms-and-conditions']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "cookies footer link": {
+    "finder": { "css": "[href$='/cookies']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "faqs footer link": {
+    "finder": { "css": "[href$='/faqs']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "contact footer link": {
+    "finder": { "css": "[href$='/contact']" },
+    "actions": [{ "name": "wait for" }]
+  }
+}

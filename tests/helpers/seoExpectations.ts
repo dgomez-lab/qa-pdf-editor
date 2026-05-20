@@ -1,9 +1,10 @@
 import type { HeaderLinkCheck } from './seoAbsoluteHrefs'
 import { FOOTER_NON_HOME_PATHNAMES, LANDING_LP_PATHNAMES } from './seoAbsoluteHrefs'
 import type { SeoHrefPolicy } from './seoAbsoluteHrefs'
+import { isPdfhintScenario } from './pdfhintScenario'
 
-/** Heurística: BASE_URL por defecto en playwright.config es pdfhint staging. */
 export function isPdfhintSite(): boolean {
+  if (isPdfhintScenario()) return true
   const u = (process.env.BASE_URL || 'https://staging.pdfhint.com').toLowerCase()
   return u.includes('pdfhint')
 }

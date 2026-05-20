@@ -1,0 +1,17 @@
+{
+  "phoneIcon": "img[alt='phone icon']",
+  "logo": "[data-id=\"logo\"]",
+  "fullAccessButton": "[data-id=\"accountSubscribeButton\"]",
+  "loginButton": "[data-id=\"logIn\"]",
+  "loginButtonRegister": "a[href='/login']:not(:has(div))",
+  "accountMenu": "[data-id=\"accountMenu\"]",
+  "subscribeMenuLink": "[data-id=\"accountMenuSuscribe\"]",
+  "accountMenuLink": "[data-id=\"accountMenuManage\"]",
+  "membershipMenuLink": "[data-id=\"membershipMenuManage\"]",
+  "dashboardMenuLink": "[data-id=\"dashboardMenu\"]",
+  "logoutMenuLink": "[data-id=\"logout\"]",
+  "acceptCookiesCta": "[data-id=\"ctaAcceptCookies\"]",
+  "formsBackground": "#content",
+  "getStartedButton": "[data-id=\"ctaGetStart\"]",
+  "closeModalButton": "[data-id=\"ctaCloseModal\"]"
+}

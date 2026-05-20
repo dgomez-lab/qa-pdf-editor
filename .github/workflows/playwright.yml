@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       profile:
-        description: 'Suite a ejecutar (fast | full | visual)'
+        description: 'Suite (fast | full | visual | regression)'
         required: false
         default: 'fast'
 
@@ -17,7 +17,7 @@ jobs:
     name: CI fast (smokes + seo + dashboard route)
     timeout-minutes: 25
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.profile == 'fast' || inputs.profile == 'full' }}
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.profile == 'fast' || inputs.profile == 'full' || inputs.profile == 'regression' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -32,12 +32,13 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      # El script compara con `../qai-pa-pdf-editor/features` (o `LEGACY_REPO`). En GitHub
-      # solo se clona este repo; sin skip el job fallaría siempre.
       - name: Tag parity check
         run: npm run porting:tags
         env:
           SKIP_LEGACY_TAG_CHECK: '1'
+
+      - name: Generate tests from features
+        run: npm run bddgen
 
       - name: Run fast suite
         run: npm run test:ci-fast
@@ -59,6 +60,7 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            cucumber-report/
           if-no-files-found: ignore
           retention-days: 7
 
@@ -81,6 +83,9 @@ jobs:
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
+
+      - name: Generate tests from features
+        run: npm run bddgen
 
       - name: Run full suite
         run: npm run test:ci-full
@@ -108,6 +113,62 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            cucumber-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  ci-regression:
+    name: CI regression (functional + visual)
+    timeout-minutes: 150
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression') }}
+    needs: ci-fast
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Generate tests from features
+        run: npm run bddgen
+
+      - name: Run regression (functional + visual)
+        run: npm run test:ci-regression
+        env:
+          BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
+          APP: ${{ vars.PLAYWRIGHT_APP }}
+          MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
+          PDFHINT_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_BASE_URL }}
+          PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
+          QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
+          PLAYWRIGHT_PAYMENT_SMOKE: '1'
+          PLAYWRIGHT_TRANSACTIONAL_PAYMENT_CONFIRMATION: '1'
+          PLAYWRIGHT_PDFHINT_DASHBOARD_SMOKE: '1'
+          PLAYWRIGHT_CRM_USER: ${{ secrets.PLAYWRIGHT_CRM_USER }}
+          PLAYWRIGHT_CRM_PASSWORD: ${{ secrets.PLAYWRIGHT_CRM_PASSWORD }}
+          PLAYWRIGHT_MAILPIT_USER: ${{ secrets.PLAYWRIGHT_MAILPIT_USER }}
+          PLAYWRIGHT_MAILPIT_PASSWORD: ${{ secrets.PLAYWRIGHT_MAILPIT_PASSWORD }}
+          PLAYWRIGHT_QA_API_KEY: ${{ secrets.PLAYWRIGHT_QA_API_KEY }}
+
+      - name: Upload regression reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-regression
+          path: |
+            playwright-report/
+            test-results/
+            cucumber-report/
           if-no-files-found: ignore
           retention-days: 14
 
@@ -130,6 +191,9 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Generate tests from features
+        run: npm run bddgen
+
       - name: Run visual suite (without --update-snapshots)
         run: npm run test:ci-visual
         env:
@@ -147,5 +211,6 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            cucumber-report/
           if-no-files-found: ignore
           retention-days: 14

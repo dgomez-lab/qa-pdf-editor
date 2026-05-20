@@ -6,6 +6,8 @@
     "loadingOverlay": "//*[contains(normalize-space(.),'Loading, please wait')]",
     "emailInput": "[data-id=\"emailForm\"]",
     "downloadLoginButton": "[data-id=\"loginBtnSubmit\"]",
+    "transactionPrice": "[data-id=\"transaction-price\"]",
+    "monthlyTransactionPrice": "[data-id=\"monthlyTransactionPrice\"]",
     "closeModalButton": "[data-id=\"ctaCloseModal\"]",
     "payWithCardButton": "//button[@type='button'][.//img[contains(@src,'/icons/checkout-flow/card.svg')] or contains(translate(.,'PAY WITH CARD','pay with card'),'pay with card')]",
     "stripePaymentIframe": "iframe[src*='componentName=payment'], iframe[src*='elements-inner-payment'], iframe[title='Secure payment input frame']",
@@ -21,9 +23,14 @@
     "expirySplit": "input[name='exp-date']",
     "cvcSplit": "input[name='cvc']",
     "continuePayment": "[data-id=\"confirm-payment-button\"]",
+    "pdfRadioButton": "div[class*='SelectFormatModal'] label[data-id='pdf']",
     "paymentSuccessDownloadButton": "//div[contains(@class,'SelectFormatModal')]//button[@data-id='download' or @data-id='descargar' or @data-id='télécharger' or @data-id='scarica' or @data-id='baixar' or @data-id='herunterladen' or @data-id='ダウンロード' or @data-id='pobierz' or @data-id='i̇ndir' or @data-id='تنزيل' or @data-id='downloaden' or @data-id='다운로드' or contains(@class,'ContinueButton')]"
   },
   "home": {
-    "fileInput": "main input[type=\"file\"].co-upload-hitlayer, main input[type=\"file\"][aria-label*=\"Upload\"], .dropzone > input"
+    "fileInput": "main input[type=\"file\"].co-upload-hitlayer, main input[type=\"file\"][aria-label*=\"Upload\"], .dropzone > input",
+    "uploadDocumentButton": ".dropzone > input",
+    "uploadDocumentHeroInput": "input.co-upload-hitlayer[data-id='ctaUploadDocumentHero']",
+    "uploadLoadingOverlay": ".cross-origin-upload .loading-overlay",
+    "uploadLoader": ".line-loader, [class*=\"LinearLoader\"]"
   }
 }

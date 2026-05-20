@@ -1,0 +1,270 @@
+{
+  "upload loader": {
+    "finder": { "className": "LinearLoader__Line-sc-b80cdf49-0 hwQvSV line-loader" }
+  },
+  "upload document button": {
+    "finder": { "data-id": "ctaUploadDocument" }
+  },
+  "print button": {
+    "finder": { "data-id": "print" }
+  },
+  "download button": {
+    "finder": { "data-id": "download" }
+  },
+  "convert button": {
+    "finder": { "data-id": "convert" }
+  },
+  "share toolbar button": {
+    "finder": {
+      "xpath": "//button[@data-id='share' and not(ancestor::div[contains(@class,'EmailInputModal')])]"
+    }
+  },
+  "select format modal continue button": {
+    "finder": {
+      "xpath": "//div[contains(@class,'SelectFormatModal')]//button[@data-id='continue' or @data-id='Continuar' or @data-id='continuar' or @data-id='Continuer' or @data-id='continuer' or @data-id='Continua' or @data-id='continua' or @data-id='Weiter' or @data-id='weiter' or @data-id='Fortfahren' or @data-id='fortfahren' or @data-id='続ける' or @data-id='次へ' or @data-id='Kontynuuj' or @data-id='kontynuuj' or @data-id='Dalej' or @data-id='dalej' or @data-id='Devam' or @data-id='devam' or @data-id='Doorgaan' or @data-id='doorgaan' or @data-id='Verder' or @data-id='verder' or @data-id='متابعة' or @data-id='계속' or @data-id='다음']"
+    }
+  },
+  "email share modal email input": {
+    "finder": {
+      "xpath": "//div[contains(@class,'EmailInputModal')]//input[@data-id='share-email' or @data-id='email-input']"
+    }
+  },
+  "email share modal share button": {
+    "finder": {
+      "xpath": "//div[contains(@class,'EmailInputModal')]//button[@data-id='share']"
+    }
+  },
+  "word radio button": {
+    "finder": { "data-id": "unSubsModalWord" }
+  },
+  "name input": {
+    "finder": { "data-id": "modalInput" }
+  },
+  "next button": {
+    "finder": { "data-id": "unSubsModalNext" }
+  },
+  "pdf radio button": {
+    "finder": { "css": "div[class*='SelectFormatModal'] label[data-id='pdf']" }
+  },
+  "close modal button": {
+    "finder": { "data-id": "ctaCloseModal" }
+  },
+  "pdf radiobutton": {
+    "finder": { "css": "div[class*='SelectFormatModal'] label[data-id='pdf']" }
+  },
+  "save radiobutton": {
+    "finder": { "data-id": "Save" }
+  },
+  "save radiobutton es": {
+    "finder": { "data-id": "Guardar" }
+  },
+  "save radiobutton fr": {
+    "finder": { "data-id": "Enregistrer" }
+  },
+  "save radiobutton it": {
+    "finder": { "data-id": "Salva" }
+  },
+  "save radiobutton pt": {
+    "finder": { "data-id": "Salvar" }
+  },
+  "save radiobutton de": {
+    "finder": { "data-id": "Speichern" }
+  },
+  "save radiobutton ja": {
+    "finder": { "data-id": "保存" }
+  },
+  "save radiobutton pl": {
+    "finder": { "data-id": "Zapisz" }
+  },
+  "save radiobutton tr": {
+    "finder": { "data-id": "Kaydet" }
+  },
+  "save radiobutton ar": {
+    "finder": { "data-id": "حفظ" }
+  },
+  "save radiobutton nl": {
+    "finder": { "data-id": "Opslaan" }
+  },
+  "save radiobutton ko": {
+    "finder": { "data-id": "저장" }
+  },
+  "done modal button": {
+    "finder": { "data-id": "modalDone" }
+  },
+  "payment success download button": {
+    "finder": {
+      "xpath": "//div[contains(@class,'SelectFormatModal')]//button[@data-id='download' or @data-id='descargar' or @data-id='télécharger' or @data-id='scarica' or @data-id='baixar' or @data-id='herunterladen' or @data-id='ダウンロード' or @data-id='pobierz' or @data-id='i̇ndir' or @data-id='تنزيل' or @data-id='downloaden' or @data-id='다운로드' or contains(@class,'ContinueButton')]"
+    }
+  },
+  "loading overlay": {
+    "finder": {
+      "xpath": "//*[contains(normalize-space(.),'Loading, please wait')]"
+    }
+  },
+  "email input": {
+    "finder": { "data-id": "emailForm" }
+  },
+  "download login button": {
+    "finder": { "data-id": "loginBtnSubmit" }
+  },
+  "loader spinner": {
+    "finder": { "className": "Spinner" }
+  },
+  "transaction price text": {
+    "finder": { "data-id": "transaction-price" }
+  },
+  "transaction monthly price text": {
+    "finder": { "data-id": "monthlyTransactionPrice" }
+  },
+  "card module": {
+    "finder": {
+      "xpath": "//*[@data-testid='payment-accordion-wrapper']//*[@role='button'][1]"
+    }
+  },
+  "terms and conditions link": {
+    "finder": { "data-id": "termsAndConditions" }
+  },
+  "privacy policy link": {
+    "finder": { "data-id": "privacyPolicy" }
+  },
+  "pay with card button": {
+    "finder": {
+      "xpath": "//button[@type='button'][.//img[contains(@src,'/icons/checkout-flow/card.svg')]]"
+    }
+  },
+  "stripe iframe": {
+    "finder": { "css": "iframe[src*='componentName=payment']" }
+  },
+  "stripe form": {
+    "finder": { "id": "payment-element" }
+  },
+  "stripe card number iframe": {
+    "finder": { "css": "iframe[src*='componentName=cardNumber']" }
+  },
+  "stripe card number input": {
+    "finder": { "css": "input[name='number'], #payment-numberInput" }
+  },
+  "stripe expiry input": {
+    "finder": { "css": "input[name='expiry'], #payment-expiryInput" }
+  },
+  "stripe cvc input": {
+    "finder": { "css": "input[name='cvc'], #payment-cvcInput" }
+  },
+  "stripe country select": {
+    "finder": { "css": "select#payment-countryInput, select[name='country']" }
+  },
+  "stripe country option us": {
+    "finder": { "xpath": "//select[@id='payment-countryInput' or @name='country']/option[@value='US']" }
+  },
+  "stripe expiry iframe": {
+    "finder": { "css": "iframe[src*='componentName=cardExpiry']" }
+  },
+  "stripe cvc iframe": {
+    "finder": { "css": "iframe[src*='componentName=cardCvc']" }
+  },
+  "card number input": {
+    "finder": { "css": "input[name='cardnumber']" }
+  },
+  "expiration date input": {
+    "finder": { "css": "input[name='exp-date']" }
+  },
+  "cvv input": {
+    "finder": { "css": "input[name='cvc']" }
+  },
+  "zip input": {
+    "finder": { "css": "#payment-postalCodeInput, input[name='postalCode'], input[data-id='payment-zipInput']" }
+  },
+  "continue button": {
+    "finder": { "data-id": "confirm-payment-button" }
+  },
+  "three ds iframe": {
+    "finder": { "css": "iframe[id*='cardinal-stepUpIframe-']" }
+  },
+  "code input": {
+    "finder": { "css": "[name^='challengeDataEntry']" }
+  },
+  "submit button": {
+    "finder": { "css": "input[type='submit']" }
+  },
+  "error message container": {
+    "finder": { "data-id": "transactionFailModal" }
+  },
+  "get my document button": {
+    "finder": { "data-id": "modalDone" }
+  },
+  "send via email option": {
+    "finder": { "data-id": "Send via email" }
+  },
+  "send via email address input": {
+    "finder": { "xpath": "//input[@placeholder='Email' and (@type='text' or not(@type))]" }
+  },
+  "send via email option es": {
+    "finder": { "data-id": "Enviar por correo electrónico" }
+  },
+  "send via email address input es": {
+    "finder": { "xpath": "//input[@placeholder='Correo electrónico' and (@type='text' or not(@type))]" }
+  },
+  "send via email option fr": {
+    "finder": { "data-id": "Envoyer par e-mail" }
+  },
+  "send via email address input fr": {
+    "finder": { "xpath": "//input[@placeholder='E-mail' and (@type='text' or not(@type))]" }
+  },
+  "send via email option it": {
+    "finder": { "data-id": "Invia tramite email" }
+  },
+  "send via email address input it": {
+    "finder": { "xpath": "//input[@placeholder='Email' and (@type='text' or not(@type))]" }
+  },
+  "send via email option pt": {
+    "finder": { "data-id": "Enviar por e-mail" }
+  },
+  "send via email address input pt": {
+    "finder": { "xpath": "//input[@placeholder='E-mail' and (@type='text' or not(@type))]" }
+  },
+  "send via email option de": {
+    "finder": { "data-id": "Per E-Mail senden" }
+  },
+  "send via email address input de": {
+    "finder": { "xpath": "//input[@placeholder='E-Mail' and (@type='text' or not(@type))]" }
+  },
+  "send via email option ja": {
+    "finder": { "data-id": "メールで送信" }
+  },
+  "send via email address input ja": {
+    "finder": { "xpath": "//input[@placeholder='メール' and (@type='text' or not(@type))]" }
+  },
+  "send via email option pl": {
+    "finder": { "data-id": "Wyślij przez e-mail" }
+  },
+  "send via email address input pl": {
+    "finder": { "xpath": "//input[@placeholder='E-mail' and (@type='text' or not(@type))]" }
+  },
+  "send via email option tr": {
+    "finder": {
+      "xpath": "//input[@type='radio' and @name='destination' and contains(@data-id, 'posta ile Gönder')]"
+    }
+  },
+  "send via email address input tr": {
+    "finder": {
+      "xpath": "//input[(@type='text' or not(@type)) and contains(@placeholder, 'posta')]"
+    }
+  },
+  "send via email option ar": {
+    "finder": { "data-id": "الإرسال عبر البريد الإلكتروني" }
+  },
+  "send via email address input ar": {
+    "finder": { "xpath": "//input[@placeholder='البريد الإلكتروني' and (@type='text' or not(@type))]" }
+  },
+  "send via email option nl": {
+    "finder": { "data-id": "Versturen via e-mail" }
+  },
+  "send via email address input nl": {
+    "finder": { "xpath": "//input[@placeholder='E-mailadres' and (@type='text' or not(@type))]" }
+  },
+  "stripe card accordion button": {
+    "finder": {
+      "xpath": "//div[@role='button' and @data-value='card' and contains(@class,'AccordionButton')]"
+    }
+  }
+}

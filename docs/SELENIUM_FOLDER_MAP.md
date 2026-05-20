@@ -1,4 +1,4 @@
-# Mapa de carpetas: qai-pa-pdf-editor (Selenium + Cucumber) → qa-pdf-editor (Playwright)
+# Mapa de carpetas: qai-pa-pdf-editor (Selenium + Cucumber) → qa-pdf-editor (Playwright-BDD)
 
 Véase también el inventario por `.feature`: [**TEST_CATALOG_BY_LEGACY_FEATURE.md**](TEST_CATALOG_BY_LEGACY_FEATURE.md).
 
@@ -19,14 +19,21 @@ flowchart LR
     R[qai-pa-pdf-editor-resources]
   end
   subgraph pw [qa-pdf-editor]
-    T[tests/**/*.spec.ts]
+    Fv[features vendored]
+    G[bddgen]
+    Gen[.features-gen]
+    Bdd[tests/bdd/steps]
     H[tests/helpers]
     PP[tests/pages]
+    LE[tests/bdd/legacy-elements]
     PF[tests/fixtures]
-    PC[playwright.config.ts + package.json]
+    PC[playwright.config.ts]
   end
-  F --> T
-  S --> H
+  F -.->|copia 1:1| Fv
+  Fv --> G --> Gen
+  S -.->|paridad lógica| Bdd
+  S -.->|paridad lógica| H
+  P --> LE
   P --> PP
   D --> H
   C --> PC
@@ -37,29 +44,30 @@ flowchart LR
 
 ## `features/` (Gherkin `.feature`)
 
-| Legacy | Playwright |
-|--------|--------------|
-| `features/payment/FirstPayment.feature` | [`tests/payment/`](../tests/payment/), [`tests/pdfhint/payment-smoke.spec.ts`](../tests/pdfhint/payment-smoke.spec.ts) |
-| `features/Dashboard.feature` | [`tests/dashboard/`](../tests/dashboard/) |
-| `features/PDFhint.feature` | [`tests/pdfhint/`](../tests/pdfhint/) |
-| `features/Recurrences.feature` | [`tests/payment/recurrences-*.spec.ts`](../tests/payment/) |
-| `features/SEO.feature` | [`tests/seo/`](../tests/seo/) |
-| `features/TransactionalEmails.feature` | [`tests/emails/`](../tests/emails/) |
-| `features/Users.feature` | [`tests/users/`](../tests/users/) |
-| `features/Visual.feature` | [`tests/visual/`](../tests/visual/) |
-| `VisualCapture.feature` (raíz o `features/`) | Sin spec homónimo: flujo de baseline con `npm run test:visual-update` — ver [TEST_CATALOG_BY_LEGACY_FEATURE.md](TEST_CATALOG_BY_LEGACY_FEATURE.md) |
+| Legacy (ruta en Cucumber) | Playwright-BDD |
+|--------|----------------|
+| `features/payment/FirstPayment.feature` | [`features/payment/FirstPayment.feature`](../features/payment/FirstPayment.feature) |
+| `features/Dashboard.feature` | [`features/Dashboard.feature`](../features/Dashboard.feature) |
+| `features/PDFhint.feature` | [`features/PDFhint.feature`](../features/PDFhint.feature) |
+| `features/Recurrences.feature` | [`features/Recurrences.feature`](../features/Recurrences.feature) |
+| `features/SEO.feature` | [`features/SEO.feature`](../features/SEO.feature) |
+| `features/TransactionalEmails.feature` | [`features/TransactionalEmails.feature`](../features/TransactionalEmails.feature) |
+| `features/Users.feature` | [`features/Users.feature`](../features/Users.feature) |
+| `features/Visual.feature` | [`features/Visual.feature`](../features/Visual.feature) |
+| `VisualCapture.feature` | [`features/VisualCapture.feature`](../features/VisualCapture.feature) — manual |
 
-Playwright **no** ejecuta `.feature`: la unidad es el archivo `*.spec.ts` bajo `testDir` ([`playwright.config.ts`](../playwright.config.ts) → `./tests`).
+Playwright **ejecuta** `.feature` vía `playwright-bdd`: `defineBddConfig` en [`playwright.config.ts`](../playwright.config.ts), salida en `.features-gen/`. `npm run porting:tags` lee `features/` y, tras `bddgen`, `.features-gen/`.
 
 ---
 
-## `steps/` (Cucumber step definitions)
+## `steps/` (Cucumber) → `tests/bdd/steps/` + `tests/helpers/`
 
-| Legacy | Playwright |
-|--------|------------|
-| `steps/commonSteps.ts`, `projectBaseSteps.ts`, … | [`tests/helpers/`](../tests/helpers/) — flujos reutilizables (`navigation.ts`, `stripePayment.ts`, `dashboardActions.ts`, `crmStaging.ts`, …) |
+| Legacy | Playwright-BDD |
+|--------|----------------|
+| `src/steps/commonSteps.ts`, `transactionalEmailSteps.ts`, … | [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts), [`hooks.steps.ts`](../tests/bdd/steps/hooks.steps.ts), [`data.steps.ts`](../tests/bdd/steps/data.steps.ts) |
+| Lógica compartida | [`tests/helpers/`](../tests/helpers/) (`navigation.ts`, `stripePayment.ts`, `crmStaging.ts`, `mailpitClient.ts`, …) |
 
-**Por qué no hay una carpeta `steps/`:** en Playwright los hooks por escenario son `test.beforeEach` / helpers importados desde los specs; renombrar `helpers` a `steps` confundiría con plugins BDD y no aporta al runner. La trazabilidad Gherkin → código sigue siendo los **tags** y [PORTING_STATUS.md](PORTING_STATUS.md).
+Los pasos BDD importan helpers y POM; no hay `tests/**/*.spec.ts` ni `tests/smoke/`.
 
 ---
 
@@ -67,14 +75,18 @@ Playwright **no** ejecuta `.feature`: la unidad es el archivo `*.spec.ts` bajo `
 
 | Legacy | Playwright |
 |--------|------------|
-| `src/pages/editor/elements.json` + página TS | [`tests/pages/editor/elements.json`](../tests/pages/editor/elements.json) + [`tests/pages/editorSelectors.ts`](../tests/pages/editorSelectors.ts) (`editor` / `home`) |
-| `src/pages/dashboard/elements.json` | [`tests/pages/dashboard/elements.json`](../tests/pages/dashboard/elements.json) + [`tests/pages/dashboardSelectors.ts`](../tests/pages/dashboardSelectors.ts) (`dashboard`) |
-| Otros módulos (`landing`, `login`, …) | [`tests/pages/*Selectors.ts`](../tests/pages/) y lógica en `tests/helpers/*Actions.ts`; extracción gradual de `elements.json` como en `editor/` y `dashboard/`. |
+| `src/pages/editor/` | [`tests/bdd/legacy-elements/editor/`](../tests/bdd/legacy-elements/editor/) + [`tests/pages/editor/`](../tests/pages/editor/) |
+| `src/pages/home/` | legacy-elements + [`tests/pages/home/`](../tests/pages/home/) |
+| `src/pages/login/` | legacy-elements + [`tests/pages/login/`](../tests/pages/login/) |
+| `src/pages/account/` | legacy-elements + [`tests/pages/account/`](../tests/pages/account/) |
+| `src/pages/contact/` | legacy-elements + [`tests/pages/contact/`](../tests/pages/contact/) |
+| `src/pages/dashboard/` | legacy-elements + [`tests/pages/dashboard/`](../tests/pages/dashboard/) |
+| `src/pages/components/` | [`tests/bdd/legacy-elements/components/pdfCommonPageElements.json`](../tests/bdd/legacy-elements/components/pdfCommonPageElements.json) + [`tests/pages/components/`](../tests/pages/components/) |
+| `src/pages/crm/` | legacy-elements + [`tests/pages/crm/`](../tests/pages/crm/) |
+| `src/pages/downloads/` | legacy-elements + [`tests/pages/downloads/`](../tests/pages/downloads/) |
+| `src/pages/landing/` | legacy-elements + [`tests/pages/landing/`](../tests/pages/landing/) |
 
-Convención recomendada al extender el POM:
-
-- `tests/pages/<contexto>/elements.json` — selectores estáticos (como en Selenium).
-- `tests/pages/<contexto>*.ts` o `tests/helpers/*Actions.ts` — acciones y esperas que usan esos selectores.
+Resolución de selectores en pasos: [`tests/bdd/elementRegistry.ts`](../tests/bdd/elementRegistry.ts).
 
 ---
 
@@ -82,7 +94,7 @@ Convención recomendada al extender el POM:
 
 | Legacy | Playwright |
 |--------|------------|
-| `constants.ts`, `testData.ts`, `*.json` | Valores por defecto y resolución de URL en [`playwright/resolveBaseUrl.ts`](../playwright/resolveBaseUrl.ts), [`tests/helpers/*.ts`](../tests/helpers/) (Mailpit, CRM, Stripe, …) y variables de entorno documentadas en PORTING_STATUS |
+| `constants.ts`, `testData.ts`, `*.json` | [`playwright/resolveBaseUrl.ts`](../playwright/resolveBaseUrl.ts), [`tests/bdd/bddTestData.ts`](../tests/bdd/bddTestData.ts), [`tests/helpers/*.ts`](../tests/helpers/), variables `PLAYWRIGHT_*` |
 
 ---
 
@@ -90,9 +102,9 @@ Convención recomendada al extender el POM:
 
 | Legacy | Playwright |
 |--------|------------|
-| `config/suites/*.json` (grupos de tags / escenarios) | Scripts npm en [`package.json`](../package.json) (`test:ci-fast`, `test:ci-full`, `test:ci-visual`, `test:smoke`, …) y rutas explícitas en [`playwright.config.ts`](../playwright.config.ts) |
-| `cucumber.json` | Sustituido por la config de Playwright + convención de tags en specs |
-| `configuration.json` / perfiles por app | `BASE_URL`, `APP`, `PLAYWRIGHT_*`, `.env` — ver README y PORTING_STATUS |
+| `config/suites/*.json` | Scripts npm: `test:ci-fast`, `test:ci-full`, `test:ci-visual`, `test:pdfhint-smoke` ([`package.json`](../package.json)) |
+| `cucumber.json` | [`playwright.config.ts`](../playwright.config.ts) + `defineBddConfig` |
+| `configuration.json` / perfiles | `BASE_URL`, `APP`, `PLAYWRIGHT_*`, `.env` |
 
 ---
 
@@ -100,19 +112,13 @@ Convención recomendada al extender el POM:
 
 | Legacy | Playwright |
 |--------|------------|
-| Runner custom / reportes Cucumber | `npx playwright test`, reporter HTML en `playwright-report/`, artefactos en `test-results/` |
+| Runner custom / reportes Cucumber | `npm run bddgen && playwright test`, reporter HTML en `playwright-report/`, artefactos en `test-results/` |
 
 ---
 
-## Checklist opcional: renombrar carpetas bajo `tests/` (paridad de nombres con legacy)
+## Carpetas retiradas en la migración BDD
 
-Solo si el equipo prioriza nombres idénticos a `features/payment/` etc. Cada ítem debe completarse y verificarse con `npm run test:ci-fast` (y suites afectadas).
+- `tests/**/*.spec.ts` — sustituidos por escenarios Gherkin + `.features-gen/`.
+- `tests/smoke/` — cobertura equivalente en `.feature` y tags `@PDFEDITOR_*`.
 
-- [ ] Inventariar referencias: `rg "tests/payment"`, `rg "tests/dashboard"`, enlaces en `docs/`.
-- [ ] Actualizar **todas** las rutas en [`package.json`](../package.json) (`scripts` que pasan rutas a `playwright test`).
-- [ ] Revisar [`.github/workflows/playwright.yml`](../.github/workflows/playwright.yml) si algún job deja de usar solo scripts npm y pasa rutas literales.
-- [ ] Actualizar enlaces en `docs/*.md` (PORTING_STATUS, catálogos, README).
-- [ ] Renombrar carpetas con `git mv` para preservar historial.
-- [ ] Ejecutar `npm run porting:tags` y `npm run test:ci-fast`; si aplica, `test:ci-full` con dispatch.
-
-**Nota:** Hoy `tests/payment` agrupa FirstPayment **y** Recurrences; separar en `tests/first-payment` y `tests/recurrences` mejora la lectura pero exige más renombres en scripts y documentación.
+No hay checklist pendiente de renombrar `tests/payment` → `tests/first-payment`; la organización por dominio es ahora `features/` + `tests/bdd/`.

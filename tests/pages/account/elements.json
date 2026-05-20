@@ -1,0 +1,13 @@
+{
+  "firstNameInput": "[data-id=\"firstNameForm\"]",
+  "lastNameInput": "[data-id=\"lastNameForm\"]",
+  "secondLastNameInput": "[data-id=\"secondLastNameForm\"]",
+  "saveChangesCta": "[data-id=\"ctaSaveChanges\"]",
+  "membershipLink": "[data-id=\"sidebarMembershipLink\"], [data-id=\"membershipLink\"]",
+  "activeStatus": "[data-id=\"statusActive\"], [data-id=\"activeStatus\"]",
+  "cancelSubscriptionLink": "[data-id=\"cancelSubscription\"]",
+  "yesUnsubscribeButton": "[data-id=\"unsubscribeAccount\"], [data-id=\"yesUnsubscribe\"]",
+  "returnAccountButton": "[data-id=\"returnAccount\"]",
+  "transactionPriceText": "[data-id=\"transactionPriceAccount\"], [data-id=\"transactionPrice\"]",
+  "transactionMonthlyPriceText": "[data-id=\"transactionMonthlyPriceAccount\"], [data-id=\"transactionMonthlyPrice\"]"
+}

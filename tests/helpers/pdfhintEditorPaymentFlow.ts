@@ -2,8 +2,10 @@ import * as path from 'path'
 import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 import { openHome } from './navigation'
+import { isPdfhintScenario } from './pdfhintScenario'
 import { fillStripePaymentLikeLegacy } from './stripePayment'
 import { editor, home } from '../pages/editorSelectors'
+import { waitForEditorAfterUpload } from './editorActions'
 
 const samplePdf = path.join(__dirname, '..', 'fixtures', 'sample.pdf')
 
@@ -11,29 +13,54 @@ export type EditorPaymentOptions = {
   /** Email para registro en el editor (flujo Direct + upload). */
   email: string
   stripe?: { number: string; exp: string; cvc: string }
-  /** Parámetros en la URL inicial (`/` o `/?…`) antes del upload (p. ej. UTM). */
+  /** Parámetros en la URL inicial (`/` o `/?…`) antes del upload (p. ej. UTM, `ip`). */
   homeQuery?: Record<string, string>
+  /** Paridad `HomePage.loadPageWithLocale` — ver `openHome({ locale })`. */
+  homeLocale?: string
+  /** Paridad `TransactionalEmails.feature`: textos en transaction-price / monthlyTransactionPrice tras registro, antes de Stripe. */
+  prePaymentEditorContains?: { priceContains: string; monthlyContains: string }
 }
 
 /** Stripe test: mensajes de declinación / fondos insuficientes (EN + fragmentos localizables). */
 const declineMessageRe =
   /declined|rechazad|declin[ée]|abgelehnt|rifiutat|recusad|your card (has been|was)|card (couldn't be|cannot be)|payment failed|pago.*fall|insufficient|insuffisant|insuficiente|unzureichend|non sufficienti|insufficiente|expired|expiration|expir[ée]|ablauf|caducad|scadut|만료|期限切れ|lost|stolen|perdue|robada|furto|verloren|gestolen|incorrect.*cvc|cvc.*invalid|invalid.*cvc|security code|sicherheitscode|codice.*sicurezza/i
 
-async function runEditorDirectUploadAndOpenPayment(page: Page, opts: Pick<EditorPaymentOptions, 'email' | 'homeQuery'>): Promise<void> {
-  const q = opts.homeQuery
-  await openHome(page, q && Object.keys(q).length > 0 ? { query: q } : undefined)
-  await page.locator(home.fileInput).first().setInputFiles(samplePdf)
-
-  const downloadFirst = page.locator(editor.downloadButton).first()
-  await expect(downloadFirst).toBeVisible({ timeout: 180_000 })
-  const overlay = page.locator(editor.loadingOverlay).first()
-  await overlay.waitFor({ state: 'hidden', timeout: 120_000 }).catch(() => {})
-  await page.waitForTimeout(2000)
-  await downloadFirst.click({ force: true })
+async function runEditorDirectUploadAndOpenPayment(
+  page: Page,
+  opts: Pick<EditorPaymentOptions, 'email' | 'homeQuery' | 'homeLocale' | 'prePaymentEditorContains'>
+): Promise<void> {
+  const hasQuery = opts.homeQuery && Object.keys(opts.homeQuery).length > 0
+  await openHome(page, {
+    ...(hasQuery ? { query: opts.homeQuery } : {}),
+    ...(opts.homeLocale ? { locale: opts.homeLocale } : {})
+  })
+  if (isPdfhintScenario()) {
+    const hero = page.locator(home.uploadDocumentHeroInput).first()
+    await hero.waitFor({ state: 'attached', timeout: 120_000 })
+    await hero.setInputFiles(samplePdf)
+    await page
+      .locator(home.uploadLoadingOverlay)
+      .first()
+      .waitFor({ state: 'hidden', timeout: 120_000 })
+      .catch(() => {})
+  } else {
+    await page.locator(home.uploadDocumentButton).first().setInputFiles(samplePdf)
+  }
+  await waitForEditorAfterUpload(page)
+  await page.locator(editor.downloadButton).first().click({ force: true })
 
   await page.locator(editor.emailInput).waitFor({ state: 'visible', timeout: 60_000 })
   await page.locator(editor.emailInput).fill(opts.email)
   await page.locator(editor.downloadLoginButton).click()
+
+  if (opts.prePaymentEditorContains) {
+    const priceLoc = page.locator(editor.transactionPrice)
+    const monthlyLoc = page.locator(editor.monthlyTransactionPrice)
+    await expect(priceLoc).toBeVisible({ timeout: 90_000 })
+    await expect(monthlyLoc).toBeVisible({ timeout: 90_000 })
+    await expect(priceLoc).toContainText(opts.prePaymentEditorContains.priceContains, { timeout: 30_000 })
+    await expect(monthlyLoc).toContainText(opts.prePaymentEditorContains.monthlyContains, { timeout: 30_000 })
+  }
 }
 
 async function anyFrameBodyMatchesDecline(page: Page): Promise<boolean> {
@@ -53,10 +80,15 @@ export async function runEditorUploadRegisterAndVisaPayment(page: Page, opts: Ed
   const exp = opts.stripe?.exp ?? process.env.STRIPE_TEST_CARD_EXP ?? '1234'
   const cvc = opts.stripe?.cvc ?? process.env.STRIPE_TEST_CARD_CVC ?? '123'
 
-  await runEditorDirectUploadAndOpenPayment(page, { email: opts.email, homeQuery: opts.homeQuery })
+  await runEditorDirectUploadAndOpenPayment(page, {
+    email: opts.email,
+    homeQuery: opts.homeQuery,
+    homeLocale: opts.homeLocale,
+    prePaymentEditorContains: opts.prePaymentEditorContains
+  })
   await fillStripePaymentLikeLegacy(page, { number, exp, cvc })
   await page.locator(editor.continuePayment).click()
-  await expect(page.locator(editor.downloadButton).first()).toBeVisible({ timeout: 120_000 })
+  await expect(page.locator(editor.pdfRadioButton).first()).toBeVisible({ timeout: 120_000 })
 }
 
 /**
@@ -72,7 +104,12 @@ export async function runEditorUploadRegisterStripePaymentExpectDecline(
   const exp = opts.stripe?.exp ?? process.env.STRIPE_TEST_DECLINE_EXP?.trim() ?? '1234'
   const cvc = opts.stripe?.cvc ?? process.env.STRIPE_TEST_DECLINE_CVC?.trim() ?? '123'
 
-  await runEditorDirectUploadAndOpenPayment(page, { email: opts.email, homeQuery: opts.homeQuery })
+  await runEditorDirectUploadAndOpenPayment(page, {
+    email: opts.email,
+    homeQuery: opts.homeQuery,
+    homeLocale: opts.homeLocale,
+    prePaymentEditorContains: opts.prePaymentEditorContains
+  })
   await fillStripePaymentLikeLegacy(page, { number, exp, cvc })
   await page.locator(editor.continuePayment).click()
   await expect.poll(async () => anyFrameBodyMatchesDecline(page), { timeout: 90_000, intervals: [500, 1500, 3000] }).toBeTruthy()

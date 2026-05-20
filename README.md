@@ -14,6 +14,43 @@ npm ci
 npx playwright install chromium
 ```
 
+## Configuración local (`config/configuration.json`)
+
+Paridad con **`qai-pa-pdf-editor/config/configuration.json`**. Edita el JSON y ejecuta `npm test`; no hace falta exportar variables en cada comando.
+
+| Campo JSON | Efecto |
+|------------|--------|
+| `driver.headless` | `true` / `false` → navegador headless o visible |
+| `logLevel` | `DEBUG` / `INFO` / `SILENT` → `BDD_LOG_LEVEL` |
+| `projectVars.environment` | `red`, `red1`, `red2`, … `red10` → `ENVIRONMENT` (URL MVPS + CRM) |
+| `projectVars.app` | `mergedpdf` o `pdfhint` → `APP` |
+| `projectVars.baseUrl` | URL fija → `BASE_URL` (pdfhint staging, local, etc.) |
+| `projectVars.appendQaToken` | `false` en pdfhint (sin token QA en marketing) |
+
+**Perfiles** (como en legacy):
+
+- Por defecto: [`config/configuration.json`](config/configuration.json) — `app: mergedpdf`, `environment: red`.
+- Pdfhint: `QAI_PA_CONFIGURATION_PATH=config/configuration.pdfhint.json` o `npm run test:pdfhint-smoke` / `npm run test:pdfhint-tag -- @TAG`. Los escenarios en `PDFhint.feature` llevan `@PDFHINT` (URL `staging.pdfhint.com`, sin token QA, prefijo Mailpit `pdfhint`) vía hooks en `tests/bdd/steps/hooks.steps.ts`.
+- Plantilla: [`config/configurationExample.json`](config/configurationExample.json) (p. ej. `red2` + `headless: false`).
+
+**Una sola fuente:** headless, `environment`, `app`, `baseUrl`, `logLevel` y `SLOWMO` (vía `timeouts.stepWaiter`) **solo** en `configuration.json`. El `.env` es para secretos (CRM, Mailpit) y flags como `PLAYWRIGHT_PAYMENT_SMOKE`.
+
+| Quieres | Qué hacer |
+|---------|-----------|
+| Sin ventana de Chrome | `"headless": true` en JSON y **no** uses `--headed` en el comando |
+| Ver el navegador | `"headless": false` en JSON y **no** uses `--headed` |
+
+`npx playwright test --headed` **siempre** abre ventana visible y **ignora** `driver.headless` del JSON (comportamiento de Playwright). Usa solo `npm run test:tag -- @TAG` y edita el JSON.
+
+Ejemplo — probar **red2** con navegador visible:
+
+```json
+{
+  "driver": { "headless": false },
+  "projectVars": { "environment": "red2", "app": "mergedpdf", "baseUrl": "" }
+}
+```
+
 ## URL base (alineado con `ProjectData.getUrl` / `configuration.pdfhint`)
 
 La resolución está en [`playwright/resolveBaseUrl.ts`](playwright/resolveBaseUrl.ts) y se usa en [`playwright.config.ts`](playwright.config.ts). Si no defines `BASE_URL`, se elige el destino con **`APP`**:
@@ -56,122 +93,103 @@ PLAYWRIGHT_PAYMENT_SMOKE=1 npm run test:tag -- @PDFEDITOR_PDFHINT_SMOKE_VISA
 
 | Variable | Descripción |
 |----------|-------------|
-| `PLAYWRIGHT_PAYMENT_SMOKE` | `1` / `true` para ejecutar el flujo de pago (`tests/pdfhint/payment-smoke.spec.ts`). |
+| `PLAYWRIGHT_PAYMENT_SMOKE` | `1` / `true` para ejecutar escenarios de pago (tags `@PDFEDITOR_PAYMENT_*` y smoke de pago). |
 | `PLAYWRIGHT_TEST_EMAIL` | Email fijo para el test de pago. |
 | `STRIPE_TEST_CARD_NUMBER` / `EXP` / `CVC` | Tarjeta de prueba Stripe (por defecto 4242… / 1234 / 123). |
 | `SEO_LOGIN_PATHNAME` | Pathname esperado del Login en marketing pdfhint (por defecto `/en/login`). |
 | `PLAYWRIGHT_TRACE` | `1` fuerza `trace: 'on'` en toda la suite (útil para depurar Stripe). |
+| `BDD_LOG_LEVEL` | Por defecto **local:** `DEBUG` (logs de página/elemento estilo legacy). **CI:** `INFO`. Override: `SILENT` / `INFO` / `DEBUG`. |
+| `BDD_TERMINAL_STEPS` | Por defecto **local:** `✔`/`✖` por paso Gherkin en terminal. **CI:** desactivado. Desactivar local: `BDD_TERMINAL_STEPS=0`. |
 
 En GitHub: variable `PLAYWRIGHT_BASE_URL` y, si aplica, `PLAYWRIGHT_APP` / `MVPS_SLOT` (ver workflow). El job **Tag parity** (`npm run porting:tags`) en Actions usa `SKIP_LEGACY_TAG_CHECK=1` porque no se clona `qai-pa-pdf-editor`; en local, con `../qai-pa-pdf-editor`, ejecuta `npm run porting:tags` sin esa variable para la comprobación completa.
+
+## Regresión completa en GitHub (manual)
+
+Equivalente remoto a un `allTests` en QAI Dogs: un solo disparo con suite funcional + visual, sin usar tu PC.
+
+1. Configura **variables** y **secrets** en el repo (tablas en [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md); plantilla [`.env.example`](.env.example)).
+2. **Actions** → **Playwright** → **Run workflow** → profile **`regression`**.
+3. Tras **ci-fast**, el job **ci-regression** ejecuta `npm run test:ci-regression` (excluye `@MANUAL_SCREEN_CAPTURE`, incluye `@PDFEDITOR_VISUAL*`).
+4. Informes: artefacto **`playwright-report-regression`** (`cucumber-report/index.html`, Playwright HTML, traces).
+
+Cada **PR** hacia `main`/`master` ejecuta **fast** y, en paralelo tras el gate, **regression** (funcional + visual). Push a `main` solo ejecuta **fast**; la regresión manual sigue disponible con `workflow_dispatch` → profile `regression`.
+
+Si staging exige allowlist de IP, los runners `ubuntu-latest` de GitHub pueden necesitar excepción en infra o un runner self-hosted (ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md)).
+
+```bash
+gh workflow run playwright.yml -f profile=regression --ref main
+```
 
 ## Scripts
 
 | Comando | Uso |
 |---------|-----|
-| `npm test` | Toda la suite (pago **omitido** salvo `PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:tag -- @TAG` | Filtrar por tag Cucumber/Playwright. |
-| `npm run test:seo` | Solo `tests/seo`. |
-| `npm run test:smoke` | Smokes + SEO pdfhint. |
-| `npm run test:pdfhint-smoke` | Equivalente al grep del smoke SEO pdfhint. |
-| `npm run test:payment` | Pago opcional con `PLAYWRIGHT_PAYMENT_SMOKE=1`. |
-| `npm run test:payment-mergedpdf` | Igual, forzando `APP=mergedpdf` (red.mvps + token QA). Opcional: `MVPS_SLOT=2`, `PLAYWRIGHT_TRACE=1`. |
-| `npm run test:refund-smoke` | Refund CRM (`PLAYWRIGHT_PAYMENT_SMOKE=1` + credenciales CRM). |
-| `npm run test:pdfhint-dashboard` | Flujo PDFhint login → dashboard → pago (`PLAYWRIGHT_PDFHINT_DASHBOARD_SMOKE=1` + Mailpit o flag sin Mailpit). |
-| `npm run test:dashboard-paid` | `@PDFEDITOR_DASHBOARD`: pago Visa + modal éxito → Dashboard (`PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:users-contact` | `@PDFEDITOR_USER_CONTACT` — formulario `/contact`. |
-| `npm run test:transactional-account-created` | Mailpit + pdfhint: correo “account created” (12 locales; `PLAYWRIGHT_MAILPIT_URL`). |
-| `npm run test:transactional-created-all` | Igual, alias explícito para ejecutar todo el spec de locales. |
-| `npm run test:transactional-payment-confirmation` | Tras pago Visa, correo en Mailpit (opt-in `PLAYWRIGHT_TRANSACTIONAL_PAYMENT_CONFIRMATION=1`). |
-| `npm run test:first-mastercard` | `@PDFEDITOR_PAYMENT_FIRST_MASTERCARD` — pago MasterCard hasta descarga (`PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:first-amex` | `@PDFEDITOR_PAYMENT_FIRST_AMEX` — pago Amex hasta descarga (`PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:first-wrong-card` | `@PDFEDITOR_PAYMENT_FIRST_WRONG_CARD` — pago declinado y aserción de error (`PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:first-utm` | `@PDFEDITOR_PAYMENT_FIRST_UTM` — Home con UTM + pago Visa (`PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:first-insufficient` | `@PDFEDITOR_PAYMENT_FIRST_INSUFFICIENT_FUNDS` — fondos insuficientes (`PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:first-discover` | `@PDFEDITOR_PAYMENT_FIRST_DISCOVER` — pago Discover (`PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:first-expired` | `@PDFEDITOR_PAYMENT_FIRST_EXPIRED_CARD` — tarjeta caducada (`PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:first-jcb` | `@PDFEDITOR_PAYMENT_FIRST_JCB` — pago JCB (`PLAYWRIGHT_PAYMENT_SMOKE=1`). |
-| `npm run test:first-unionpay` | `@PDFEDITOR_PAYMENT_FIRST_UNIONPAY` — UnionPay. |
-| `npm run test:first-diners` | `@PDFEDITOR_PAYMENT_FIRST_DINERS` — Diners Club. |
-| `npm run test:recurrences-api` | Health opcional si `PLAYWRIGHT_RECURRENCE_API_BASE_URL` está definido. |
-| `npm run test:first-payment-all` | Todos los tags `@PDFEDITOR_PAYMENT_FIRST_*` con pago activo. |
-| `npm run test:smoke-faqs` | `@PDFEDITOR_SMOKE_FAQS` — carga `/faqs`. |
-| `npm run test:smoke-cookies` | `@PDFEDITOR_SMOKE_COOKIES` — carga `/cookies`. |
-| `npm run test:smoke-terms` | `@PDFEDITOR_SMOKE_TERMS` — carga `/terms-and-conditions`. |
-| `npm run test:smoke-terms-alt` | `@PDFEDITOR_SMOKE_TERMS_ALT` — carga `/terms`. |
-| `npm run test:smoke-privacy` | `@PDFEDITOR_SMOKE_PRIVACY` — carga `/privacy`. |
-| `npm run test:smoke-magic-link` | `@PDFEDITOR_SMOKE_MAGIC_LINK` — login pdfhint vía Mailpit. |
-| `npm run test:smoke-contact` | `@PDFEDITOR_SMOKE_CONTACT` — carga `/contact`. |
-| `npm run test:smoke-about` | `@PDFEDITOR_SMOKE_ABOUT` — carga `/about`. |
-| `npm run test:smoke-robots` | `@PDFEDITOR_SMOKE_ROBOTS` — `GET /robots.txt`. |
-| `npm run test:smoke-sitemap` | `@PDFEDITOR_SMOKE_SITEMAP` — `GET /sitemap.xml`. |
-| `npm run test:smoke-lp-pdf-to-word` | `@PDFEDITOR_SMOKE_LP_PDF_TO_WORD` — landing `/lp/pdf-to-word`. |
-| `npm run test:smoke-pricing` | `@PDFEDITOR_SMOKE_PRICING` — `/pricing` (omite si 404). |
-| `npm run test:smoke-login` | `@PDFEDITOR_SMOKE_LOGIN` — ruta de login (pdfhint `/en/login` o `/login`). |
-| `npm run test:smoke-lp-marketing-core` | Siete smokes `@PDFEDITOR_SMOKE_LP_*` (merge, edit, sign, split, compress, watermark, rotate). |
-| `npm run test:smoke-lp-extra` | `@PDFEDITOR_SMOKE_LP_PDF_TO_JPG`, `@PDFEDITOR_SMOKE_LP_EXCEL_TO_PDF`. |
-| `npm run test:first-stolen` | `@PDFEDITOR_PAYMENT_FIRST_STOLEN_CARD` — tarjeta robada (Stripe test). |
-| `npm run test:first-incorrect-cvc` | `@PDFEDITOR_PAYMENT_FIRST_INCORRECT_CVC` — CVC inválido (Stripe test). |
-| `npm run test:pdfhint-all` | Todos los specs en `tests/pdfhint/`. |
-| `npm run test:first-lost` | `@PDFEDITOR_PAYMENT_FIRST_LOST_CARD` — tarjeta perdida (Stripe test). |
-| `npm run test:qa-api-smoke` | `@PDFEDITOR_QA_API` — si `PLAYWRIGHT_QA_API_BASE_URL` está definido. |
-| `npm run test:emails-all` | Todos los specs bajo `tests/emails/`. |
-| `npm run test:dashboard-route` | `@PDFEDITOR_DASHBOARD_ROUTE_LOAD` — ruta dashboard o login. |
-| `npm run test:users-account` | `@PDFEDITOR_USER_ACCOUNT` — carga `/en/account` o `/account`. |
-| `npm run test:visual` | Regresión visual opcional (`PLAYWRIGHT_VISUAL_SNAPSHOTS=1`). |
-| `npm run test:visual-update` | Regenera PNG de referencia (`--update-snapshots`). |
-| `npm run test:visual-update-auth` | Solo `visual-auth-modals.spec.ts` (requiere `PLAYWRIGHT_PAYMENT_SMOKE=1` + Stripe). |
-| `npm run test:visual-update-account` | Solo `visual-account-session.spec.ts` (Mailpit + rutas pdfhint). |
-| `npm run test:visual-account` | `@PDFEDITOR_VISUAL_ACCOUNT` — captura `/en/account` tras magic link (Mailpit + `PLAYWRIGHT_VISUAL_SNAPSHOTS=1`). |
-| `npm run test:visual-products` | 22 tags `@PDFEDITOR_VISUAL_PRODUCT_*` (LPs `/lp/...`). |
-| `npm run test:visual-forms` | 18 tags `@PDFEDITOR_VISUAL_FORM_*` (formularios). |
-| `npm run test:visual-auth-modals` | Modales con sesión (`@PDFEDITOR_VISUAL_EDITOR_MODAL_*`, `@PDFEDITOR_VISUAL_DASHBOARD_*`, …). |
-| `npm run test:refund-visa` … `test:refund-jcb` | Pago + refund CRM por tarjeta (6 specs). |
-| `npm run test:first-ip` | 5 tags `@PDFEDITOR_PAYMENT_IP_*` (US/AU/CA/ES/GB). |
-| `npm run test:cancel-user` / `test:cancel-agent` | Cancel suscripción (usuario vs agente CRM). |
-| `npm run test:utm-register` | 8 tags `@PDFEDITOR_PAYMENT_UTM_REGISTER_*`. |
-| `npm run test:recurrences-legacy` | 2 tags `@PDFEDITOR_PAYMENT_RECURRENCE_LEGACY_14056*` (Worldpay / Padrina). |
-| `npm run test:transactional-magic-link` | 10 tags `@PDFEDITOR_TRANSACTIONAL_EMAIL_MAGIC_LINK_*`. |
-| `npm run test:transactional-document-sent` | 11 tags `@PDFEDITOR_TRANSACTIONAL_EMAIL_DOCUMENT_SENT_*`. |
-| `npm run test:transactional-subscription-cancellation` | 12 tags `@PDFEDITOR_TRANSACTIONAL_EMAIL_SUBSCRIPTION_CANCELLATION_*`. |
-| `npm run test:transactional-payment-confirmation-currency` | 5 tags `_PAYMENT_CONFIRMATION_USD/EUR/CAD/AUD/GBP`. |
-| `npm run test:transactional-payment-confirmation-locale` | 12 tags `_PAYMENT_CONFIRMATION_EN` + `_LOCALE_*`. |
-| `npm run porting:stats` | Estadísticas Gherkin del legacy. |
-| `npm run porting:tags` | Comparador legacy vs Playwright (sale `missingFromPlaywright: []` = 100% paridad). |
-| `npm run test:ui` | Playwright UI mode. |
+| `npm run bddgen` | Genera tests Playwright desde `features/**/*.feature` en `.features-gen/`. |
+| `npm test` | Ejecuta `bddgen` y luego toda la suite Playwright-BDD. |
+| `npm run test:tag -- @TAG` | Ejecuta por tag (`@PDFEDITOR_*`) sobre escenarios BDD. |
+| `npm run test:pdfhint-smoke` | Pdfhint (`configuration.pdfhint.json`) + tags `@PDFEDITOR_PDFHINT_SMOKE*` (hook `@PDFHINT` en el feature). |
+| `npm run sync:legacy-elements` | Copia selectores desde `../qai-pa-pdf-editor` a `tests/bdd/legacy-elements/`. |
+| `npm run test:pdfhint-tag -- @TAG` | Igual con perfil pdfhint y tag arbitrario. |
+| `npm run test:ci-fast` | Suite rápida de CI (SEO + smoke SEO pdfhint + dashboard). |
+| `npm run test:ci-full` | Suite funcional CI (excluye `@MANUAL_SCREEN_CAPTURE`). |
+| `npm run test:ci-regression` | Funcional + visual (`@PDFEDITOR_VISUAL*`) para regresión GitHub. |
+| `npm run test:ci-visual` | Solo visual por tag `@PDFEDITOR_VISUAL*`. |
+| `npm run typecheck` | Verificación TypeScript (`tsc --noEmit`). |
+| `npm run porting:stats` | Estadísticas de escenarios/tags vendored en `features/`. |
+| `npm run porting:tags` | Comparador de tags legacy vs vendored/generated. |
+| `npm run test:report` | Abre el informe Cucumber HTML (`cucumber-report/index.html`) con estado por paso Gherkin. |
+
+## Depuración y informes de fallo
+
+Tras ejecutar tests, puedes ver **qué paso Gherkin falló** en:
+
+| Salida | Ruta / comando |
+|--------|----------------|
+| Cucumber HTML (recomendado, paridad con resumen legacy) | `npm run test:report` → `cucumber-report/index.html` |
+| Playwright HTML | `npx playwright show-report` |
+| Contexto del fallo (snapshot de accesibilidad) | `test-results/**/error-context.md` |
+| Screenshot / video | `test-results/**/` |
+
+Logs en consola (activos por defecto en local con `npm test` / `npm run test:tag`):
+
+```bash
+npm run test:tag -- @PDFEDITOR_PAYMENT_FIRST_VISA
+# Silenciar en local:
+BDD_LOG_LEVEL=SILENT BDD_TERMINAL_STEPS=0 npm run test:tag -- @TAG
+```
 
 ## Documentación de migración
 
 - [docs/MIGRATION_INVENTORY.md](docs/MIGRATION_INVENTORY.md) — inventario del repo Cucumber/Selenium.
 - [docs/PORTING_STATUS.md](docs/PORTING_STATUS.md) — escenarios por feature y estado del port.
-- [docs/ADDING_PLAYWRIGHT_TESTS.md](docs/ADDING_PLAYWRIGHT_TESTS.md) — **cómo añadir tests** (Playwright vs `.feature`, plantilla, tags, `grep`).
+- [docs/ADDING_PLAYWRIGHT_TESTS.md](docs/ADDING_PLAYWRIGHT_TESTS.md) — **cómo añadir escenarios** (Gherkin, pasos BDD, tags, `bddgen`).
 
 ## Paridad con Bitbucket (resumen)
 
-- **Tag parity: 211/211 (100%)** — verificable con `npm run porting:tags` (`missingFromPlaywright: []`).
-- 9 features Cucumber portadas: SEO, PDFhint, Users (14 specs), Dashboard, FirstPayment (incl. refund x6, IP x5, UTM x9, cancel x2, UTM register x8), TransactionalEmails (62 tags Mailpit), Recurrences (14056 success / soft), Visual (68 tags) + VisualCapture documentado.
+- **Tag parity: 215/215 (100%)** — verificable con `npm run porting:tags` (`missingFromPlaywright: []`). Los mismos `.feature` del legacy están en [`features/`](features/) (vendored).
+- 9 features Cucumber portadas vía Playwright-BDD: SEO, PDFhint, Users, Dashboard, FirstPayment (refund, IP, UTM, cancel), TransactionalEmails (Mailpit), Recurrences, Visual + VisualCapture documentado.
 - Pago Stripe: helper [`tests/helpers/stripePayment.ts`](tests/helpers/stripePayment.ts) (unificado, `#payment-element`, split, recorrido de frames `stripe.com`).
 - CRM staging: helpers [`tests/helpers/crmStaging.ts`](tests/helpers/crmStaging.ts) con `refund`, `unsubscribe`, `blockCustomer`, `confirmSubscriptionCancellation`, `expectLastTransactionMatches`.
 - Mailpit: helpers [`tests/helpers/mailpitClient.ts`](tests/helpers/mailpitClient.ts) con polling por search/subject/locale, `extractDownloadCode`, `extractFirstHttpsUrl`.
-- Specs ejecutan contra staging real cuando se exportan las credenciales; sin ellas, `test.skip` con motivo claro (no ruido en CI).
+- Escenarios BDD ejecutan contra staging real cuando se exportan las credenciales; sin ellas, `test.skip` con motivo claro (no ruido en CI).
 
 ## Estructura
 
 ```
+features/                    # Gherkin vendored (9 .feature) — fuente de escenarios
+.features-gen/               # Tests generados por bddgen (gitignored)
 playwright/
   resolveBaseUrl.ts          # red / redN + token vs pdfhint
 scripts/
   porting-parity-stats.mjs   # Estadísticas Gherkin
-  porting-tags.mjs           # Comparador de tags legacy vs Playwright
+  porting-tags.mjs           # Comparador de tags legacy vs features/.features-gen
 tests/
-  seo/                       # SEO.feature
-  smoke/                     # Home, forms, LPs, faqs, cookies, privacy, terms, sitemap, pricing, contact, about, robots, magic link, editor
-  pdfhint/                   # PDFhint.feature (SEO + pago)
-  payment/                   # FirstPayment.feature: tarjetas, errores, refund x6, IP x5, UTM x9, UTM register x8, cancel x2 + Recurrences 14056
-  users/                     # Users.feature (14 specs cubren 25 tags)
-  dashboard/                 # Dashboard.feature (7 specs)
-  emails/                    # TransactionalEmails (62 tags Mailpit)
-  visual/                    # Visual.feature (68 tags) + visual-account-session
-  helpers/                   # stripePayment, crmStaging, mailpitClient, editorActions, dashboardActions, accountActions, loginFlow, multiFormatUpload, forceUrlParams, recurrencesApi, trustpilotWindow, ...
-  pages/                     # Selectores tipo elements.json (editor, dashboard, contact)
-  fixtures/                  # sample.pdf (+ sample.docx/xlsx/pptx/jpg/jpeg/png si se aportan vía PLAYWRIGHT_FIXTURE_<FORMAT>)
+  bdd/
+    fixtures.ts              # createBdd + world
+    steps/                   # Given/When/Then (core, hooks, data)
+    legacy-elements/         # elements.json heredados del POM Selenium
+  helpers/                   # stripePayment, crmStaging, mailpitClient, navigation, ...
+  pages/                     # POM TypeScript + elements.json
+  visual/baseline/           # PNG de regresión visual (@PDFEDITOR_VISUAL*)
+  fixtures/                  # sample.pdf (+ otros formatos vía PLAYWRIGHT_FIXTURE_<FORMAT>)
 ```

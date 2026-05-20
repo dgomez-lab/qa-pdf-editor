@@ -1,0 +1,101 @@
+{
+  "phone icon": {
+    "finder": { "css": "img[alt='phone icon']" }
+  },
+  "logo": {
+    "finder": { "data-id": "logo" }
+  },
+  "full access button": {
+    "finder": { "data-id": "accountSubscribeButton" }
+  },
+  "login button": {
+    "finder": { "data-id": "logIn" }
+  },
+  "login button register": {
+    "finder": { "css": "a[href='/login']:not(:has(div))" }
+  },
+  "account menu": {
+    "finder": { "data-id": "accountMenu" }
+  },
+  "subscribe menu link": {
+    "finder": { "data-id": "accountMenuSuscribe" }
+  },
+  "account menu link": {
+    "finder": { "data-id": "accountMenuManage" }
+  },
+  "membership menu link": {
+    "finder": { "data-id": "membershipMenuManage" }
+  },
+  "dashboard menu link": {
+    "finder": { "data-id": "dashboardMenu" }
+  },
+  "logout menu link": {
+    "finder": { "data-id": "logout" }
+  },
+  "accept cookies cta": {
+    "finder": { "data-id": "ctaAcceptCookies" }
+  },
+  "forms background": {
+    "finder": { "id": "content" }
+  },
+  "form w4 link": {
+    "finder": { "data-id": "Form W-4 2023" }
+  },
+  "form w9 link": {
+    "finder": { "data-id": "Form W-9 2026" }
+  },
+  "form 1040 2021 link": {
+    "finder": { "data-id": "Form 1040 2021" }
+  },
+  "form 1040 link": {
+    "finder": { "data-id": "Form 1040 — Individual Income Tax Return (2022)" }
+  },
+  "form social link": {
+    "finder": { "data-id": "Social Security Card Replacement" }
+  },
+  "form 1099 link": {
+    "finder": { "data-id": "Form 1099 MISC 2022" }
+  },
+  "form 1099 nec link": {
+    "finder": { "data-id": "Form 1099-NEC 2023" }
+  },
+  "form w2 link": {
+    "finder": { "data-id": "Form W-2, Wage and Tax Statement" }
+  },
+  "form 1095 link": {
+    "finder": { "data-id": "1095 A Form 2022-2023" }
+  },
+  "form philippines link": {
+    "finder": { "data-id": "Philippines Passport Application Form" }
+  },
+  "form 941 link": {
+    "finder": { "data-id": "Form 941 2023" }
+  },
+  "form feedex link": {
+    "finder": { "data-id": "Fedex Door Tag Form" }
+  },
+  "form da link": {
+    "finder": { "data-id": "DA Form 31 2022-2023" }
+  },
+  "form schedule link": {
+    "finder": { "data-id": "Schedule C (Form 1040) 2022-2023" }
+  },
+  "form ds11 link": {
+    "finder": { "data-id": "DS 11 form 2022-2023" }
+  },
+  "form obituary link": {
+    "finder": { "data-id": "Obituary Template Form" }
+  },
+  "form marriage link": {
+    "finder": { "data-id": "Marriage Certificate" }
+  },
+  "form gift link": {
+    "finder": { "data-id": "Gift Certificate Form" }
+  },
+  "get started button": {
+    "finder": { "data-id": "ctaGetStart" }
+  },
+  "close modal button": {
+    "finder": { "data-id": "ctaCloseModal" }
+  }
+}

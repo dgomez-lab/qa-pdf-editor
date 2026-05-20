@@ -1,0 +1,19 @@
+{
+  "driver": {
+    "headless": true
+  },
+  "logLevel": "DEBUG",
+  "timeouts": {
+    "cucumberPromisesTimeout": 200,
+    "waiter": 60,
+    "qualityWaiter": 45,
+    "scrollWaiter": 0.15,
+    "selectWaiter": 0.3,
+    "stepWaiter": 0.5
+  },
+  "projectVars": {
+    "environment": "red",
+    "baseUrl": "",
+    "app": "mergedpdf"
+  }
+}

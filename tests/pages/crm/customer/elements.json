@@ -1,0 +1,17 @@
+{
+  "customerAccountId": "[data-id=\"accountId\"]",
+  "customerDomain": "[data-id=\"domain\"]",
+  "subscriptionAccountId": "[data-id=\"subscriptionId\"]",
+  "customerSubscriptionStatus": "[data-id=\"subscriptionStatus\"]",
+  "customerSubscriptionType": "[data-id=\"subscriptionType\"]",
+  "customerUtmSource": "[data-id=\"utmSource\"]",
+  "customerUtmMedium": "[data-id=\"utmMedium\"]",
+  "refundButton": "[data-id=\"refundButton-0\"]",
+  "refundSelect": "[data-id=\"refundSelect\"]",
+  "refundQaOption": "[data-id=\"refundOption-8\"]",
+  "refundOkButton": "[data-id=\"refundModalOk\"]",
+  "unsubscribeButton": "[data-id=\"unsubscribeButton\"]",
+  "okUnsubscribeButton": "button.ant-btn-primary.ant-btn-dangerous",
+  "successMessage": ".ant-notification-notice-message",
+  "firstTransactionRow": "[data-id=\"transactionRow-0\"]"
+}

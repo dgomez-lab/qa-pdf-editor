@@ -1,0 +1,17 @@
+{
+  "uploadDocumentButton": ".dropzone > input, [data-id=\"ctaUploadDocument\"]",
+  "uploadLoader": ".line-loader, [class*=\"LinearLoader\"]",
+  "uploadButton": "[data-id=\"ctaUploadDocument\"]",
+  "wordToPdf": "img[alt='wordToPDF']",
+  "jpgToPdf": "img[alt='jpgToPDF']",
+  "pngToPdf": "img[alt='pngToPDF']",
+  "pwpToPdf": "img[alt='pwpToPDF']",
+  "excelToPdf": "img[alt='excelToPDF']",
+  "mergePdf": "img[alt='mergePDF']",
+  "splitPdf": "img[alt='splitPdf']",
+  "compressPdf": "img[alt='compressPDF']",
+  "editPdf": "img[alt='editPDF']",
+  "signPdf": "img[alt='signPdf']",
+  "watermark": "img[alt='watermark']",
+  "rotatePdf": "img[alt='rotatePDF']"
+}

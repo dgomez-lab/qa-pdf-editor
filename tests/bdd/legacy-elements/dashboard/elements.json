@@ -1,0 +1,137 @@
+{
+  "get full access button": {
+    "finder": { "data-id": "accountSubscribeButton" }
+  },
+  "onboarding close modal button": {
+    "finder": { "data-id": "ctaCloseModal" }
+  },
+  "review not happy button": {
+    "finder": {
+      "xpath": "//div[contains(@class,'style__ButtonCTA') and contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'not happy')]"
+    }
+  },
+  "review happy button": {
+    "finder": {
+      "xpath": "//div[contains(@class,'style__ButtonCTA') and contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'happy') and not(contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'not happy'))]"
+    }
+  },
+  "onboarding view tutorial button": {
+    "finder": { "data-id": "dashboardViewTutorial" }
+  },
+  "onboarding next button": {
+    "finder": { "data-id": "onBoardingNext" }
+  },
+  "onboarding back button": {
+    "finder": { "data-id": "onBoardingBack" }
+  },
+  "onboarding finish button": {
+    "finder": { "data-id": "onBoardingFinish" }
+  },
+  "upload document button": {
+    "finder": { "data-id": "ctaUploadDocument" }
+  },
+  "pdf section": {
+    "finder": { "id": "pdf-section" }
+  },
+  "dashboard side menu link": {
+    "finder": { "data-id": "sidebarDashboardLink" }
+  },
+  "dashboard my documents side menu link": {
+    "finder": { "data-id": "sidebarMyDocumentsLink" }
+  },
+  "dashboard most used forms side menu link": {
+    "finder": { "data-id": "sidebarFormsLink" }
+  },
+  "dashboard trash side menu link": {
+    "finder": { "data-id": "sidebarTrashLink" }
+  },
+  "document 0 name": {
+    "finder": { "data-id": "dashboardFiles-0" }
+  },
+  "rename element 0 button": {
+    "finder": { "data-id": "dashboardFiles-0-rename" }
+  },
+  "rename element input": {
+    "finder": { "data-id": "modalInput" }
+  },
+  "rename element button": {
+    "finder": { "data-id": "dashboardRenameBtn" }
+  },
+  "restore element 0 bin button": {
+    "finder": { "data-id": "trashCard-0-restore" }
+  },
+  "my document 0 radio button": {
+    "finder": { "data-id": "dashboardFiles-0-radioButton" }
+  },
+  "my document 1 radio button": {
+    "finder": { "data-id": "dashboardFiles-1-radioButton" }
+  },
+  "delete element 0 bin button": {
+    "finder": { "data-id": "trashCard-0-delete" }
+  },
+  "delete modal button": {
+    "finder": { "data-id": "trashCardPermanentlyDelete" }
+  },
+  "get full access dashboard button": {
+    "finder": { "data-id": "dashboardCTASubscribeBanner" }
+  },
+  "edit pdf link": {
+    "finder": { "css": "a[href*='/lp/edit-pdf']" }
+  },
+  "try now button": {
+    "finder": { "data-id": "ctaTryNow" }
+  },
+  "delete element 0 button": {
+    "finder": { "data-id": "dashboardFiles-0-delete" }
+  },
+  "delete element 1 button": {
+    "finder": { "data-id": "dashboardFiles-1-delete" }
+  },
+  "open document side button": {
+    "finder": { "data-id": "myDocumentsCard-0-openActionsMenu" }
+  },
+  "open document 0 button": {
+    "finder": { "data-id": "dashboardFiles-0-open" }
+  },
+  "open my document 0 button": {
+    "finder": { "data-id": "myDocumentsCard-0-open" }
+  },
+  "open form 0 button": {
+    "finder": { "data-id": "mostUsedFormsCard-0-open" }
+  },
+  "trash icon": {
+    "finder": { "data-id": "trashCardIcon" }
+  },
+  "downloads footer link": {
+    "finder": { "css": "[href='/downloads']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "about us footer link": {
+    "finder": { "css": "[href='/about-us']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "terms of use footer link": {
+    "finder": { "css": "[href='/terms-of-use']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "privacy policy footer link": {
+    "finder": { "css": "[href='/privacy-policy']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "terms and conditions footer link": {
+    "finder": { "css": "[href='/terms-and-conditions']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "cookies footer link": {
+    "finder": { "css": "[href='/cookies']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "faqs footer link": {
+    "finder": { "css": "[href='/faqs']" },
+    "actions": [{ "name": "wait for" }]
+  },
+  "contact footer link": {
+    "finder": { "css": "[href='/contact']" },
+    "actions": [{ "name": "wait for" }]
+  }
+}
