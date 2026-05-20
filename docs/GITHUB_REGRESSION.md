@@ -85,8 +85,58 @@ Si hay flakes en pago/Mailpit, baja workers en el workflow: `PLAYWRIGHT_CI_WORKE
 1. **Actions** → workflow **Playwright** → **Run workflow**.
 2. Rama: `main` (o la rama a validar).
 3. **profile:** `regression`.
-4. Esperar **ci-fast** → **regression-setup** → **6× functional shard** + **visual** (en paralelo).
-5. Si falla: artefactos **`playwright-report-shard-N`** o **`playwright-report-regression-visual`**.
+4. Esperar **ci-fast** → **regression-setup** → **6× functional shard** + **visual** → **Publish regression report**.
+5. Abrir el informe desde el **job summary** del job **Publish regression report** (enlace al dashboard) o la URL de GitHub Pages (abajo).
+
+## Informe QAI-style (GitHub Pages)
+
+Tras cada regresión (PR o `profile: regression`), el job **Publish regression report** fusiona los fragmentos de los 6 shards + visual y publica un dashboard HTML (cuadrícula, % de progreso, pasos Gherkin, capturas en fallos).
+
+### Activar GitHub Pages (una vez)
+
+1. **Settings** → **Pages** → **Build and deployment** → Source: **Deploy from a branch**.
+2. Branch: **`gh-pages`** / folder **`/(root)`** (el workflow `peaceiris/actions-gh-pages` crea/actualiza esa rama en el primer despliegue).
+3. El repo es **público**: las capturas de fallo pueden mostrar UI de staging (CRM, pago). Valora privacidad antes de compartir la URL.
+
+### URL del informe
+
+```
+https://<owner>.github.io/<repo>/runs/<run_id>/
+```
+
+Ejemplo: `https://dgomez-lab.github.io/qa-pdf-editor/runs/26161124410/`
+
+También aparece en el **Summary** del workflow (pestaña del run en Actions) tras **Publish regression report**.
+
+### Qué incluye el dashboard
+
+| Elemento | Descripción |
+|----------|-------------|
+| Barra de progreso | % completado, total / passed / failed / skipped |
+| Cuadrícula | Un cuadrado por escenario (color por estado); clic abre detalle |
+| Detalle | Pasos Given/When/Then con estado; screenshot en el paso fallido |
+| Playwright HTML | Enlace opcional a traces/vídeo si hay blobs fusionados |
+
+### Artefactos por shard (depuración)
+
+Cada shard sube siempre (aunque pase):
+
+| Artefacto | Contenido |
+|-----------|-----------|
+| `cucumber-messages-shard-N` | `messages.ndjson` (fusionable) |
+| `blob-report-shard-N` | Blobs Playwright para traces |
+| `cucumber-messages-visual` / `blob-report-visual` | Mismo para el job visual |
+
+Ya no se suben informes HTML de 1+ GB por shard.
+
+### Fusionar informes en local
+
+```bash
+mkdir -p artifacts/cucumber-messages-shard-1
+cp cucumber-report/messages.ndjson artifacts/cucumber-messages-shard-1/
+npm run report:merge-local
+# Abre report/index.html (o report-local si usas REPORT_OUTPUT_DIR)
+```
 
 ### Perfiles del workflow
 
@@ -141,4 +191,5 @@ gh run list --workflow=playwright.yml --limit 3
 - [ ] `gh workflow run … profile=regression` o Run workflow en la UI.
 - [ ] Revisar logs: `bddgen` y recuento de tests.
 - [ ] Si timeouts masivos en `*.mvps.website`: allowlist GitHub Actions o runner self-hosted.
-- [ ] Descargar artefacto y abrir `cucumber-report/index.html` o trace en `test-results/`.
+- [ ] GitHub Pages activado (Settings → Pages).
+- [ ] Tras el run: abrir el enlace del **job summary** o `https://<owner>.github.io/<repo>/runs/<run_id>/`.

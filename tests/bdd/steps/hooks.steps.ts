@@ -38,5 +38,16 @@ After(async ({ page }) => {
   } catch {
     lastUrl = undefined
   }
+  if (!passed) {
+    try {
+      const buffer = await page.screenshot({ fullPage: true })
+      await testInfo.attach('failure-screenshot', {
+        body: buffer,
+        contentType: 'image/png'
+      })
+    } catch {
+      /* page may already be closed */
+    }
+  }
   logScenarioEnd(testInfo.title, passed, passed ? undefined : lastUrl)
 })

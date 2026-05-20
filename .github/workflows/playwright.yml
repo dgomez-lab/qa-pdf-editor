@@ -164,7 +164,7 @@ jobs:
 
   ci-regression-functional:
     name: Regression functional (shard ${{ matrix.shard }}/6)
-    timeout-minutes: 90
+    timeout-minutes: 120
     runs-on: ubuntu-latest
     if: >-
       ${{ github.event_name == 'pull_request' ||
@@ -217,21 +217,27 @@ jobs:
           PLAYWRIGHT_MAILPIT_PASSWORD: ${{ secrets.PLAYWRIGHT_MAILPIT_PASSWORD }}
           PLAYWRIGHT_QA_API_KEY: ${{ secrets.PLAYWRIGHT_QA_API_KEY }}
 
-      - name: Upload shard report on failure
-        if: failure()
+      - name: Upload cucumber messages
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-shard-${{ matrix.shard }}
-          path: |
-            playwright-report/
-            test-results/
-            cucumber-report/
-          if-no-files-found: ignore
+          name: cucumber-messages-shard-${{ matrix.shard }}
+          path: cucumber-report/messages.ndjson
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload blob report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-shard-${{ matrix.shard }}
+          path: blob-report/
+          if-no-files-found: warn
           retention-days: 14
 
   ci-regression-visual:
     name: Regression visual
-    timeout-minutes: 45
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     if: >-
       ${{ github.event_name == 'pull_request' ||
@@ -271,17 +277,99 @@ jobs:
           PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
           QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
 
-      - name: Upload visual report on failure
-        if: failure()
+      - name: Upload cucumber messages
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-regression-visual
-          path: |
-            playwright-report/
-            test-results/
-            cucumber-report/
-          if-no-files-found: ignore
+          name: cucumber-messages-visual
+          path: cucumber-report/messages.ndjson
+          if-no-files-found: warn
           retention-days: 14
+
+      - name: Upload blob report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-visual
+          path: blob-report/
+          if-no-files-found: warn
+          retention-days: 14
+
+  report-publish:
+    name: Publish regression report
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [regression-setup, ci-regression-functional, ci-regression-visual]
+    if: >-
+      always() &&
+      needs.regression-setup.result == 'success' &&
+      (github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression'))
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Download cucumber message artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: cucumber-messages-*
+
+      - name: Download blob report artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: blob-report-*
+
+      - name: Merge reports and build dashboard
+        id: merge
+        run: node scripts/merge-regression-report.mjs
+        env:
+          ARTIFACTS_DIR: artifacts
+          REPORT_OUTPUT_DIR: report
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_WORKFLOW: ${{ github.workflow }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          PLAYWRIGHT_MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: steps.merge.outputs.report_ready == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: report
+          destination_dir: runs/${{ github.run_id }}
+          keep_files: true
+
+      - name: Job summary
+        if: always()
+        run: |
+          if [ -f report/summary.md ]; then
+            cat report/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No regression report was generated (missing cucumber message artifacts)." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   ci-visual:
     name: CI visual (toHaveScreenshot baselines)

@@ -20,6 +20,7 @@
     "test:ui": "npm run bddgen && playwright test --ui",
     "test:report": "npx http-server ./cucumber-report -c-1 -a localhost -o index.html",
     "test:cucumber-report": "npm run test:report",
+    "report:merge-local": "node scripts/merge-regression-report.mjs",
     "porting:stats": "node scripts/porting-parity-stats.mjs",
     "porting:tags": "node scripts/porting-tags.mjs",
     "sync:legacy-elements": "node scripts/sync-legacy-elements.mjs",

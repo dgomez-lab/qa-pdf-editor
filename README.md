@@ -140,6 +140,11 @@ gh workflow run playwright.yml -f profile=regression --ref main
 | `npm run porting:stats` | Estadísticas de escenarios/tags vendored en `features/`. |
 | `npm run porting:tags` | Comparador de tags legacy vs vendored/generated. |
 | `npm run test:report` | Abre el informe Cucumber HTML (`cucumber-report/index.html`) con estado por paso Gherkin. |
+| `npm run report:merge-local` | Fusiona `artifacts/cucumber-messages-*` en un dashboard HTML (mismo generador que CI). |
+
+## Informes en GitHub Actions (regresión)
+
+Tras un run de regresión (PR o **Run workflow** → `profile: regression`), el job **Publish regression report** publica un dashboard estilo [QAI Dogs](https://qai.1eqa.net/) en GitHub Pages: progreso %, cuadrícula de tests, pasos Gherkin al clic, screenshots en fallos. URL: `https://<owner>.github.io/<repo>/runs/<run_id>/` (también enlazada en el **Summary** del workflow). Configuración: [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md#informe-qai-style-github-pages).
 
 ## Depuración y informes de fallo
 

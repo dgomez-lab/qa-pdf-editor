@@ -5,6 +5,9 @@ node_modules/
 /playwright/.cache/
 .features-gen/
 cucumber-report/
+/report/
+/report-local/
+/artifacts/
 .env
 .env.local
 *.log

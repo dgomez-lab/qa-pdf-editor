@@ -70,11 +70,20 @@ const bddTestDir = defineBddConfig({
   outputDir: '.features-gen'
 })
 
-const reporters: Parameters<typeof defineConfig>[0]['reporter'] = [
-  ['list'],
-  cucumberReporter('html', { outputFile: 'cucumber-report/index.html' }),
-  ['html', { open: 'never' }]
-]
+const reporters: Parameters<typeof defineConfig>[0]['reporter'] = [['list']]
+
+if (process.env.CI) {
+  reporters.push(
+    cucumberReporter('message', { outputFile: 'cucumber-report/messages.ndjson' }),
+    ['blob'],
+    ['json', { outputFile: 'playwright-report/results.json' }]
+  )
+} else {
+  reporters.push(
+    cucumberReporter('html', { outputFile: 'cucumber-report/index.html' }),
+    ['html', { open: 'never' }]
+  )
+}
 
 const terminalStepsOff =
   process.env.BDD_TERMINAL_STEPS === '0' ||
@@ -126,7 +135,9 @@ export default defineConfig({
     trace:
       process.env.PLAYWRIGHT_TRACE === '1' || process.env.PWTEST_TEST_UI_MODE === '1'
         ? 'on'
-        : 'on-first-retry',
+        : process.env.CI
+          ? 'retain-on-failure'
+          : 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     navigationTimeout: 90_000,
