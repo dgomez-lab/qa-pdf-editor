@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { resolvePlaywrightBaseUrl } from '../../playwright/resolveBaseUrl'
 import { isMvpsMergedStage } from './siteContext'
 
 function appendQaDisabled(): boolean {
@@ -43,10 +44,22 @@ export function ensureMvpsMarketingUrl(target: string): string {
   return `${target}${sep}${key}=${encodeURIComponent(value)}`
 }
 
+function resolveMarketingTarget(target: string): string {
+  const t = target.trim()
+  if (t.startsWith('http://') || t.startsWith('https://')) {
+    return ensureMvpsMarketingUrl(t)
+  }
+  const base = resolvePlaywrightBaseUrl()
+  const origin = base.endsWith('/') ? base : `${base}/`
+  const path = t.startsWith('/') ? t : `/${t}`
+  const abs = new URL(path, origin).href
+  return ensureMvpsMarketingUrl(abs)
+}
+
 export async function gotoMarketingPath(
   page: Page,
   target: string,
   options?: Parameters<Page['goto']>[1]
 ): Promise<Awaited<ReturnType<Page['goto']>>> {
-  return page.goto(ensureMvpsMarketingUrl(target), options)
+  return page.goto(resolveMarketingTarget(target), options)
 }

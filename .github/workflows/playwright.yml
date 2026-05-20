@@ -30,6 +30,7 @@ jobs:
     env:
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
+      PLAYWRIGHT_CI_WORKERS: '1'
       SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
     steps:
       - uses: actions/checkout@v4
@@ -166,7 +167,7 @@ jobs:
     name: Regression setup (bddgen, dispatch)
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.profile == 'regression' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.profile == 'regression' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -201,7 +202,7 @@ jobs:
       always() &&
       (needs.regression-setup.result == 'success' || needs.regression-setup-dispatch.result == 'success') &&
       (github.event_name == 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression'))
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.profile == 'regression'))
     needs:
       - regression-setup
       - regression-setup-dispatch
@@ -278,7 +279,7 @@ jobs:
       always() &&
       (needs.regression-setup.result == 'success' || needs.regression-setup-dispatch.result == 'success') &&
       (github.event_name == 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression'))
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.profile == 'regression'))
     needs:
       - regression-setup
       - regression-setup-dispatch
@@ -353,7 +354,7 @@ jobs:
       (needs.regression-setup.result == 'success' || needs.regression-setup.result == 'skipped') &&
       (needs.regression-setup-dispatch.result == 'success' || needs.regression-setup-dispatch.result == 'skipped') &&
       (github.event_name == 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression'))
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.profile == 'regression'))
     permissions:
       contents: write
       pages: write

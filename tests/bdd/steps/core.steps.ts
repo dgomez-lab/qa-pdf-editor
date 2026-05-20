@@ -72,6 +72,8 @@ import {
   hrefPolicyForSite,
   footerRootSelectorForSite
 } from '../../helpers/seoExpectations'
+import { isPdfhintScenario } from '../../helpers/pdfhintScenario'
+import { collectPdfhintHeaderSeoErrors } from '../../helpers/pdfhintHeaderSeo'
 
 function normalized(s: string): string {
   return s.trim().toLowerCase()
@@ -676,6 +678,10 @@ Then('the subscription cancellation email contains expected localized content', 
 })
 
 Then('every link in the Home page header should have an absolute http or https URL', async ({ page }) => {
+  if (isPdfhintScenario()) {
+    expect(await collectPdfhintHeaderSeoErrors(page)).toEqual([])
+    return
+  }
   const errors = await collectHeaderAbsoluteHrefErrors(page, headerLinkChecksForBaseUrl(), {
     hrefPolicy: hrefPolicyForSite()
   })
