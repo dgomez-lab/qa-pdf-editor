@@ -7,9 +7,9 @@ Guía para ejecutar en remoto (sin usar tu máquina) la misma cobertura que un `
 | Run | Commit | Evento | Qué esperar |
 |-----|--------|--------|-------------|
 | Antes de `ac33d95` (p. ej. `4439503`) | Viejo workflow | `workflow_dispatch` / push | **ci-fast** ~24 min y fallo (dashboard + `/en/login`). **ci-regression** no corre (0s) porque fast falló o el perfil no existía. **Ignorar.** |
-| `ac33d95`+ push a `main` | Actions | `push` | **ci-fast** ~1 min, luego **6 shards + visual**. |
+| `ac33d95`+ push a `main` | Actions | `push` | Solo **ci-fast** (~1 min). |
 | `ac33d95`+ `profile: regression` | Manual | `workflow_dispatch` | **ci-fast** → **regression-setup** → **6 shards** + **visual** en paralelo. |
-| PR a `main` | `pull_request` | PR | Igual que regresión manual (6 shards + visual). |
+| PR a `main` | `pull_request` | PR | **ci-fast** → regresión completa (6 shards + visual). |
 
 Si lanzaste **regression** dos veces antes del push, ambas usaron el workflow antiguo: solo cuenta la ejecución sobre **`ac33d95` o posterior**.
 
@@ -70,11 +70,13 @@ Los jobs de regresión activan además (sin secret): `PLAYWRIGHT_PAYMENT_SMOKE=1
 
 Tras **ci-fast**, la regresión no usa un solo runner de 3 h:
 
-1. **regression-setup** — `bddgen` una vez, artefacto `features-gen`.
+1. **regression-setup** — `bddgen` una vez, artefacto `features-gen` (directorio oculto `.features-gen/`; el upload usa `include-hidden-files: true` porque `upload-artifact@v4.4+` lo excluye por defecto).
 2. **ci-regression-functional** — matriz **6 jobs** en paralelo (`--shard=1/6` … `6/6`), **2 workers** por runner (`PLAYWRIGHT_CI_WORKERS=2`).
 3. **ci-regression-visual** — job aparte en paralelo con los shards (`@PDFEDITOR_VISUAL*`).
 
 Tiempo de pared ≈ `max(duración de un shard, duración visual)`, no la suma de todos los tests.
+
+Si **regression-setup** falla con *No files were found* al subir el artefacto, comprueba que existan `*.spec.js` bajo `.features-gen/` tras `bddgen` y que el paso de upload tenga `include-hidden-files: true`.
 
 Si hay flakes en pago/Mailpit, baja workers en el workflow: `PLAYWRIGHT_CI_WORKERS: '1'`.
 
@@ -99,7 +101,7 @@ Si hay flakes en pago/Mailpit, baja workers en el workflow: `PLAYWRIGHT_CI_WORKE
 
 Cada **pull request** hacia `main` o `master` ejecuta **ci-fast** y luego la regresión paralela (6 shards + visual).
 
-Los **push** a `main`/`master` ejecutan **ci-fast** y luego la regresión completa (6 shards + visual), igual que un merge de PR.
+Los **push** a `main`/`master` ejecutan solo **ci-fast** (smoke SEO). La regresión completa no corre en push; valida en el PR antes del merge o con **Run workflow** → profile **`regression`**.
 
 Los PR desde **forks** no reciben secrets del repo base.
 
