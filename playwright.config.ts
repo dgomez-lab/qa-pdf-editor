@@ -111,7 +111,11 @@ export default defineConfig({
   testDir: bddTestDir,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI
+    ? (Number.isFinite(Number(process.env.PLAYWRIGHT_CI_RETRIES))
+        ? Math.max(0, Math.floor(Number(process.env.PLAYWRIGHT_CI_RETRIES)))
+        : 1)
+    : 0,
   workers: process.env.CI ? resolveCiWorkers() : undefined,
   timeout: 180_000,
   snapshotDir: path.join(__dirname, 'tests', 'visual', 'baseline'),

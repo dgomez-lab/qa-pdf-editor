@@ -24,7 +24,26 @@ const githubOutput = process.env.GITHUB_OUTPUT
 const skipBlobMerge = process.env.SKIP_BLOB_MERGE === '1'
 const blobMergeMaxBytes = Number(process.env.BLOB_MERGE_MAX_BYTES || '524288000')
 const minNdjsonBytes = 1024
-const expectedSources = 7
+const expectedTestTotal = Number(process.env.REGRESSION_EXPECTED_TESTS || '214')
+const expectedSources = Number(process.env.REGRESSION_EXPECTED_SOURCES || '10')
+
+function isHookStepId(stepId) {
+  return /-(before|after)-test-(case|run)-/.test(stepId)
+}
+
+function gherkinSteps(steps) {
+  return steps.filter((s) => !isHookStepId(s.id))
+}
+
+function resolveAttemptStatus(att) {
+  if (att.status !== 'UNKNOWN') return att.status
+  const gherkin = gherkinSteps(att.steps)
+  if (gherkin.some((s) => s.status === 'FAILED')) return 'FAILED'
+  if (gherkin.some((s) => s.status === 'SKIPPED')) return 'SKIPPED'
+  if (att.finished && gherkin.length > 0 && gherkin.every((s) => s.status === 'PASSED')) return 'PASSED'
+  if (!att.finished) return 'INCOMPLETE'
+  return 'UNKNOWN'
+}
 
 function escapeHtml(s) {
   return String(s)
@@ -123,6 +142,7 @@ function parseCucumberMessages(envelopes) {
         pickle,
         steps: [],
         status: 'UNKNOWN',
+        finished: false,
         durationNs: 0,
         errorMessage: '',
         screenshotDataUrl: null
@@ -174,14 +194,17 @@ function parseCucumberMessages(envelopes) {
     }
     if (env.testCaseFinished) {
       const att = attempts.get(env.testCaseFinished.testCaseStartedId)
-      if (att && env.testCaseFinished.testCaseResult) {
-        att.status = env.testCaseFinished.testCaseResult.status
-        att.durationNs = env.testCaseFinished.testCaseResult.duration?.seconds
-          ? Number(env.testCaseFinished.testCaseResult.duration.seconds) * 1e9 +
-            Number(env.testCaseFinished.testCaseResult.duration.nanos || 0)
-          : 0
-        if (env.testCaseFinished.testCaseResult.message) {
-          att.errorMessage = env.testCaseFinished.testCaseResult.message
+      if (att) {
+        att.finished = true
+        if (env.testCaseFinished.testCaseResult) {
+          att.status = env.testCaseFinished.testCaseResult.status
+          att.durationNs = env.testCaseFinished.testCaseResult.duration?.seconds
+            ? Number(env.testCaseFinished.testCaseResult.duration.seconds) * 1e9 +
+              Number(env.testCaseFinished.testCaseResult.duration.nanos || 0)
+            : 0
+          if (env.testCaseFinished.testCaseResult.message) {
+            att.errorMessage = env.testCaseFinished.testCaseResult.message
+          }
         }
       }
     }
@@ -197,13 +220,14 @@ function parseCucumberMessages(envelopes) {
     const pickle = att.pickle
     if (!pickle) continue
     const tag = primaryTag(pickle)
+    const status = resolveAttemptStatus(att)
     const failedStep = att.steps.find((s) => s.status === 'FAILED')
     scenarios.push({
       id: att.testCaseId,
       label: tag || pickle.name,
       featureName: pickle.uri || pickle.name,
       scenarioName: pickle.name,
-      status: att.status,
+      status,
       durationMs: Math.round(att.durationNs / 1e6),
       steps: att.steps,
       errorMessage: att.errorMessage || failedStep?.errorMessage || '',
@@ -215,8 +239,10 @@ function parseCucumberMessages(envelopes) {
   return scenarios
 }
 
+export { parseCucumberMessages, resolveAttemptStatus, isHookStepId, gherkinSteps }
+
 function countByStatus(scenarios) {
-  const counts = { PASSED: 0, FAILED: 0, SKIPPED: 0, PENDING: 0, UNKNOWN: 0 }
+  const counts = { PASSED: 0, FAILED: 0, SKIPPED: 0, PENDING: 0, INCOMPLETE: 0, UNKNOWN: 0 }
   for (const s of scenarios) {
     const k = counts[s.status] !== undefined ? s.status : 'UNKNOWN'
     counts[k] = (counts[k] || 0) + 1
@@ -230,8 +256,12 @@ function buildHtml(scenarios, meta) {
   const done = counts.PASSED + counts.FAILED + counts.SKIPPED
   const pct = total ? Math.round((done / total) * 100) : 0
   const scenariosJson = JSON.stringify(scenarios).replace(/</g, '\\u003c')
+  const incompleteStat =
+    counts.INCOMPLETE > 0
+      ? `<span class="stat incomplete">${counts.INCOMPLETE} incomplete</span>`
+      : ''
   const partialBanner = meta.partialRun
-    ? `<div class="banner">Partial run: ${meta.sourcesUsed}/${expectedSources} shard artifacts had test data. Timed-out or cancelled jobs may be missing.</div>`
+    ? `<div class="banner">Partial run: ${meta.sourcesUsed}/${expectedSources} shard artifacts had test data (${total} reported, ${expectedTestTotal} expected). Timed-out or cancelled jobs may be missing.</div>`
     : ''
 
   return `<!DOCTYPE html>
@@ -303,6 +333,7 @@ function buildHtml(scenarios, meta) {
     .stat.passed { border-color: var(--passed); color: var(--passed); }
     .stat.failed { border-color: var(--failed); color: var(--failed); }
     .stat.skipped { border-color: var(--skipped); color: var(--skipped); }
+    .stat.incomplete { border-color: var(--warn); color: var(--warn); }
     .grid { display: flex; flex-wrap: wrap; gap: 4px; }
     .cell {
       width: 14px;
@@ -316,6 +347,7 @@ function buildHtml(scenarios, meta) {
     .cell.failed { background: var(--failed); }
     .cell.skipped { background: var(--skipped); opacity: 0.7; }
     .cell.pending, .cell.unknown { background: var(--pending); opacity: 0.5; }
+    .cell.incomplete { background: var(--warn); opacity: 0.85; }
     .cell:hover { outline: 2px solid #fff; outline-offset: 1px; }
     .overlay {
       display: none;
@@ -388,6 +420,7 @@ function buildHtml(scenarios, meta) {
         <span class="stat passed">${counts.PASSED} passed</span>
         <span class="stat failed">${counts.FAILED} failed</span>
         <span class="stat skipped">${counts.SKIPPED} skipped</span>
+        ${incompleteStat}
       </div>
     </section>
     <section>
@@ -417,7 +450,7 @@ function buildHtml(scenarios, meta) {
     scenarios.forEach((s) => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'cell ' + (s.status === 'PASSED' ? 'passed' : s.status === 'FAILED' ? 'failed' : s.status === 'SKIPPED' ? 'skipped' : 'pending');
+      btn.className = 'cell ' + (s.status === 'PASSED' ? 'passed' : s.status === 'FAILED' ? 'failed' : s.status === 'SKIPPED' ? 'skipped' : s.status === 'INCOMPLETE' ? 'incomplete' : 'pending');
       btn.title = s.label + ' (' + s.status + ')';
       btn.addEventListener('click', () => openModal(s));
       grid.appendChild(btn);
@@ -624,17 +657,19 @@ async function main() {
 
   const total = scenarios.length
   const partialNote = partialRun
-    ? `\n\n> **Partial run:** ${sourcesUsed}/${expectedSources} shards contributed data. Open shard job logs for timed-out jobs.\n`
+    ? `\n\n> **Partial run:** ${sourcesUsed}/${expectedSources} shards contributed data (${total}/${expectedTestTotal} tests). Open shard job logs for timed-out jobs.\n`
     : ''
+  const incompleteRow =
+    counts.INCOMPLETE > 0 ? `| Incomplete | ${counts.INCOMPLETE} |\n` : ''
   const summary = `## Regression report
 
 | Metric | Count |
 |--------|------:|
-| Total | ${total} |
+| Total | ${total}${partialRun ? ` (expected ${expectedTestTotal})` : ''} |
 | Passed | ${counts.PASSED} |
 | Failed | ${counts.FAILED} |
 | Skipped | ${counts.SKIPPED} |
-
+${incompleteRow}
 **Progress:** ${total ? Math.round(((counts.PASSED + counts.FAILED + counts.SKIPPED) / total) * 100) : 0}%
 
 **Dashboard:** [Open QAI-style report](${pagesUrl})
@@ -649,7 +684,13 @@ async function main() {
   writeGithubOutput('pages_url', pagesUrl)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
