@@ -74,7 +74,10 @@ const reporters: Parameters<typeof defineConfig>[0]['reporter'] = [['list']]
 
 if (process.env.CI) {
   reporters.push(
-    cucumberReporter('message', { outputFile: 'cucumber-report/messages.ndjson' }),
+    cucumberReporter('message', {
+      outputFile: 'cucumber-report/messages.ndjson',
+      skipAttachments: true
+    }),
     ['blob'],
     ['json', { outputFile: 'playwright-report/results.json' }]
   )

@@ -237,7 +237,7 @@ jobs:
 
   ci-regression-visual:
     name: Regression visual
-    timeout-minutes: 90
+    timeout-minutes: 120
     runs-on: ubuntu-latest
     if: >-
       ${{ github.event_name == 'pull_request' ||
@@ -298,7 +298,7 @@ jobs:
   report-publish:
     name: Publish regression report
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [regression-setup, ci-regression-functional, ci-regression-visual]
     if: >-
       always() &&
@@ -306,7 +306,7 @@ jobs:
       (github.event_name == 'pull_request' ||
       (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression'))
     permissions:
-      contents: read
+      contents: write
       pages: write
       id-token: write
     concurrency:
@@ -338,12 +338,13 @@ jobs:
           path: artifacts
           pattern: blob-report-*
 
-      - name: Merge reports and build dashboard
+      - name: Merge cucumber messages and build dashboard
         id: merge
         run: node scripts/merge-regression-report.mjs
         env:
           ARTIFACTS_DIR: artifacts
           REPORT_OUTPUT_DIR: report
+          SKIP_BLOB_MERGE: '1'
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
@@ -353,7 +354,17 @@ jobs:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           PLAYWRIGHT_MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
 
+      - name: Merge Playwright blobs (optional)
+        if: steps.merge.outputs.report_ready == 'true'
+        continue-on-error: true
+        run: node scripts/merge-regression-report.mjs --blobs-only
+        env:
+          ARTIFACTS_DIR: artifacts
+          REPORT_OUTPUT_DIR: report
+          BLOB_MERGE_MAX_BYTES: '524288000'
+
       - name: Deploy to GitHub Pages
+        id: deploy
         uses: peaceiris/actions-gh-pages@v4
         if: steps.merge.outputs.report_ready == 'true'
         with:
@@ -369,6 +380,11 @@ jobs:
             cat report/summary.md >> "$GITHUB_STEP_SUMMARY"
           else
             echo "No regression report was generated (missing cucumber message artifacts)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ "${{ steps.merge.outputs.report_ready }}" = "true" ] && [ "${{ steps.deploy.outcome }}" = "failure" ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "### GitHub Pages not deployed" >> "$GITHUB_STEP_SUMMARY"
+            echo "Enable **Settings → Pages → Deploy from branch → gh-pages / (root)** then re-run **Publish regression report** or the full regression workflow." >> "$GITHUB_STEP_SUMMARY"
           fi
 
   ci-visual:

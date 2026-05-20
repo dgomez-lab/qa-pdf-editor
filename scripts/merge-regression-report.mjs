@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+import * as readline from 'node:readline'
 import { execSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, '..')
+
+const args = process.argv.slice(2)
+const blobsOnly = args.includes('--blobs-only')
 
 const artifactsDir = process.env.ARTIFACTS_DIR || path.join(root, 'artifacts')
 const outputDir = process.env.REPORT_OUTPUT_DIR || path.join(root, 'report')
@@ -17,6 +21,10 @@ const actor = process.env.GITHUB_ACTOR || 'local'
 const workflow = process.env.GITHUB_WORKFLOW || 'Playwright'
 const mvpsSlot = process.env.PLAYWRIGHT_MVPS_SLOT || ''
 const githubOutput = process.env.GITHUB_OUTPUT
+const skipBlobMerge = process.env.SKIP_BLOB_MERGE === '1'
+const blobMergeMaxBytes = Number(process.env.BLOB_MERGE_MAX_BYTES || '524288000')
+const minNdjsonBytes = 1024
+const expectedSources = 7
 
 function escapeHtml(s) {
   return String(s)
@@ -37,16 +45,53 @@ function findFiles(dir, name) {
   return out
 }
 
-function readNdjsonFiles(paths) {
-  const lines = []
-  for (const file of paths) {
-    const content = fs.readFileSync(file, 'utf8')
-    for (const line of content.split(/\r?\n/)) {
-      const t = line.trim()
-      if (t) lines.push(t)
+function sanitizeEnvelope(env) {
+  if (!env?.attachment) return env
+  const { body, ...rest } = env.attachment
+  return { ...env, attachment: { ...rest, body: body ? '[stripped]' : undefined } }
+}
+
+async function streamNdjsonFile(filePath, onEnvelope) {
+  const rl = readline.createInterface({
+    input: fs.createReadStream(filePath, { encoding: 'utf8' }),
+    crlfDelay: Infinity
+  })
+  let lineNo = 0
+  for await (const line of rl) {
+    lineNo++
+    const t = line.trim()
+    if (!t) continue
+    if (t.length > 50_000_000) {
+      console.warn(`Skipping oversized line ${lineNo} in ${filePath} (${t.length} chars)`)
+      continue
+    }
+    try {
+      onEnvelope(sanitizeEnvelope(JSON.parse(t)))
+    } catch (err) {
+      console.warn(`Invalid JSON at ${filePath}:${lineNo}:`, err.message)
     }
   }
-  return lines.map((l) => JSON.parse(l))
+}
+
+async function loadEnvelopesFromPaths(paths) {
+  const envelopes = []
+  const sources = []
+  for (const file of paths) {
+    const stat = fs.statSync(file)
+    const label = path.basename(path.dirname(file))
+    if (stat.size < minNdjsonBytes) {
+      console.warn(`Skipping ${file} (${stat.size} bytes — likely timeout stub)`)
+      continue
+    }
+    console.log(`Reading ${file} (${(stat.size / 1024 / 1024).toFixed(2)} MB)`)
+    let count = 0
+    await streamNdjsonFile(file, (env) => {
+      envelopes.push(env)
+      count++
+    })
+    if (count > 0) sources.push({ label, count })
+  }
+  return { envelopes, sources }
 }
 
 function primaryTag(pickle) {
@@ -115,11 +160,10 @@ function parseCucumberMessages(envelopes) {
     }
     if (env.attachment) {
       const a = env.attachment
+      if (a.body === '[stripped]' || !a.body) continue
       const media = a.mediaType || a.contentType || ''
       if (!media.startsWith('image/')) continue
-      const body = a.body
-      if (!body) continue
-      const dataUrl = `data:${media};base64,${body}`
+      const dataUrl = `data:${media};base64,${a.body}`
       const att = a.testCaseStartedId ? attempts.get(a.testCaseStartedId) : null
       if (a.testStepId && att) {
         const step = att.steps.find((s) => s.id === a.testStepId)
@@ -149,13 +193,13 @@ function parseCucumberMessages(envelopes) {
   }
 
   const scenarios = []
-  for (const [testCaseId, att] of byTestCase) {
+  for (const [, att] of byTestCase) {
     const pickle = att.pickle
     if (!pickle) continue
     const tag = primaryTag(pickle)
     const failedStep = att.steps.find((s) => s.status === 'FAILED')
     scenarios.push({
-      id: testCaseId,
+      id: att.testCaseId,
       label: tag || pickle.name,
       featureName: pickle.uri || pickle.name,
       scenarioName: pickle.name,
@@ -180,19 +224,15 @@ function countByStatus(scenarios) {
   return counts
 }
 
-function statusClass(status) {
-  if (status === 'PASSED') return 'passed'
-  if (status === 'FAILED') return 'failed'
-  if (status === 'SKIPPED') return 'skipped'
-  return 'pending'
-}
-
 function buildHtml(scenarios, meta) {
   const counts = countByStatus(scenarios)
   const total = scenarios.length
   const done = counts.PASSED + counts.FAILED + counts.SKIPPED
   const pct = total ? Math.round((done / total) * 100) : 0
   const scenariosJson = JSON.stringify(scenarios).replace(/</g, '\\u003c')
+  const partialBanner = meta.partialRun
+    ? `<div class="banner">Partial run: ${meta.sourcesUsed}/${expectedSources} shard artifacts had test data. Timed-out or cancelled jobs may be missing.</div>`
+    : ''
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -211,6 +251,7 @@ function buildHtml(scenarios, meta) {
       --failed: #d29922;
       --skipped: #58a6ff;
       --pending: #388bfd;
+      --warn: #d29922;
     }
     * { box-sizing: border-box; }
     body {
@@ -228,6 +269,15 @@ function buildHtml(scenarios, meta) {
     header h1 { margin: 0 0 0.5rem; font-size: 1.25rem; }
     .meta { color: var(--muted); font-size: 0.875rem; line-height: 1.6; }
     .meta a { color: #58a6ff; }
+    .banner {
+      margin: 1rem 1.5rem 0;
+      padding: 0.75rem 1rem;
+      background: rgba(210, 153, 34, 0.15);
+      border: 1px solid var(--warn);
+      border-radius: 6px;
+      color: var(--warn);
+      font-size: 0.875rem;
+    }
     main { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
     .progress-wrap { margin-bottom: 1.5rem; }
     .progress-wrap h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 0.5rem; }
@@ -241,7 +291,6 @@ function buildHtml(scenarios, meta) {
     .progress-fill {
       height: 100%;
       background: linear-gradient(90deg, var(--passed), var(--passed) ${pct}%, var(--border) ${pct}%);
-      transition: width 0.3s;
     }
     .stats {
       display: flex;
@@ -254,11 +303,7 @@ function buildHtml(scenarios, meta) {
     .stat.passed { border-color: var(--passed); color: var(--passed); }
     .stat.failed { border-color: var(--failed); color: var(--failed); }
     .stat.skipped { border-color: var(--skipped); color: var(--skipped); }
-    .grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
+    .grid { display: flex; flex-wrap: wrap; gap: 4px; }
     .cell {
       width: 14px;
       height: 14px;
@@ -332,6 +377,7 @@ function buildHtml(scenarios, meta) {
       <div><a href="${escapeHtml(meta.runUrl)}" target="_blank" rel="noopener">GitHub Actions run</a></div>
     </div>
   </header>
+  ${partialBanner}
   <main>
     <section class="progress-wrap">
       <h2>Progress</h2>
@@ -350,6 +396,7 @@ function buildHtml(scenarios, meta) {
     </section>
     <footer class="links">
       <a id="pw-report-link" href="playwright/index.html" style="display:none">Playwright HTML report (traces)</a>
+      <span id="pw-report-missing" style="color:var(--muted);display:none">Screenshots/traces: open shard logs or re-run with smaller blob artifacts.</span>
     </footer>
   </main>
   <div class="overlay" id="overlay" role="dialog" aria-modal="true">
@@ -367,7 +414,7 @@ function buildHtml(scenarios, meta) {
     const scenarios = ${scenariosJson};
     const grid = document.getElementById('grid');
     const overlay = document.getElementById('overlay');
-    scenarios.forEach((s, i) => {
+    scenarios.forEach((s) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'cell ' + (s.status === 'PASSED' ? 'passed' : s.status === 'FAILED' ? 'failed' : s.status === 'SKIPPED' ? 'skipped' : 'pending');
@@ -402,31 +449,66 @@ function buildHtml(scenarios, meta) {
     overlay.onclick = (e) => { if (e.target === overlay) overlay.classList.remove('open'); };
     if (${meta.hasPlaywrightReport ? 'true' : 'false'}) {
       document.getElementById('pw-report-link').style.display = 'inline';
+    } else {
+      document.getElementById('pw-report-missing').style.display = 'inline';
     }
   </script>
 </body>
 </html>`
 }
 
+function collectBlobDirs() {
+  const blobDirs = []
+  if (!fs.existsSync(artifactsDir)) return blobDirs
+  for (const entry of fs.readdirSync(artifactsDir, { withFileTypes: true })) {
+    if (entry.isDirectory() && entry.name.startsWith('blob-report-')) {
+      blobDirs.push(path.join(artifactsDir, entry.name))
+    }
+  }
+  return blobDirs
+}
+
+function totalBlobBytes(blobDirs) {
+  let total = 0
+  for (const dir of blobDirs) {
+    if (!fs.existsSync(dir)) continue
+    for (const f of fs.readdirSync(dir)) {
+      if (f.endsWith('.zip') || f.endsWith('.jsonl')) {
+        total += fs.statSync(path.join(dir, f)).size
+      }
+    }
+  }
+  return total
+}
+
 function mergePlaywrightBlobs(blobDirs, outReportDir) {
-  let found = 0
   const blobs = []
   for (const dir of blobDirs) {
     if (!fs.existsSync(dir)) continue
     for (const f of fs.readdirSync(dir)) {
       if (f.endsWith('.zip') || f.endsWith('.jsonl')) {
         blobs.push(path.join(dir, f))
-        found++
       }
     }
   }
-  if (found === 0) return false
+  if (blobs.length === 0) {
+    console.log('No blob files to merge')
+    return false
+  }
+  const total = blobs.reduce((n, p) => n + fs.statSync(p).size, 0)
+  if (total > blobMergeMaxBytes) {
+    console.warn(
+      `Skipping blob merge: ${(total / 1024 / 1024).toFixed(0)} MB exceeds cap ${(blobMergeMaxBytes / 1024 / 1024).toFixed(0)} MB`
+    )
+    return false
+  }
   const mergeInput = path.join(outputDir, '_blob-merge-input')
   fs.mkdirSync(mergeInput, { recursive: true })
   try {
     blobs.forEach((src, i) => {
       fs.copyFileSync(src, path.join(mergeInput, `${i}-${path.basename(src)}`))
     })
+    console.log(`Merging ${blobs.length} blob file(s)...`)
     execSync(`npx playwright merge-reports --reporter html "${mergeInput}"`, {
       cwd: root,
       stdio: 'inherit'
@@ -438,11 +520,26 @@ function mergePlaywrightBlobs(blobDirs, outReportDir) {
       fs.cpSync(defaultReport, target, { recursive: true })
     }
     return fs.existsSync(path.join(target, 'index.html'))
-  } catch {
+  } catch (err) {
+    console.warn('Blob merge failed:', err.message || err)
     return false
   } finally {
     fs.rmSync(mergeInput, { recursive: true, force: true })
   }
+}
+
+function patchDashboardPlaywrightLink(hasPlaywrightReport) {
+  const indexPath = path.join(outputDir, 'index.html')
+  if (!fs.existsSync(indexPath)) return
+  let html = fs.readFileSync(indexPath, 'utf8')
+  if (hasPlaywrightReport) {
+    html = html.replace(
+      'id="pw-report-link" href="playwright/index.html" style="display:none"',
+      'id="pw-report-link" href="playwright/index.html" style="display:inline"'
+    )
+    html = html.replace('id="pw-report-missing" style="color:var(--muted);display:none"', 'id="pw-report-missing" style="display:none"')
+  }
+  fs.writeFileSync(indexPath, html)
 }
 
 function writeGithubOutput(key, value) {
@@ -451,7 +548,20 @@ function writeGithubOutput(key, value) {
   }
 }
 
-function main() {
+async function runBlobsOnly() {
+  fs.mkdirSync(outputDir, { recursive: true })
+  const blobDirs = collectBlobDirs()
+  const ok = mergePlaywrightBlobs(blobDirs, outputDir)
+  patchDashboardPlaywrightLink(ok)
+  process.exit(0)
+}
+
+async function main() {
+  if (blobsOnly) {
+    await runBlobsOnly()
+    return
+  }
+
   const ndjsonPaths = findFiles(artifactsDir, 'messages.ndjson')
   if (ndjsonPaths.length === 0) {
     console.warn('No cucumber messages.ndjson found under', artifactsDir)
@@ -464,27 +574,40 @@ function main() {
     return
   }
 
-  console.log('Merging', ndjsonPaths.length, 'message file(s)')
-  const envelopes = readNdjsonFiles(ndjsonPaths)
+  const { envelopes, sources } = await loadEnvelopesFromPaths(ndjsonPaths)
+  if (envelopes.length === 0) {
+    console.warn('No valid cucumber envelopes after parsing')
+    fs.mkdirSync(outputDir, { recursive: true })
+    fs.writeFileSync(
+      path.join(outputDir, 'summary.md'),
+      '## Regression report\n\nCucumber message files were present but empty or invalid (timed-out shards).\n'
+    )
+    writeGithubOutput('report_ready', 'false')
+    return
+  }
+
   const scenarios = parseCucumberMessages(envelopes)
   const counts = countByStatus(scenarios)
+  const sourcesUsed = sources.length
+  const partialRun = sourcesUsed < expectedSources
 
   const [owner, repo] = repository.split('/')
   const pagesBase = `https://${owner}.github.io/${repo}`
   const pagesUrl = `${pagesBase}/runs/${runId}/`
   const runUrl = `${serverUrl}/${repository}/actions/runs/${runId}`
 
-  const blobDirs = []
-  if (fs.existsSync(artifactsDir)) {
-    for (const entry of fs.readdirSync(artifactsDir, { withFileTypes: true })) {
-      if (entry.isDirectory() && entry.name.startsWith('blob-report-')) {
-        blobDirs.push(path.join(artifactsDir, entry.name))
-      }
+  fs.mkdirSync(outputDir, { recursive: true })
+
+  let hasPlaywrightReport = false
+  if (!skipBlobMerge) {
+    const blobDirs = collectBlobDirs()
+    const total = totalBlobBytes(blobDirs)
+    if (total <= blobMergeMaxBytes) {
+      hasPlaywrightReport = mergePlaywrightBlobs(blobDirs, outputDir)
+    } else {
+      console.warn(`Skipping inline blob merge (${(total / 1024 / 1024).toFixed(0)} MB); workflow may run --blobs-only`)
     }
   }
-
-  fs.mkdirSync(outputDir, { recursive: true })
-  const hasPlaywrightReport = mergePlaywrightBlobs(blobDirs, outputDir)
 
   const html = buildHtml(scenarios, {
     runId,
@@ -493,11 +616,16 @@ function main() {
     actor,
     mvpsSlot,
     runUrl,
-    hasPlaywrightReport
+    hasPlaywrightReport,
+    partialRun,
+    sourcesUsed
   })
   fs.writeFileSync(path.join(outputDir, 'index.html'), html)
 
   const total = scenarios.length
+  const partialNote = partialRun
+    ? `\n\n> **Partial run:** ${sourcesUsed}/${expectedSources} shards contributed data. Open shard job logs for timed-out jobs.\n`
+    : ''
   const summary = `## Regression report
 
 | Metric | Count |
@@ -511,7 +639,7 @@ function main() {
 
 **Dashboard:** [Open QAI-style report](${pagesUrl})
 
-**Actions run:** [${runUrl}](${runUrl})
+**Actions run:** [${runUrl}](${runUrl})${partialNote}
 `
   fs.writeFileSync(path.join(outputDir, 'summary.md'), summary)
 
@@ -521,4 +649,7 @@ function main() {
   writeGithubOutput('pages_url', pagesUrl)
 }
 
-main()
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})

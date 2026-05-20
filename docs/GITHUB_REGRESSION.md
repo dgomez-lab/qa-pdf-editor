@@ -114,8 +114,8 @@ También aparece en el **Summary** del workflow (pestaña del run en Actions) tr
 |----------|-------------|
 | Barra de progreso | % completado, total / passed / failed / skipped |
 | Cuadrícula | Un cuadrado por escenario (color por estado); clic abre detalle |
-| Detalle | Pasos Given/When/Then con estado; screenshot en el paso fallido |
-| Playwright HTML | Enlace opcional a traces/vídeo si hay blobs fusionados |
+| Detalle | Pasos Given/When/Then con estado y mensaje de error |
+| Playwright HTML | Enlace a traces/vídeo/screenshots (fusión de blobs; omitida si supera ~500 MB) |
 
 ### Artefactos por shard (depuración)
 
@@ -127,7 +127,21 @@ Cada shard sube siempre (aunque pase):
 | `blob-report-shard-N` | Blobs Playwright para traces |
 | `cucumber-messages-visual` / `blob-report-visual` | Mismo para el job visual |
 
-Ya no se suben informes HTML de 1+ GB por shard.
+Ya no se suben informes HTML de 1+ GB por shard. En CI, `messages.ndjson` usa `skipAttachments: true` (tamaño típico: pocos MB, no GB).
+
+### Solución de problemas (informe no publicado)
+
+Si el job **Publish regression report** falla o no hay enlace al dashboard:
+
+| Síntoma | Causa habitual | Qué hacer |
+|---------|----------------|-----------|
+| Paso **Merge cucumber messages** en rojo | `messages.ndjson` de varios GB (capturas embebidas en runs antiguos) o OOM al fusionar | Usar commit con `skipAttachments: true`; el merge actual ignora adjuntos y parsea por streaming |
+| **Deploy** en rojo, merge en verde | GitHub Pages no activado | **Settings → Pages → Deploy from branch → `gh-pages` / (root)** |
+| Dashboard con aviso **Partial run** | Shards o visual cancelados por timeout (p. ej. run `26174444489`) | Revisar logs de shards 1–4 / visual; subir timeouts o bajar `PLAYWRIGHT_CI_WORKERS` |
+| Workflow **Cancelled** con otro run en curso | `concurrency: cancel-in-progress: true` | No lanzar dos regresiones en la misma rama a la vez |
+| Artefacto `cucumber-messages-*` de **146 B** | Job cancelado antes de ejecutar tests | Normal en shards/visual con timeout; no aportan datos al informe |
+
+Ejemplo de run incompleto: [26174444489](https://github.com/dgomez-lab/qa-pdf-editor/actions/runs/26174444489) — shards 2/5/6 con fallos de test; 1/3/4 y visual por timeout; el merge falló por NDJSON enormes (corregido en commits posteriores).
 
 ### Fusionar informes en local
 
@@ -191,5 +205,6 @@ gh run list --workflow=playwright.yml --limit 3
 - [ ] `gh workflow run … profile=regression` o Run workflow en la UI.
 - [ ] Revisar logs: `bddgen` y recuento de tests.
 - [ ] Si timeouts masivos en `*.mvps.website`: allowlist GitHub Actions o runner self-hosted.
-- [ ] GitHub Pages activado (Settings → Pages).
-- [ ] Tras el run: abrir el enlace del **job summary** o `https://<owner>.github.io/<repo>/runs/<run_id>/`.
+- [ ] GitHub Pages activado (**Settings → Pages → branch `gh-pages` / root**).
+- [ ] Tras el run: job **Publish regression report** en verde; enlace en **Summary**.
+- [ ] URL: `https://<owner>.github.io/<repo>/runs/<run_id>/`.
