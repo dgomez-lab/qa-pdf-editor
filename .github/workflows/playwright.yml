@@ -16,6 +16,9 @@ concurrency:
   group: playwright-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  REGRESSION_SHARD_TOTAL: '6'
+
 jobs:
   ci-fast:
     name: CI fast (SEO + pdfhint SEO smoke)
@@ -125,17 +128,51 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
-  ci-regression:
-    name: CI regression (functional + visual)
-    timeout-minutes: 180
+  regression-setup:
+    name: Regression setup (bddgen)
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     if: >-
       ${{ github.event_name == 'pull_request' ||
       (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression') }}
     needs: ci-fast
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate tests from features
+        run: npm run bddgen
+
+      - name: Upload features-gen artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: features-gen
+          path: .features-gen/
+          retention-days: 1
+
+  ci-regression-functional:
+    name: Regression functional (shard ${{ matrix.shard }}/${{ env.REGRESSION_SHARD_TOTAL }})
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression') }}
+    needs: regression-setup
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
     env:
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
+      PLAYWRIGHT_CI_WORKERS: '2'
       SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
     steps:
       - uses: actions/checkout@v4
@@ -148,14 +185,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Download features-gen artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: features-gen
+          path: .features-gen
+
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Generate tests from features
-        run: npm run bddgen
-
-      - name: Run regression (functional + visual)
-        run: npm run test:ci-regression
+      - name: Run functional shard
+        run: npm run test:ci-regression-functional-shard -- --shard=${{ matrix.shard }}/${{ env.REGRESSION_SHARD_TOTAL }}
         env:
           BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
           MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
@@ -171,11 +211,65 @@ jobs:
           PLAYWRIGHT_MAILPIT_PASSWORD: ${{ secrets.PLAYWRIGHT_MAILPIT_PASSWORD }}
           PLAYWRIGHT_QA_API_KEY: ${{ secrets.PLAYWRIGHT_QA_API_KEY }}
 
-      - name: Upload regression reports
-        if: always()
+      - name: Upload shard report on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-regression
+          name: playwright-report-shard-${{ matrix.shard }}
+          path: |
+            playwright-report/
+            test-results/
+            cucumber-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  ci-regression-visual:
+    name: Regression visual
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && inputs.profile == 'regression') }}
+    needs: regression-setup
+    env:
+      APP: mergedpdf
+      PLAYWRIGHT_APP: mergedpdf
+      PLAYWRIGHT_CI_WORKERS: '2'
+      SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download features-gen artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: features-gen
+          path: .features-gen
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run visual regression
+        run: npm run test:ci-regression-visual
+        env:
+          BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
+          MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
+          PDFHINT_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_BASE_URL }}
+          PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
+          QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
+
+      - name: Upload visual report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-regression-visual
           path: |
             playwright-report/
             test-results/

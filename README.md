@@ -109,10 +109,10 @@ Equivalente remoto a un `allTests` en QAI Dogs: un solo disparo con suite funcio
 
 1. Configura **variables** y **secrets** en el repo (tablas en [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md); plantilla [`.env.example`](.env.example)).
 2. **Actions** → **Playwright** → **Run workflow** → profile **`regression`**.
-3. Tras **ci-fast**, el job **ci-regression** ejecuta `npm run test:ci-regression` (excluye `@MANUAL_SCREEN_CAPTURE`, incluye `@PDFEDITOR_VISUAL*`).
-4. Informes: artefacto **`playwright-report-regression`** (`cucumber-report/index.html`, Playwright HTML, traces).
+3. Tras **ci-fast**: **regression-setup** → **6 jobs funcionales en paralelo** (shards, estilo QAI Dogs) + **visual** en paralelo.
+4. Informes en fallo: **`playwright-report-shard-1`** … **`shard-6`** o **`playwright-report-regression-visual`**.
 
-Cada **PR** hacia `main`/`master` ejecuta **fast** y luego **regression** (funcional + visual). Push a `main` solo ejecuta **fast** (~1 min). Regresión completa: **Actions → Run workflow → `regression`** o abrir un PR. Ejecuciones en commits anteriores a `ac33d95` usaban el workflow antiguo (fallos de 24 min) — ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md).
+Cada **PR** a `main` ejecuta **fast** y luego regresión paralela (6 shards + visual). Push a `main` solo **fast** (~1 min). Ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md).
 
 Si staging exige allowlist de IP, los runners `ubuntu-latest` de GitHub pueden necesitar excepción en infra o un runner self-hosted (ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md)).
 
@@ -132,7 +132,9 @@ gh workflow run playwright.yml -f profile=regression --ref main
 | `npm run test:pdfhint-tag -- @TAG` | Igual con perfil pdfhint y tag arbitrario. |
 | `npm run test:ci-fast` | Gate rápido CI: SEO mergedpdf + smoke SEO pdfhint (sin dashboard/pago). |
 | `npm run test:ci-full` | Suite funcional CI (excluye `@MANUAL_SCREEN_CAPTURE`). |
-| `npm run test:ci-regression` | Funcional + visual (`@PDFEDITOR_VISUAL*`) para regresión GitHub. |
+| `npm run test:ci-regression` | Funcional + visual local (sin sharding). |
+| `npm run test:ci-regression-functional-shard -- --shard=1/6` | Un shard funcional (CI usa 6 en paralelo). |
+| `npm run test:ci-regression-visual` | Solo visual (requiere `bddgen` previo). |
 | `npm run test:ci-visual` | Solo visual por tag `@PDFEDITOR_VISUAL*`. |
 | `npm run typecheck` | Verificación TypeScript (`tsc --noEmit`). |
 | `npm run porting:stats` | Estadísticas de escenarios/tags vendored en `features/`. |

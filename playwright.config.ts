@@ -90,12 +90,17 @@ if (terminalStepsOn) {
   )
 }
 
+function resolveCiWorkers(): number {
+  const v = Number(process.env.PLAYWRIGHT_CI_WORKERS ?? '2')
+  return Number.isFinite(v) && v >= 1 ? Math.floor(v) : 2
+}
+
 export default defineConfig({
   testDir: bddTestDir,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  workers: process.env.CI ? resolveCiWorkers() : undefined,
   timeout: 180_000,
   snapshotDir: path.join(__dirname, 'tests', 'visual', 'baseline'),
   snapshotPathTemplate: '{snapshotDir}/{arg}{-projectName}{-snapshotSuffix}{ext}',

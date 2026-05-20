@@ -8,8 +8,8 @@ Guía para ejecutar en remoto (sin usar tu máquina) la misma cobertura que un `
 |-----|--------|--------|-------------|
 | Antes de `ac33d95` (p. ej. `4439503`) | Viejo workflow | `workflow_dispatch` / push | **ci-fast** ~24 min y fallo (dashboard + `/en/login`). **ci-regression** no corre (0s) porque fast falló o el perfil no existía. **Ignorar.** |
 | `ac33d95`+ push | [run push](https://github.com/dgomez-lab/qa-pdf-editor/actions) | `push` | Solo **ci-fast** ~1 min, 5 tests SEO. |
-| `ac33d95`+ `profile: regression` | Manual | `workflow_dispatch` | **ci-fast** → **ci-regression** (hasta ~3 h). |
-| PR a `main` | `pull_request` | PR | **ci-fast** → **ci-regression** automático. |
+| `ac33d95`+ `profile: regression` | Manual | `workflow_dispatch` | **ci-fast** → **regression-setup** → **6 shards** + **visual** en paralelo. |
+| PR a `main` | `pull_request` | PR | Igual que regresión manual (6 shards + visual). |
 
 Si lanzaste **regression** dos veces antes del push, ambas usaron el workflow antiguo: solo cuenta la ejecución sobre **`ac33d95` o posterior**.
 
@@ -64,35 +64,44 @@ Solo `@PDFEDITOR_SEO` y `@PDFEDITOR_PDFHINT_SMOKE_SEO` (~5 tests). Sin dashboard
 
 Plantilla local: [`.env.example`](../.env.example).
 
-El job **regression** activa además (sin secret): `PLAYWRIGHT_PAYMENT_SMOKE=1`, `PLAYWRIGHT_TRANSACTIONAL_PAYMENT_CONFIRMATION=1`, `PLAYWRIGHT_PDFHINT_DASHBOARD_SMOKE=1`.
+Los jobs de regresión activan además (sin secret): `PLAYWRIGHT_PAYMENT_SMOKE=1`, `PLAYWRIGHT_TRANSACTIONAL_PAYMENT_CONFIRMATION=1`, `PLAYWRIGHT_PDFHINT_DASHBOARD_SMOKE=1`.
+
+## Paralelismo (6 shards, estilo QAI Dogs)
+
+Tras **ci-fast**, la regresión no usa un solo runner de 3 h:
+
+1. **regression-setup** — `bddgen` una vez, artefacto `features-gen`.
+2. **ci-regression-functional** — matriz **6 jobs** en paralelo (`--shard=1/6` … `6/6`), **2 workers** por runner (`PLAYWRIGHT_CI_WORKERS=2`).
+3. **ci-regression-visual** — job aparte en paralelo con los shards (`@PDFEDITOR_VISUAL*`).
+
+Tiempo de pared ≈ `max(duración de un shard, duración visual)`, no la suma de todos los tests.
+
+Si hay flakes en pago/Mailpit, baja workers en el workflow: `PLAYWRIGHT_CI_WORKERS: '1'`.
 
 ## Lanzar la regresión (manual)
 
 1. **Actions** → workflow **Playwright** → **Run workflow**.
 2. Rama: `main` (o la rama a validar).
 3. **profile:** `regression`.
-4. Esperar **ci-fast** (gate rápido + parity tags) y luego **ci-regression** (hasta ~150 min).
-5. Si falla o quieres revisar informes: artefacto **`playwright-report-regression`** (`playwright-report/`, `test-results/`, `cucumber-report/`).
+4. Esperar **ci-fast** → **regression-setup** → **6× functional shard** + **visual** (en paralelo).
+5. Si falla: artefactos **`playwright-report-shard-N`** o **`playwright-report-regression-visual`**.
 
 ### Perfiles del workflow
 
 | profile | Jobs | Contenido |
 |---------|------|-----------|
-| `fast` | ci-fast | SEO + pdfhint SEO smoke + dashboard (PR/push por defecto) |
-| `full` | ci-fast → ci-full | Funcional completo (sin visual) |
-| `visual` | ci-visual | Solo `@PDFEDITOR_VISUAL*` |
-| `regression` | ci-fast → ci-regression | Funcional (`--grep-invert @MANUAL_SCREEN_CAPTURE`) + visual |
+| `fast` | ci-fast | SEO + pdfhint SEO smoke (PR/push por defecto) |
+| `full` | ci-fast → ci-full | Funcional completo en un runner (sin visual) |
+| `visual` | ci-visual | Solo `@PDFEDITOR_VISUAL*` (manual) |
+| `regression` | ci-fast → setup → 6 shards + visual | Regresión completa paralela |
 
 ## Disparo automático en pull requests
 
-Cada **pull request** hacia `main` o `master` ejecuta:
+Cada **pull request** hacia `main` o `master` ejecuta **ci-fast** y luego la regresión paralela (6 shards + visual).
 
-1. **ci-fast** — SEO + smoke pdfhint SEO (~15 min máx.).
-2. **ci-regression** — regresión completa tras pasar ci-fast (hasta ~150 min).
+Los **push** a `main` solo ejecutan **ci-fast**.
 
-Los **push** directos a `main`/`master` siguen ejecutando solo **ci-fast** (sin regresión completa), para no alargar cada merge.
-
-Los PR desde **forks** no reciben secrets del repo base; la regresión puede fallar o omitir escenarios que requieran credenciales hasta merge en una rama del mismo repo.
+Los PR desde **forks** no reciben secrets del repo base.
 
 ## Comandos locales equivalentes
 
@@ -100,7 +109,15 @@ Los PR desde **forks** no reciben secrets del repo base; la regresión puede fal
 npm run test:ci-regression
 ```
 
-Equivale a `bddgen` + funcional sin captura manual + visual con snapshots.
+Regresión completa en un solo proceso (sin sharding).
+
+Depurar un shard:
+
+```bash
+npm run bddgen
+npm run test:ci-regression-functional-shard -- --shard=1/6 --list
+npm run test:ci-regression-functional-shard -- --shard=1/6
+```
 
 ## CLI (opcional)
 
