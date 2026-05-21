@@ -210,7 +210,7 @@ jobs:
           retention-days: 1
 
   ci-regression-functional:
-    name: Regression functional (shard ${{ matrix.shard }}/${{ env.REGRESSION_SHARD_TOTAL }})
+    name: Regression functional (shard ${{ matrix.shard }}/10)
     timeout-minutes: 120
     runs-on: ubuntu-latest
     if: >-
