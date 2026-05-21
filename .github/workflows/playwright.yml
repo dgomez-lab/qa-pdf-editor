@@ -123,6 +123,7 @@ jobs:
           PDFHINT_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_BASE_URL }}
           PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
           QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
+          PLAYWRIGHT_DEFAULT_TEST_IP: 'ES'
           PLAYWRIGHT_PAYMENT_SMOKE: '1'
           PLAYWRIGHT_TRANSACTIONAL_PAYMENT_CONFIRMATION: '1'
           PLAYWRIGHT_PDFHINT_DASHBOARD_SMOKE: '1'
@@ -228,6 +229,7 @@ jobs:
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
       PLAYWRIGHT_CI_WORKERS: '1'
+      PLAYWRIGHT_DEFAULT_TEST_IP: 'ES'
       SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
     steps:
       - uses: actions/checkout@v4
@@ -316,6 +318,7 @@ jobs:
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
       PLAYWRIGHT_CI_WORKERS: '1'
+      PLAYWRIGHT_DEFAULT_TEST_IP: 'ES'
       SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
     steps:
       - uses: actions/checkout@v4

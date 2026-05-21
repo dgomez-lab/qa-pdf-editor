@@ -144,11 +144,9 @@ export default defineConfig({
     trace:
       process.env.PLAYWRIGHT_TRACE === '1' || process.env.PWTEST_TEST_UI_MODE === '1'
         ? 'on'
-        : process.env.CI
-          ? 'retain-on-failure'
-          : 'on-first-retry',
+        : 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: process.env.CI ? 'off' : 'retain-on-failure',
     navigationTimeout: 90_000,
     actionTimeout: 45_000
   },

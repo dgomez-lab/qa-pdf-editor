@@ -44,6 +44,7 @@ El script [`scripts/setup-github-actions-env.py`](../scripts/setup-github-action
 | `PLAYWRIGHT_APP` | `mergedpdf` o `pdfhint` |
 | `PLAYWRIGHT_MVPS_SLOT` | Slot `1`–`10` o vacío para `red` |
 | `PLAYWRIGHT_RUNNER` | `self-hosted` para regresión en runner con VPN (Mailpit + pdfhint); vacío → `ubuntu-latest` |
+| `PLAYWRIGHT_DEFAULT_TEST_IP` | País simulado en query (`?ip=…`) cuando el escenario no fija `ip`. Los jobs de regresión/full fijan **`ES`** (runners US de GitHub no deben forzar checkout USD + ZIP). |
 | `PLAYWRIGHT_PDFHINT_BASE_URL` | Marketing pdfhint |
 | `PLAYWRIGHT_PDFHINT_APP_BASE_URL` | App pdfhint si difiere |
 | `SEO_LOGIN_PATHNAME` | Login cabecera pdfhint (default `/login`) |
@@ -92,21 +93,52 @@ La regresión no usa un solo runner de 3 h:
 2. **ci-regression-functional** — matriz **10 jobs** (`--shard=1/10` … `10/10`), ~15 tests/shard, **1 worker** (`PLAYWRIGHT_CI_WORKERS=1`), **1 reintento** en CI (`PLAYWRIGHT_CI_RETRIES=1`). Los runners bloquean analytics conocidos (menos ruido de red).
 3. **ci-regression-visual** — matriz **2 jobs** (`--shard=1/2` y `2/2`), ~34 tests/shard.
 
-Tiempo de pared ≈ `max(shard funcional más lento, shard visual más lento)`. Objetivo **~35–45 min** en GitHub-hosted; **30–40 min** como QAI Dogs (5 máquinas AWS) suele requerir runners self-hosted más cerca de staging.
+Tiempo de pared ≈ `max(shard funcional más lento, shard visual más lento)`. Objetivo **~35–45 min** en GitHub-hosted cuando la mayoría de tests **pasan**; **30–40 min** como QAI Dogs (5 máquinas AWS) suele requerir runners self-hosted más cerca de staging.
+
+Si muchos escenarios **fallan**, `PLAYWRIGHT_CI_RETRIES=1` duplica trabajo y los timeouts largos (pago/CRM, 120–180 s por paso) pueden llevar el shard más pesado a **~90–100 min** (p. ej. run [26217895507](https://github.com/dgomez-lab/qa-pdf-editor/actions/runs/26217895507): shard 2 ≈ 91 min, visual 1 ≈ 100 min, total ~102 min). El cuello de botella no es la secuencia del workflow sino el **shard más lento** + reintentos.
+
+| Shard (ejemplo run 26217895507) | Duración aprox. | Contenido típico |
+|---------------------------------|-----------------|------------------|
+| Functional 2/10 | ~91 min | `FirstPayment` refunds, wrong cards, UTMs |
+| Functional 4/10 | ~18 min | SEO, inicio de Mailpit/pdfhint (fallos rápidos) |
+| Visual 1/2 | ~100 min | ~34 screenshots + reintentos + blobs grandes |
+
+En CI, Playwright usa `trace: on-first-retry` y `video: off` para reducir artefactos `blob-report-*` (antes ~500 MB–1 GB por shard con `retain-on-failure` + vídeo).
 
 Si **regression-setup** falla con *No files were found* al subir el artefacto, comprueba que existan `*.spec.js` bajo `.features-gen/` tras `bddgen` y que el paso de upload tenga `include-hidden-files: true`.
 
 Los shards de regresión usan `PLAYWRIGHT_CI_WORKERS: '1'` para reducir presión sobre `red.mvps.website`.
 
+### Geo / ZIP en checkout (runners US)
+
+Los runners `ubuntu-latest` de GitHub salen con IP **estadounidense**. Sin `?ip=…`, staging puede mostrar **USD + campo ZIP** mientras los escenarios por defecto esperan **EUR** (`1.95 EUR`).
+
+- Los jobs de regresión definen `PLAYWRIGHT_DEFAULT_TEST_IP=ES` → [`homeQueryFromTestData`](../tests/helpers/testIpQuery.ts) añade `?ip=ES` en Home/Editor cuando el Gherkin no fija `ip`.
+- Escenarios `@PDFEDITOR_PAYMENT_IP_US` siguen forzando `?ip=US`; [`fillStripePaymentLikeLegacy`](../tests/helpers/stripePayment.ts) rellena país + ZIP (`90210`) solo para `testData.ip === US`.
+
 ### Mailpit y VPN (emails transaccionales)
 
-Mailpit (`mailpit.1ecorp.net`) y pdfhint staging requieren **VPN corporativa** desde runners públicos de GitHub. Sin VPN verás `Mailpit list: HTTP 403` en ~12 escenarios.
+Mailpit (`mailpit.1ecorp.net`) y pdfhint staging requieren **VPN corporativa** desde runners públicos de GitHub. Sin VPN verás `Mailpit list: HTTP 403` (o **401** sin credenciales) en escenarios `@TransactionalEmails` y parte de `@PDFHINT`.
+
+**Comprobar en tu entorno:**
+
+1. **Settings → Variables → Actions** → `PLAYWRIGHT_RUNNER`: si está vacío, los shards usan `ubuntu-latest`.
+2. En logs de un shard con `TransactionalEmails`, busca `Mailpit` / `HTTP 403` / `HTTP 401`.
+3. Desde una máquina sin VPN: `curl -sI https://mailpit.1ecorp.net/api/v1/messages` suele devolver **401** (no accesible como en QAI Dogs con VPN).
+
+**Opciones:**
+
+| Opción | Cuándo |
+|--------|--------|
+| **A — Self-hosted + VPN (recomendado)** | Registra runner con VPN; `PLAYWRIGHT_RUNNER=self-hosted`. Misma red que QAI Dogs. |
+| **B — Excluir Mailpit en CI público** | Si no hay runner VPN: etiquetar escenarios Mailpit con `@CI_NO_MAILPIT` y `--grep-invert` en el workflow hasta tener runner (no implementado por defecto). |
+| **C — Solo local** | Ejecutar `@TransactionalEmails` con VPN en máquina de desarrollo. |
 
 1. Registra un **self-hosted runner** con acceso VPN (misma red que QAI Dogs).
 2. En **Settings → Variables**, define `PLAYWRIGHT_RUNNER` = `self-hosted`.
 3. Los jobs **ci-regression-functional** y **ci-regression-visual** usarán ese runner; mantén secrets `PLAYWRIGHT_MAILPIT_USER` / `PLAYWRIGHT_MAILPIT_PASSWORD` (`npm run setup:github-actions`).
 
-Con `PLAYWRIGHT_RUNNER` vacío, la regresión sigue en `ubuntu-latest` (MVPS/CRM/visual OK; Mailpit en rojo hasta tener runner VPN).
+Con `PLAYWRIGHT_RUNNER` vacío, la regresión sigue en `ubuntu-latest` (MVPS/CRM/pago con `?ip=ES` OK; Mailpit y pdfhint VPN en rojo hasta tener runner VPN).
 
 ## Lanzar la regresión (manual)
 
@@ -172,6 +204,7 @@ En CI, `messages.ndjson` usa `skipAttachments: true` (pocos MB). Las capturas va
 | **Verify MVPS QA token access** en rojo | MVPS no responde con token desde IP de GitHub | Comprobar secret `QAI_TOKEN_PARAM` (`npm run setup:github-actions`); si el token es correcto y sigue fallando, allowlist IP de GitHub Actions o runner self-hosted |
 | **Run fast suite** en rojo, preflight verde | Test SEO MVPS (ver **Summary** del job) | Revisar lista de fallos en el Summary; artefacto `playwright-report-fast` |
 | Variable `PLAYWRIGHT_BASE_URL` mal puesta | Apunta a pdfhint u otro host sin token MVPS | Dejar la variable **sin definir** |
+| Pago falla con **ZIP inválido** / precios USD en regresión | Runner US sin `?ip=ES`; port Playwright sin ZIP para `@PDFEDITOR_PAYMENT_IP_US` | Confirmar `PLAYWRIGHT_DEFAULT_TEST_IP=ES` en workflow; escenarios US deben forzar `ip` en Gherkin |
 
 #### Informe de regresión (GitHub Pages)
 

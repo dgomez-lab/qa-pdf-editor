@@ -22,18 +22,13 @@ import { logPageLoad, logVisitUrl } from './bddLogger'
 import { registerNewUserFromLogin, loginExistingUserFromLogin } from '../helpers/loginFlow'
 import { openCrmCustomerForEmail, loginCrmAndOpenCustomers, searchAndOpenFirstCustomer } from '../helpers/crmStaging'
 import { forceUrlWithParameters, forceWrongUrl } from '../helpers/forceUrlParams'
+import { homeQueryFromTestData } from '../helpers/testIpQuery'
 import { contact } from '../pages/contact/contactSelectorsBundle'
 import type { BddWorld } from './fixtures'
 import { closeCrmPageIfOpen } from './stepHelpers'
 
 function flow(td: Record<string, string>): string {
   return (td.flow ?? 'Default').trim()
-}
-
-function homeQueryFromTestData(td: Record<string, string>): Record<string, string> | undefined {
-  const ip = td.ip?.trim()
-  if (!ip || ip === 'Default') return undefined
-  return { ip }
 }
 
 export async function loadHomePage(page: Page, w: BddWorld): Promise<void> {
@@ -133,11 +128,15 @@ export async function loadDashboardPage(page: Page, w: BddWorld): Promise<void> 
     if (w.testData.skipUploadInEditorLoadPage !== 'true' && w.testData.skipUploadInEditorLoadPage !== 'yes') {
       await clickNextButton(page, { flow: w.testData.flow })
       await createNewUserFromEditor(page, w.email)
-      await fillStripePaymentLikeLegacy(page, {
-        number: process.env.STRIPE_TEST_CARD_NUMBER ?? '4242424242424242',
-        exp: process.env.STRIPE_TEST_CARD_EXP ?? '1234',
-        cvc: process.env.STRIPE_TEST_CARD_CVC ?? '123'
-      })
+      await fillStripePaymentLikeLegacy(
+        page,
+        {
+          number: process.env.STRIPE_TEST_CARD_NUMBER ?? '4242424242424242',
+          exp: process.env.STRIPE_TEST_CARD_EXP ?? '1234',
+          cvc: process.env.STRIPE_TEST_CARD_CVC ?? '123'
+        },
+        { testIp: w.testData.ip }
+      )
       await page.locator('[data-id="confirm-payment-button"]').first().click()
       await page.locator('[data-id="download"]').first().waitFor({ state: 'visible', timeout: 120_000 })
     }

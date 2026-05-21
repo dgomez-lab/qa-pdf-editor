@@ -207,7 +207,7 @@ When('I make the initial payment', async ({ page, bddWorld }) => {
   const cardName = bddWorld.testData.card || 'Visa'
   const card = stripeCardForName(cardName)
   logElementAction('Filling', 'stripe card number input', `${cardName} → ${card.number}`)
-  await fillStripePaymentLikeLegacy(p, card)
+  await fillStripePaymentLikeLegacy(p, card, { testIp: bddWorld.testData.ip })
   await p.locator('[data-id="confirm-payment-button"]').first().click({ timeout: 15_000 }).catch(() => {})
   await p.waitForTimeout(2000)
 })

@@ -24,6 +24,19 @@ const cvcLocators = [
   "input[name='cc-csc']"
 ]
 
+const stripeCountrySelect =
+  "select#payment-countryInput, select[name='country']"
+const stripeZipInput =
+  '#payment-postalCodeInput, input[name="postalCode"], input[data-id="payment-zipInput"]'
+
+const STRIPE_BILLING_BY_IP: Partial<Record<string, { country: string; postal: string }>> = {
+  US: { country: 'US', postal: '90210' }
+}
+
+export type StripePaymentOptions = {
+  testIp?: string
+}
+
 async function tryClickPayWithCard(page: Page): Promise<void> {
   /**
    * Selectores en cascada para "Pay with card" en pdfhint/mergedpdf:
@@ -182,19 +195,66 @@ async function fillByWalkingStripeFrames(page: Page, number: string, exp: string
   return false
 }
 
+function stripeBillingForTestIp(testIp?: string): { country: string; postal: string } | undefined {
+  const ip = testIp?.trim()
+  if (!ip) return undefined
+  return STRIPE_BILLING_BY_IP[ip]
+}
+
+async function fillStripeCountryAndPostal(
+  page: Page,
+  country: string,
+  postal: string
+): Promise<void> {
+  const countrySelect = page.locator(stripeCountrySelect).first()
+  await countrySelect.waitFor({ state: 'visible', timeout: 20_000 })
+  try {
+    await countrySelect.selectOption(country)
+  } catch {
+    await countrySelect.click({ timeout: 5_000, force: true }).catch(() => {})
+    const option = page
+      .locator(
+        `xpath=//select[@id='payment-countryInput' or @name='country']/option[@value='${country}']`
+      )
+      .first()
+    await option.waitFor({ state: 'visible', timeout: 10_000 })
+    await option.click({ timeout: 5_000, force: true })
+  }
+  const zip = page.locator(stripeZipInput).first()
+  await zip.waitFor({ state: 'visible', timeout: 20_000 })
+  await zip.fill(postal)
+}
+
+async function maybeFillStripeBillingForTestIp(page: Page, testIp?: string): Promise<void> {
+  const billing = stripeBillingForTestIp(testIp)
+  if (!billing) return
+  const zip = page.locator(stripeZipInput).first()
+  if (!(await zip.isVisible({ timeout: 4_000 }).catch(() => false))) return
+  await fillStripeCountryAndPostal(page, billing.country, billing.postal)
+}
+
 /**
  * Orden alineado con `EditorPage.fillPaymentForm` en qai-pa-pdf-editor.
  */
-export async function fillStripePaymentLikeLegacy(page: Page, card: { number: string; exp: string; cvc: string }): Promise<void> {
+export async function fillStripePaymentLikeLegacy(
+  page: Page,
+  card: { number: string; exp: string; cvc: string },
+  options?: StripePaymentOptions
+): Promise<void> {
   await tryClickPayWithCard(page)
   await page.waitForTimeout(800)
 
-  if (await fillUnifiedPaymentIframe(page, card.number, card.exp, card.cvc)) return
-  if (await fillPaymentElementHost(page, card.number, card.exp, card.cvc)) return
-  if (await fillSplitStripeIframes(page, card.number, card.exp, card.cvc)) return
-  if (await fillByWalkingStripeFrames(page, card.number, card.exp, card.cvc)) return
+  let filled = false
+  if (await fillUnifiedPaymentIframe(page, card.number, card.exp, card.cvc)) filled = true
+  else if (await fillPaymentElementHost(page, card.number, card.exp, card.cvc)) filled = true
+  else if (await fillSplitStripeIframes(page, card.number, card.exp, card.cvc)) filled = true
+  else if (await fillByWalkingStripeFrames(page, card.number, card.exp, card.cvc)) filled = true
 
-  throw new Error(
-    'No se pudieron rellenar los campos de tarjeta Stripe (unificado, #payment-element, split ni frames stripe.com). Revisa trace / UI del entorno.'
-  )
+  if (!filled) {
+    throw new Error(
+      'No se pudieron rellenar los campos de tarjeta Stripe (unificado, #payment-element, split ni frames stripe.com). Revisa trace / UI del entorno.'
+    )
+  }
+
+  await maybeFillStripeBillingForTestIp(page, options?.testIp)
 }
