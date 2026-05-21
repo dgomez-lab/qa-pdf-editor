@@ -130,7 +130,7 @@ gh workflow run playwright.yml -f profile=regression --ref main
 | `npm run test:pdfhint-smoke` | Pdfhint (`configuration.pdfhint.json`) + tags `@PDFEDITOR_PDFHINT_SMOKE*` (hook `@PDFHINT` en el feature). |
 | `npm run sync:legacy-elements` | Copia selectores desde `../qai-pa-pdf-editor` a `tests/bdd/legacy-elements/`. |
 | `npm run test:pdfhint-tag -- @TAG` | Igual con perfil pdfhint y tag arbitrario. |
-| `npm run test:ci-fast` | Gate rápido CI: SEO mergedpdf + smoke SEO pdfhint (sin dashboard/pago). |
+| `npm run test:ci-fast` | Gate rápido CI: solo SEO MVPS (`@PDFEDITOR_SEO`; pdfhint en regresión completa o local con VPN). |
 | `npm run test:ci-full` | Suite funcional CI (excluye `@MANUAL_SCREEN_CAPTURE`). |
 | `npm run test:ci-regression` | Funcional + visual local (sin sharding). |
 | `npm run test:ci-regression-functional-shard -- --shard=1/10` | Un shard funcional (CI usa 10 en paralelo). |

@@ -51,7 +51,7 @@ Si no defines variables, en CI se aplica [`config/configuration.json`](../config
 
 ### Job **ci-fast** (push / PR gate)
 
-Solo `@PDFEDITOR_SEO` y `@PDFEDITOR_PDFHINT_SMOKE_SEO` (~5 tests). Sin dashboard ni pago.
+Solo `@PDFEDITOR_SEO` en **red.mvps.website** (~4 tests). Sin pdfhint (staging.pdfhint.com exige VPN corporativa; los escenarios `@PDFHINT` / `@PDFEDITOR_PDFHINT_*` van en la regresión completa o en local). Sin dashboard ni pago.
 
 - **Push a `main`:** solo corre **ci-fast** (~1–2 min). La regresión completa (214 tests) no se lanza en push; usa **Run workflow** con profile **`regression`** o un PR.
 - Antes de los tests, **Verify MVPS QA token access** hace `curl` a `https://red.mvps.website/?x-token-qa=…` (MVPS exige token en la URL para ver staging).
@@ -159,7 +159,7 @@ En CI, `messages.ndjson` usa `skipAttachments: true` (pocos MB). Las capturas va
 | Síntoma | Causa habitual | Qué hacer |
 |---------|----------------|-----------|
 | **Verify MVPS QA token access** en rojo | MVPS no responde con token desde IP de GitHub | Comprobar secret `QAI_TOKEN_PARAM` (`npm run setup:github-actions`); si el token es correcto y sigue fallando, allowlist IP de GitHub Actions o runner self-hosted |
-| **Run fast suite** en rojo, preflight verde | Test SEO/pdfhint (ver **Summary** del job) | Revisar lista de fallos en el Summary; artefacto `playwright-report-fast` |
+| **Run fast suite** en rojo, preflight verde | Test SEO MVPS (ver **Summary** del job) | Revisar lista de fallos en el Summary; artefacto `playwright-report-fast` |
 | Variable `PLAYWRIGHT_BASE_URL` mal puesta | Apunta a pdfhint u otro host sin token MVPS | Dejar la variable **sin definir** |
 
 #### Informe de regresión (GitHub Pages)
@@ -190,7 +190,7 @@ npm run report:merge-local
 
 | profile | Jobs | Contenido |
 |---------|------|-----------|
-| `fast` | ci-fast | SEO + pdfhint SEO smoke (PR/push por defecto) |
+| `fast` | ci-fast | SEO MVPS only (PR/push gate; sin pdfhint) |
 | `full` | ci-fast → ci-full | Funcional completo en un runner (sin visual) |
 | `visual` | ci-visual | Solo `@PDFEDITOR_VISUAL*` (manual) |
 | `regression` | setup (PR: tras fast; manual: dispatch) → 10 + 2 shards | Regresión completa paralela |

@@ -23,7 +23,7 @@ env:
 
 jobs:
   ci-fast:
-    name: CI fast (SEO + pdfhint SEO smoke)
+    name: CI fast (MVPS SEO smoke)
     timeout-minutes: 15
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.profile == 'fast' || inputs.profile == 'full' || inputs.profile == 'regression' }}
@@ -70,8 +70,6 @@ jobs:
         env:
           BASE_URL: ${{ vars.PLAYWRIGHT_BASE_URL }}
           MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
-          PDFHINT_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_BASE_URL }}
-          PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
           QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
 
       - name: Fast suite failure summary
