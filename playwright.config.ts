@@ -72,11 +72,13 @@ const bddTestDir = defineBddConfig({
 
 const reporters: Parameters<typeof defineConfig>[0]['reporter'] = [['list']]
 
+const embedCucumberAttachments = process.env.CUCUMBER_EMBED_ATTACHMENTS === '1'
+
 if (process.env.CI) {
   reporters.push(
     cucumberReporter('message', {
       outputFile: 'cucumber-report/messages.ndjson',
-      skipAttachments: true
+      skipAttachments: !embedCucumberAttachments
     }),
     ['blob'],
     ['json', { outputFile: 'playwright-report/results.json' }]

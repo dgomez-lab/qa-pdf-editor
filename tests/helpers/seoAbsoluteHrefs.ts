@@ -81,9 +81,15 @@ function seoHydrationTimeoutMs(): number {
   return process.env.CI ? 45_000 : 20_000
 }
 
+export async function waitForSeoNetworkSettled(page: Page): Promise<void> {
+  const cap = process.env.CI ? 8_000 : 5_000
+  await page.waitForLoadState('networkidle', { timeout: cap }).catch(() => {})
+}
+
 export async function waitForMvpsHeaderHydration(page: Page, timeoutMs?: number): Promise<void> {
   if (!isMvpsMergedStage()) return
   const t = timeoutMs ?? seoHydrationTimeoutMs()
+  await waitForSeoNetworkSettled(page)
   await page.locator('a[data-id="logIn"]').first().waitFor({ state: 'visible', timeout: t })
   await page.waitForFunction(
     () => {
@@ -109,14 +115,12 @@ export async function waitForMvpsFormsGridHydration(page: Page, timeoutMs?: numb
   await page.locator(`a[data-id=${JSON.stringify(firstId)}]`).first().waitFor({ state: 'visible', timeout: t })
 }
 
-export async function collectHeaderAbsoluteHrefErrors(
+async function evaluateHeaderHrefErrors(
   page: Page,
-  checks: readonly HeaderLinkCheck[] = HEADER_LINK_CHECKS,
-  opts?: { hrefPolicy?: SeoHrefPolicy }
+  checks: readonly HeaderLinkCheck[],
+  policy: SeoHrefPolicy
 ): Promise<string[]> {
-  await waitForMvpsHeaderHydration(page)
   const list = checks.map((c) => ({ ...c }))
-  const policy = opts?.hrefPolicy ?? 'strictHttp'
   return page.evaluate(
     ({ listIn, policy: pol }) => {
       const norm = (p: string) => (p.length > 1 && p.endsWith('/') ? p.slice(0, -1) : p)
@@ -159,11 +163,28 @@ export async function collectHeaderAbsoluteHrefErrors(
   )
 }
 
+export async function collectHeaderAbsoluteHrefErrors(
+  page: Page,
+  checks: readonly HeaderLinkCheck[] = HEADER_LINK_CHECKS,
+  opts?: { hrefPolicy?: SeoHrefPolicy }
+): Promise<string[]> {
+  const policy = opts?.hrefPolicy ?? 'strictHttp'
+  await waitForMvpsHeaderHydration(page)
+  let errors = await evaluateHeaderHrefErrors(page, checks, policy)
+  if (errors.length > 0 && isMvpsMergedStage()) {
+    await page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {})
+    await waitForMvpsHeaderHydration(page)
+    errors = await evaluateHeaderHrefErrors(page, checks, policy)
+  }
+  return errors
+}
+
 export async function collectLandingAbsoluteHrefErrors(
   page: Page,
   pathnames: readonly string[] = LANDING_LP_PATHNAMES as unknown as string[],
   opts?: { hrefPolicy?: SeoHrefPolicy; contentRoot?: 'contentId' | 'main' | 'auto' }
 ): Promise<string[]> {
+  if (isMvpsMergedStage()) await waitForMvpsHeaderHydration(page)
   const paths = [...pathnames]
   const policy = opts?.hrefPolicy ?? 'strictHttp'
   const rootMode = opts?.contentRoot ?? 'auto'
@@ -224,6 +245,7 @@ export async function collectFooterAbsoluteHrefErrors(
   pathnames: readonly string[] = FOOTER_NON_HOME_PATHNAMES as unknown as string[],
   opts?: { hrefPolicy?: SeoHrefPolicy; footerSelector?: string }
 ): Promise<string[]> {
+  if (isMvpsMergedStage()) await waitForMvpsHeaderHydration(page)
   const extraPaths = [...pathnames]
   const policy = opts?.hrefPolicy ?? 'strictHttp'
   const footerSelector = opts?.footerSelector ?? '[class*="FooterContainer"]'
@@ -289,13 +311,8 @@ export async function collectFooterAbsoluteHrefErrors(
   )
 }
 
-export async function collectFormsPageAbsoluteHrefErrors(
-  page: Page,
-  opts?: { hrefPolicy?: SeoHrefPolicy }
-): Promise<string[]> {
-  await waitForMvpsFormsGridHydration(page)
+async function evaluateFormsHrefErrors(page: Page, policy: SeoHrefPolicy): Promise<string[]> {
   const checks = FORMS_PAGE_LINK_CHECKS.map((c) => ({ ...c }))
-  const policy = opts?.hrefPolicy ?? 'strictHttp'
   return page.evaluate(
     ({ list, policy: pol }) => {
       const errors: string[] = []
@@ -334,4 +351,19 @@ export async function collectFormsPageAbsoluteHrefErrors(
     },
     { list: checks, policy }
   )
+}
+
+export async function collectFormsPageAbsoluteHrefErrors(
+  page: Page,
+  opts?: { hrefPolicy?: SeoHrefPolicy }
+): Promise<string[]> {
+  const policy = opts?.hrefPolicy ?? 'strictHttp'
+  await waitForMvpsFormsGridHydration(page)
+  let errors = await evaluateFormsHrefErrors(page, policy)
+  if (errors.length > 0 && isMvpsMergedStage()) {
+    await page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {})
+    await waitForMvpsFormsGridHydration(page)
+    errors = await evaluateFormsHrefErrors(page, policy)
+  }
+  return errors
 }

@@ -4,6 +4,7 @@ import {
   deactivatePdfhintScenarioEnv,
   isPdfhintScenario
 } from '../../helpers/pdfhintScenario'
+import { persistFailureScreenshot } from '../../helpers/failureScreenshot'
 import { logConfigOnce, logScenarioEnd, logScenarioStart, printBanner } from '../bddLogger'
 
 Before(async ({ bddWorld }) => {
@@ -39,15 +40,7 @@ After(async ({ page }) => {
     lastUrl = undefined
   }
   if (!passed) {
-    try {
-      const buffer = await page.screenshot({ fullPage: true })
-      await testInfo.attach('failure-screenshot', {
-        body: buffer,
-        contentType: 'image/png'
-      })
-    } catch {
-      /* page may already be closed */
-    }
+    await persistFailureScreenshot(page, testInfo)
   }
   logScenarioEnd(testInfo.title, passed, passed ? undefined : lastUrl)
 })

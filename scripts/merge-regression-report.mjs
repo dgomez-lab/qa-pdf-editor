@@ -25,7 +25,7 @@ const skipBlobMerge = process.env.SKIP_BLOB_MERGE === '1'
 const blobMergeMaxBytes = Number(process.env.BLOB_MERGE_MAX_BYTES || '524288000')
 const minNdjsonBytes = 1024
 const expectedTestTotal = Number(process.env.REGRESSION_EXPECTED_TESTS || '214')
-const expectedSources = Number(process.env.REGRESSION_EXPECTED_SOURCES || '10')
+const expectedSources = Number(process.env.REGRESSION_EXPECTED_SOURCES || '12')
 
 function isHookStepId(stepId) {
   return /-(before|after)-test-(case|run)-/.test(stepId)
@@ -117,6 +117,71 @@ function primaryTag(pickle) {
   const tags = pickle.tags || []
   const preferred = tags.find((t) => /^@(PDFEDITOR|PDFHINT)/i.test(t.name))
   return preferred?.name || tags[0]?.name || null
+}
+
+function normalizeScenarioTitle(title) {
+  return String(title || '')
+    .replace(/\s*\(pdfhint smoke\)\s*/gi, '')
+    .trim()
+    .toLowerCase()
+}
+
+function safeFileId(testId) {
+  return String(testId || '').replace(/[^a-zA-Z0-9_-]/g, '_')
+}
+
+function findFailureScreenshotDirs(root) {
+  const dirs = []
+  if (!fs.existsSync(root)) return dirs
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        if (entry.name === 'failure-screenshots') dirs.push(p)
+        else walk(p)
+      }
+    }
+  }
+  walk(root)
+  return dirs
+}
+
+function loadFailureScreenshotIndex(artifactsDir) {
+  const byTag = new Map()
+  const byTitle = new Map()
+  for (const dir of findFailureScreenshotDirs(artifactsDir)) {
+    const manifestPath = path.join(dir, 'manifest.ndjson')
+    if (!fs.existsSync(manifestPath)) continue
+    for (const line of fs.readFileSync(manifestPath, 'utf8').split(/\r?\n/)) {
+      if (!line.trim()) continue
+      let entry
+      try {
+        entry = JSON.parse(line)
+      } catch {
+        continue
+      }
+      const pngPath = path.join(dir, `${safeFileId(entry.testId)}.png`)
+      if (!fs.existsSync(pngPath)) continue
+      const buf = fs.readFileSync(pngPath)
+      const dataUrl = `data:image/png;base64,${buf.toString('base64')}`
+      if (entry.tag) byTag.set(entry.tag, dataUrl)
+      if (entry.title) byTitle.set(normalizeScenarioTitle(entry.title), dataUrl)
+    }
+  }
+  return { byTag, byTitle }
+}
+
+function applyFailureScreenshots(scenarios, artifactsDir) {
+  const { byTag, byTitle } = loadFailureScreenshotIndex(artifactsDir)
+  for (const s of scenarios) {
+    if (s.status !== 'FAILED' && !s.steps.some((st) => st.status === 'FAILED')) continue
+    const dataUrl =
+      (s.label && byTag.get(s.label)) || byTitle.get(normalizeScenarioTitle(s.scenarioName)) || null
+    if (!dataUrl) continue
+    if (!s.screenshotDataUrl) s.screenshotDataUrl = dataUrl
+    const failedStep = s.steps.find((st) => st.status === 'FAILED' && !isHookStepId(st.id))
+    if (failedStep && !failedStep.screenshotDataUrl) failedStep.screenshotDataUrl = dataUrl
+  }
 }
 
 function parseCucumberMessages(envelopes) {
@@ -462,10 +527,17 @@ function buildHtml(scenarios, meta) {
       document.getElementById('modal-error').textContent = s.errorMessage || '';
       const stepsEl = document.getElementById('modal-steps');
       stepsEl.innerHTML = '';
-      for (const step of s.steps) {
+      const gherkin = (s.steps || []).filter((step) => !/-(before|after)-test-(case|run)-/.test(step.id));
+      for (const step of gherkin) {
         const li = document.createElement('li');
         li.className = (step.status === 'PASSED' ? 'passed' : step.status === 'FAILED' ? 'failed' : step.status === 'SKIPPED' ? 'skipped' : 'unknown');
         li.textContent = step.text;
+        if (step.errorMessage) {
+          const err = document.createElement('div');
+          err.className = 'error';
+          err.textContent = step.errorMessage;
+          li.appendChild(err);
+        }
         stepsEl.appendChild(li);
       }
       const img = document.getElementById('modal-screenshot');
@@ -620,6 +692,7 @@ async function main() {
   }
 
   const scenarios = parseCucumberMessages(envelopes)
+  applyFailureScreenshots(scenarios, artifactsDir)
   const counts = countByStatus(scenarios)
   const sourcesUsed = sources.length
   const partialRun = sourcesUsed < expectedSources
@@ -674,7 +747,9 @@ ${incompleteRow}
 
 **Dashboard:** [Open QAI-style report](${pagesUrl})
 
-**Actions run:** [${runUrl}](${runUrl})${partialNote}
+**Actions run:** [${runUrl}](${runUrl})
+
+Per-shard traces: download \`blob-report-*\` artifacts if Playwright HTML merge was skipped.${partialNote}
 `
   fs.writeFileSync(path.join(outputDir, 'summary.md'), summary)
 

@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REGRESSION_SHARD_TOTAL: '8'
+  REGRESSION_SHARD_TOTAL: '10'
   REGRESSION_VISUAL_SHARD_TOTAL: '2'
   PLAYWRIGHT_CI_RETRIES: '1'
 
@@ -63,6 +63,7 @@ jobs:
           QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
 
       - name: Run fast suite
+        # Leave repository variable PLAYWRIGHT_BASE_URL unset unless you intentionally override staging (red.mvps.website + QA token).
         run: |
           export QAI_TOKEN_PARAM="${QAI_TOKEN_PARAM:-x-token-qa=niGqCYH7McqERAB}"
           npm run test:ci-fast-run
@@ -209,7 +210,7 @@ jobs:
           retention-days: 1
 
   ci-regression-functional:
-    name: Regression functional (shard ${{ matrix.shard }}/8)
+    name: Regression functional (shard ${{ matrix.shard }}/${{ env.REGRESSION_SHARD_TOTAL }})
     timeout-minutes: 120
     runs-on: ubuntu-latest
     if: >-
@@ -223,9 +224,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     env:
-      REGRESSION_SHARD_TOTAL: '8'
+      REGRESSION_SHARD_TOTAL: '10'
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
       PLAYWRIGHT_CI_WORKERS: '2'
@@ -285,6 +286,15 @@ jobs:
           name: blob-report-shard-${{ matrix.shard }}
           path: blob-report/
           if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots-shard-${{ matrix.shard }}
+          path: cucumber-report/failure-screenshots/
+          if-no-files-found: ignore
           retention-days: 14
 
   ci-regression-visual:
@@ -356,6 +366,15 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots-visual-${{ matrix.shard }}
+          path: cucumber-report/failure-screenshots/
+          if-no-files-found: ignore
+          retention-days: 14
+
   report-publish:
     name: Publish regression report
     runs-on: ubuntu-latest
@@ -404,6 +423,12 @@ jobs:
           path: artifacts
           pattern: blob-report-*
 
+      - name: Download failure screenshot artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: failure-screenshots-*
+
       - name: Merge cucumber messages and build dashboard
         id: merge
         run: node scripts/merge-regression-report.mjs
@@ -411,7 +436,7 @@ jobs:
           ARTIFACTS_DIR: artifacts
           REPORT_OUTPUT_DIR: report
           SKIP_BLOB_MERGE: '1'
-          REGRESSION_EXPECTED_SOURCES: '10'
+          REGRESSION_EXPECTED_SOURCES: '12'
           REGRESSION_EXPECTED_TESTS: '214'
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
