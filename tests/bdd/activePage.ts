@@ -5,3 +5,7 @@ export function primaryOrPopup(w: BddWorld, main: Page): Page {
   if (w.popup && !w.popup.isClosed()) return w.popup
   return main
 }
+
+export function marketingPage(w: BddWorld, main: Page): Page {
+  return primaryOrPopup(w, main)
+}

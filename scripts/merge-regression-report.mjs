@@ -126,6 +126,14 @@ function normalizeScenarioTitle(title) {
     .toLowerCase()
 }
 
+function normalizePlaywrightTitle(title) {
+  const raw = String(title || '').trim()
+  if (!raw) return ''
+  const parts = raw.split('›').map((p) => p.trim())
+  const last = parts.length > 1 ? parts[parts.length - 1] : raw
+  return normalizeScenarioTitle(last.replace(/^\[[^\]]+\]\s*/, ''))
+}
+
 function safeFileId(testId) {
   return String(testId || '').replace(/[^a-zA-Z0-9_-]/g, '_')
 }
@@ -136,10 +144,13 @@ function findFailureScreenshotDirs(root) {
   const walk = (dir) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const p = path.join(dir, entry.name)
-      if (entry.isDirectory()) {
-        if (entry.name === 'failure-screenshots') dirs.push(p)
-        else walk(p)
+      if (!entry.isDirectory()) continue
+      const manifestPath = path.join(p, 'manifest.ndjson')
+      if (fs.existsSync(manifestPath)) {
+        dirs.push(p)
+        continue
       }
+      walk(p)
     }
   }
   walk(root)
@@ -165,7 +176,11 @@ function loadFailureScreenshotIndex(artifactsDir) {
       const buf = fs.readFileSync(pngPath)
       const dataUrl = `data:image/png;base64,${buf.toString('base64')}`
       if (entry.tag) byTag.set(entry.tag, dataUrl)
-      if (entry.title) byTitle.set(normalizeScenarioTitle(entry.title), dataUrl)
+      if (entry.title) {
+        byTitle.set(normalizeScenarioTitle(entry.title), dataUrl)
+        const fromPw = normalizePlaywrightTitle(entry.title)
+        if (fromPw) byTitle.set(fromPw, dataUrl)
+      }
     }
   }
   return { byTag, byTitle }
@@ -184,6 +199,26 @@ function applyFailureScreenshots(scenarios, artifactsDir) {
   }
 }
 
+function buildTestStepTextMap(testCases, pickleStepText) {
+  const testStepText = new Map()
+  for (const tc of testCases.values()) {
+    for (const ts of tc.testSteps || []) {
+      if (!ts.pickleStepId) continue
+      const text = pickleStepText.get(ts.pickleStepId)
+      if (text) testStepText.set(ts.id, text)
+    }
+  }
+  return testStepText
+}
+
+function resolveStepText(testStepId, testStepText, pickleStepText) {
+  return (
+    testStepText.get(testStepId) ||
+    pickleStepText.get(testStepId) ||
+    testStepId
+  )
+}
+
 function parseCucumberMessages(envelopes) {
   const pickles = new Map()
   const testCases = new Map()
@@ -198,6 +233,11 @@ function parseCucumberMessages(envelopes) {
       }
     }
     if (env.testCase) testCases.set(env.testCase.id, env.testCase)
+  }
+
+  const testStepText = buildTestStepTextMap(testCases, pickleStepText)
+
+  for (const env of envelopes) {
     if (env.testCaseStarted) {
       const tc = testCases.get(env.testCaseStarted.testCaseId)
       const pickle = tc ? pickles.get(tc.pickleId) : null
@@ -218,7 +258,7 @@ function parseCucumberMessages(envelopes) {
       if (att) {
         att.steps.push({
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text: resolveStepText(env.testStepStarted.testStepId, testStepText, pickleStepText),
           status: 'UNKNOWN',
           durationNs: 0,
           errorMessage: '',
@@ -304,7 +344,14 @@ function parseCucumberMessages(envelopes) {
   return scenarios
 }
 
-export { parseCucumberMessages, resolveAttemptStatus, isHookStepId, gherkinSteps }
+export {
+  parseCucumberMessages,
+  resolveAttemptStatus,
+  isHookStepId,
+  gherkinSteps,
+  applyFailureScreenshots,
+  findFailureScreenshotDirs
+}
 
 function countByStatus(scenarios) {
   const counts = { PASSED: 0, FAILED: 0, SKIPPED: 0, PENDING: 0, INCOMPLETE: 0, UNKNOWN: 0 }

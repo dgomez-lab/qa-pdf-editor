@@ -210,7 +210,7 @@ jobs:
   ci-regression-functional:
     name: Regression functional (shard ${{ matrix.shard }}/10)
     timeout-minutes: 120
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.PLAYWRIGHT_RUNNER == 'self-hosted' && 'self-hosted' || 'ubuntu-latest' }}
     if: >-
       always() &&
       (needs.regression-setup.result == 'success' || needs.regression-setup-dispatch.result == 'success') &&
@@ -227,7 +227,7 @@ jobs:
       REGRESSION_SHARD_TOTAL: '10'
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
-      PLAYWRIGHT_CI_WORKERS: '2'
+      PLAYWRIGHT_CI_WORKERS: '1'
       SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
     steps:
       - uses: actions/checkout@v4
@@ -298,7 +298,7 @@ jobs:
   ci-regression-visual:
     name: Regression visual (shard ${{ matrix.shard }}/2)
     timeout-minutes: 120
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.PLAYWRIGHT_RUNNER == 'self-hosted' && 'self-hosted' || 'ubuntu-latest' }}
     if: >-
       always() &&
       (needs.regression-setup.result == 'success' || needs.regression-setup-dispatch.result == 'success') &&
@@ -315,7 +315,7 @@ jobs:
       REGRESSION_VISUAL_SHARD_TOTAL: '2'
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
-      PLAYWRIGHT_CI_WORKERS: '2'
+      PLAYWRIGHT_CI_WORKERS: '1'
       SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
     steps:
       - uses: actions/checkout@v4

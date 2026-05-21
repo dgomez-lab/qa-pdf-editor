@@ -22,6 +22,7 @@ import {
 } from '../pageFactory'
 import { getLocatorForPage } from '../elementRegistry'
 import { bddLocator, bddPage, screenshotOpts, visualSnapshotBaseForPageLabel } from '../stepHelpers'
+import { marketingPage } from '../activePage'
 import { logBrowserRefresh, logElementAction } from '../bddLogger'
 import { clickNextButton, createNewUserFromEditor, loginExistingUserFromEditor } from '../../helpers/editorActions'
 import { registerNewUserFromLogin, loginExistingUserFromLogin, tryLoginBlockedUser } from '../../helpers/loginFlow'
@@ -84,7 +85,7 @@ function urlRegexForPage(pageName: string): RegExp {
   const n = normalized(pageName)
   if (n === 'home') return /\/([a-z]{2}\/)?($|\?)/i
   if (n === 'login') return /\/login/i
-  if (n === 'editor') return /\/editor|\/[a-z]{2}\/?(\?|$)/i
+  if (n === 'editor') return /\/editor(\/|$|\?)/i
   if (n === 'dashboard') return /\/dashboard/i
   if (n === 'account') return /\/account/i
   if (n === 'downloads') return /\/downloads/i
@@ -154,12 +155,12 @@ When('I search the current customer', async ({ bddWorld }) => {
 })
 
 Then('I am redirected to {word} page', async ({ page, bddWorld }, target: string) => {
-  const p = bddPage(bddWorld, page)
+  const p = marketingPage(bddWorld, page)
   await expect(p).toHaveURL(urlRegexForPage(target), { timeout: 120_000 })
 })
 
 Then('I am redirected to {string} page', async ({ page, bddWorld }, target: string) => {
-  const p = bddPage(bddWorld, page)
+  const p = marketingPage(bddWorld, page)
   await expect(p).toHaveURL(urlRegexForPage(target), { timeout: 120_000 })
 })
 
@@ -622,19 +623,21 @@ When('I trigger the mergedpdf document download from the downloads page', async 
 })
 
 Then('the browser url should contain {word}', async ({ page, bddWorld }, token: string) => {
-  await expect(bddPage(bddWorld, page)).toHaveURL(new RegExp(token, 'i'), { timeout: 60_000 })
+  await expect(marketingPage(bddWorld, page)).toHaveURL(new RegExp(token, 'i'), { timeout: 60_000 })
 })
 
 Then('The url of current page should contain {string}', async ({ page, bddWorld }, token: string) => {
-  await expect(bddPage(bddWorld, page)).toHaveURL(new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), {
-    timeout: 60_000
-  })
+  await expect(marketingPage(bddWorld, page)).toHaveURL(
+    new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+    { timeout: 60_000 }
+  )
 })
 
 Then(/^The url of current page should contain (.+)$/, async ({ page, bddWorld }, token: string) => {
-  await expect(bddPage(bddWorld, page)).toHaveURL(new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), {
-    timeout: 60_000
-  })
+  await expect(marketingPage(bddWorld, page)).toHaveURL(
+    new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+    { timeout: 60_000 }
+  )
 })
 
 When('The dashboard pdf preview should not show load failure', async ({ page, bddWorld }) => {

@@ -1,7 +1,14 @@
 import type { Page } from '@playwright/test'
 import type { BddWorld } from './fixtures'
 import { getLocatorForPage, resolvePageForElement } from './elementRegistry'
-import { primaryOrPopup } from './activePage'
+import { marketingPage, primaryOrPopup } from './activePage'
+
+export async function closeCrmPageIfOpen(w: BddWorld): Promise<void> {
+  if (w.crmPage && !w.crmPage.isClosed()) {
+    await w.crmPage.close().catch(() => {})
+  }
+  w.crmPage = null
+}
 
 export function bddPage(w: BddWorld, main: Page): Page {
   if ((w.currentPage === 'CrmCustomer' || w.currentPage === 'CrmCustomersTable' || w.currentPage === 'CrmHome') && w.crmPage && !w.crmPage.isClosed()) {

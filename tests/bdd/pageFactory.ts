@@ -24,6 +24,7 @@ import { openCrmCustomerForEmail, loginCrmAndOpenCustomers, searchAndOpenFirstCu
 import { forceUrlWithParameters, forceWrongUrl } from '../helpers/forceUrlParams'
 import { contact } from '../pages/contact/contactSelectorsBundle'
 import type { BddWorld } from './fixtures'
+import { closeCrmPageIfOpen } from './stepHelpers'
 
 function flow(td: Record<string, string>): string {
   return (td.flow ?? 'Default').trim()
@@ -36,6 +37,7 @@ function homeQueryFromTestData(td: Record<string, string>): Record<string, strin
 }
 
 export async function loadHomePage(page: Page, w: BddWorld): Promise<void> {
+  await closeCrmPageIfOpen(w)
   logPageLoad('Home')
   const loc = w.testData.locale?.trim()
   await openHome(page, {
@@ -47,6 +49,7 @@ export async function loadHomePage(page: Page, w: BddWorld): Promise<void> {
 }
 
 export async function loadLoginPage(page: Page, w: BddWorld): Promise<void> {
+  await closeCrmPageIfOpen(w)
   logPageLoad('Login')
   const f = flow(w.testData)
   if (f === 'Direct' || f === 'Dashboard') {
@@ -72,6 +75,7 @@ export async function loadLoginPage(page: Page, w: BddWorld): Promise<void> {
 }
 
 export async function loadEditorPage(page: Page, w: BddWorld): Promise<void> {
+  await closeCrmPageIfOpen(w)
   logPageLoad('Editor')
   const f = flow(w.testData)
   if (f === 'Forms') {
@@ -116,6 +120,7 @@ export async function loadEditorPage(page: Page, w: BddWorld): Promise<void> {
 }
 
 export async function loadDashboardPage(page: Page, w: BddWorld): Promise<void> {
+  await closeCrmPageIfOpen(w)
   logPageLoad('Dashboard')
   const f = flow(w.testData)
   if (f === 'Direct') {
@@ -151,6 +156,7 @@ export async function loadDashboardPage(page: Page, w: BddWorld): Promise<void> 
 }
 
 export async function loadAccountPage(page: Page, w: BddWorld): Promise<void> {
+  await closeCrmPageIfOpen(w)
   const f = flow(w.testData)
   if (f === 'Direct') {
     await gotoLogin(page)
@@ -170,17 +176,20 @@ export async function loadAccountPage(page: Page, w: BddWorld): Promise<void> {
 }
 
 export async function loadContactPage(page: Page, w: BddWorld): Promise<void> {
+  await closeCrmPageIfOpen(w)
   await gotoMarketingPath(page, '/contact', { waitUntil: 'domcontentloaded' })
   await dismissCookiesIfPresent(page)
   w.currentPage = 'Contact'
 }
 
 export async function loadDownloadsPage(page: Page, w: BddWorld): Promise<void> {
+  await closeCrmPageIfOpen(w)
   await gotoMarketingPath(page, '/downloads', { waitUntil: 'domcontentloaded' })
   w.currentPage = 'Downloads'
 }
 
 export async function loadLandingProductPage(page: Page, slug: string, w: BddWorld): Promise<void> {
+  await closeCrmPageIfOpen(w)
   await gotoLanding(page, slug)
   w.currentPage = 'Landing'
 }

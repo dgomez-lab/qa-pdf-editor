@@ -43,6 +43,7 @@ El script [`scripts/setup-github-actions-env.py`](../scripts/setup-github-action
 | `PLAYWRIGHT_BASE_URL` | URL base opcional. **Recomendado: dejarla sin definir** para que CI use `red.mvps.website` y el token QA en query (`?x-token-qa=…`). Solo configúrala si quieres otro host explícito. |
 | `PLAYWRIGHT_APP` | `mergedpdf` o `pdfhint` |
 | `PLAYWRIGHT_MVPS_SLOT` | Slot `1`–`10` o vacío para `red` |
+| `PLAYWRIGHT_RUNNER` | `self-hosted` para regresión en runner con VPN (Mailpit + pdfhint); vacío → `ubuntu-latest` |
 | `PLAYWRIGHT_PDFHINT_BASE_URL` | Marketing pdfhint |
 | `PLAYWRIGHT_PDFHINT_APP_BASE_URL` | App pdfhint si difiere |
 | `SEO_LOGIN_PATHNAME` | Login cabecera pdfhint (default `/login`) |
@@ -88,14 +89,24 @@ Los shards funcionales **no** ejecutan los visuales (evita duplicar ~68 tests en
 La regresión no usa un solo runner de 3 h:
 
 1. **regression-setup** (PR: tras **ci-fast**) o **regression-setup-dispatch** (manual: en paralelo con **ci-fast**) — `bddgen` una vez, artefacto `features-gen` (`include-hidden-files: true` en el upload).
-2. **ci-regression-functional** — matriz **10 jobs** (`--shard=1/10` … `10/10`), ~15 tests/shard, **2 workers** (`PLAYWRIGHT_CI_WORKERS=2`), **1 reintento** en CI (`PLAYWRIGHT_CI_RETRIES=1`). Los runners bloquean analytics conocidos (menos ruido de red).
+2. **ci-regression-functional** — matriz **10 jobs** (`--shard=1/10` … `10/10`), ~15 tests/shard, **1 worker** (`PLAYWRIGHT_CI_WORKERS=1`), **1 reintento** en CI (`PLAYWRIGHT_CI_RETRIES=1`). Los runners bloquean analytics conocidos (menos ruido de red).
 3. **ci-regression-visual** — matriz **2 jobs** (`--shard=1/2` y `2/2`), ~34 tests/shard.
 
 Tiempo de pared ≈ `max(shard funcional más lento, shard visual más lento)`. Objetivo **~35–45 min** en GitHub-hosted; **30–40 min** como QAI Dogs (5 máquinas AWS) suele requerir runners self-hosted más cerca de staging.
 
 Si **regression-setup** falla con *No files were found* al subir el artefacto, comprueba que existan `*.spec.js` bajo `.features-gen/` tras `bddgen` y que el paso de upload tenga `include-hidden-files: true`.
 
-Si hay flakes en pago/Mailpit, baja workers en el workflow: `PLAYWRIGHT_CI_WORKERS: '1'`.
+Los shards de regresión usan `PLAYWRIGHT_CI_WORKERS: '1'` para reducir presión sobre `red.mvps.website`.
+
+### Mailpit y VPN (emails transaccionales)
+
+Mailpit (`mailpit.1ecorp.net`) y pdfhint staging requieren **VPN corporativa** desde runners públicos de GitHub. Sin VPN verás `Mailpit list: HTTP 403` en ~12 escenarios.
+
+1. Registra un **self-hosted runner** con acceso VPN (misma red que QAI Dogs).
+2. En **Settings → Variables**, define `PLAYWRIGHT_RUNNER` = `self-hosted`.
+3. Los jobs **ci-regression-functional** y **ci-regression-visual** usarán ese runner; mantén secrets `PLAYWRIGHT_MAILPIT_USER` / `PLAYWRIGHT_MAILPIT_PASSWORD` (`npm run setup:github-actions`).
+
+Con `PLAYWRIGHT_RUNNER` vacío, la regresión sigue en `ubuntu-latest` (MVPS/CRM/visual OK; Mailpit en rojo hasta tener runner VPN).
 
 ## Lanzar la regresión (manual)
 
@@ -172,6 +183,8 @@ Si el job **Publish regression report** falla o no hay enlace al dashboard:
 | **Deploy** en rojo, merge en verde | GitHub Pages no activado | **Settings → Pages → Deploy from branch → `gh-pages` / (root)** |
 | Dashboard **106 total, 0 passed** | Run parcial + merge antiguo sin inferir estado desde pasos | Re-ejecutar con commit actual; debe mostrar **~214** y passed/failed > 0 |
 | Dashboard con **Partial run** | Menos de **12/12** artefactos con datos (timeout/cancelación) | Revisar shards; no lanzar dos regresiones a la vez en la misma rama |
+| Pasos con IDs `…-step-0` en el modal | Merge antiguo sin `testCase.testSteps.pickleStepId` | Usar commit actual de `merge-regression-report.mjs` y re-publicar informe |
+| Sin screenshots en fallos del dashboard | Artefactos `failure-screenshots-shard-*` no indexados (solo buscaba carpeta `failure-screenshots/`) | Mismo merge actual; artefactos ya suben PNG + `manifest.ndjson` |
 | Workflow **Cancelled** con otro run en curso | `concurrency: cancel-in-progress: true` | Esperar al run anterior o usar otra rama |
 | Artefacto `cucumber-messages-*` de **146 B** | Job cancelado/timeout antes de tests | No aporta al informe |
 
