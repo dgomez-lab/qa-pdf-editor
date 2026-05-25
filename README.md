@@ -96,6 +96,7 @@ PLAYWRIGHT_PAYMENT_SMOKE=1 npm run test:tag -- @PDFEDITOR_PDFHINT_SMOKE_VISA
 | `PLAYWRIGHT_PAYMENT_SMOKE` | `1` / `true` para ejecutar escenarios de pago (tags `@PDFEDITOR_PAYMENT_*` y smoke de pago). |
 | `PLAYWRIGHT_TEST_EMAIL` | Email fijo para el test de pago. |
 | `STRIPE_TEST_CARD_NUMBER` / `EXP` / `CVC` | Tarjeta de prueba Stripe (por defecto 4242… / 1234 / 123). |
+| `PLAYWRIGHT_DEFAULT_TEST_IP` | País simulado que se añade como `?ip=…` cuando el escenario no fija `ip`. En CI el fallback es `ES`; los jobs `full`/`regression` lo fijan explícitamente para evitar precios USD en runners GitHub. |
 | `SEO_LOGIN_PATHNAME` | Pathname esperado del Login en marketing pdfhint (por defecto `/login`; `@PDFHINT` lo fija si falta). |
 | `PLAYWRIGHT_TRACE` | `1` fuerza `trace: 'on'` en toda la suite (útil para depurar Stripe). |
 | `BDD_LOG_LEVEL` | Por defecto **local:** `DEBUG` (logs de página/elemento estilo legacy). **CI:** `INFO`. Override: `SILENT` / `INFO` / `DEBUG`. |

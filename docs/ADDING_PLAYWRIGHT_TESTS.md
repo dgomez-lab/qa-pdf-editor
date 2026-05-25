@@ -41,6 +41,38 @@ npm run test:tag -- @PDFEDITOR_MI_ESCENARIO_TAG
 5. Actualiza [`PORTING_STATUS.md`](PORTING_STATUS.md) si cambia el alcance del port.
 6. Verifica paridad de tags: `npm run porting:tags` (esperado `missingFromPlaywright: []`).
 
+## Datos de escenario: geo, moneda y checkout Stripe
+
+El paso `Given I set this test to start with the following data:` guarda la primera fila de la tabla en `bddWorld.testData` (ver [`tests/bdd/bddTestData.ts`](../tests/bdd/bddTestData.ts)). Las claves más usadas por los loaders son:
+
+| Clave | Consumidores | Efecto |
+|-------|--------------|--------|
+| `flow` | [`tests/bdd/pageFactory.ts`](../tests/bdd/pageFactory.ts) | Decide si el loader entra por Home, Login, Dashboard, Forms o flujo default con upload + pago. |
+| `locale` | `loadHomePage`, `loadEditorPage`, helpers Mailpit | Abre Home con prefijo de idioma cuando aplica y valida emails localizados. |
+| `ip` | [`homeQueryFromTestData`](../tests/helpers/testIpQuery.ts), [`fillStripePaymentLikeLegacy`](../tests/helpers/stripePayment.ts) | Añade `?ip=<pais>` al Home/Editor y permite adaptar el formulario Stripe cuando el país cambia campos obligatorios. |
+| `card` | `When I make the initial payment` | Selecciona tarjeta desde [`tests/bdd/stripeTestCards.ts`](../tests/bdd/stripeTestCards.ts); por defecto `Visa`. |
+
+Reglas para `ip`:
+
+- Si la tabla trae un país concreto (`US`, `ES`, `CA`, etc.), `homeQueryFromTestData` navega con `?ip=<pais>`.
+- Si la tabla trae `Default` o no trae `ip`, `PLAYWRIGHT_DEFAULT_TEST_IP` decide el país simulado. En CI, si la variable no existe, el fallback del helper es `ES`; los jobs `full` y `regression` también exportan `PLAYWRIGHT_DEFAULT_TEST_IP=ES`.
+- En local, sin `PLAYWRIGHT_DEFAULT_TEST_IP`, no se añade `ip` por defecto. Esto reproduce el comportamiento natural de tu red y puede cambiar moneda/precios frente a CI.
+- Los escenarios que esperan moneda concreta deben fijar `ip` explícito en Gherkin y, si fuerzan URL con JSON, mantener el mismo valor en ambos sitios.
+- Stripe puede pedir datos extra por país. Hoy [`fillStripePaymentLikeLegacy`](../tests/helpers/stripePayment.ts) solo rellena país `US` + ZIP `90210` cuando `testData.ip === 'US'`; si otro país empieza a exigir campos de facturación, añade primero el caso al helper y cubre la regla con un test unitario.
+
+Ejemplo:
+
+```gherkin
+Given I set this test to start with the following data:
+  | flow    | ip |
+  | Default | US |
+And I am in Home page
+And I force URL with parameters
+  """
+  { "ip": "US" }
+  """
+```
+
 ## Ejemplo mínimo de paso
 
 ```typescript
