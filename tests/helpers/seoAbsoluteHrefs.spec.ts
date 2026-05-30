@@ -27,10 +27,18 @@ function restoreEnv(snapshot: EnvSnapshot): void {
 test.describe('SEO absolute href helpers', () => {
   let envSnapshot: EnvSnapshot
 
-  test.beforeEach(() => {
+  test.beforeEach(async ({ page }) => {
     envSnapshot = captureEnv()
     process.env.BASE_URL = 'https://staging.pdfhint.com'
     delete process.env.CI
+    await page.route('https://staging.pdfhint.com/**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!doctype html><html><body></body></html>'
+      })
+    )
+    await page.goto('https://staging.pdfhint.com/')
   })
 
   test.afterEach(() => {
