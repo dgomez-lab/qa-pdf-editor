@@ -1,0 +1,311 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison of all products >> Example #6
+- Location: .features-gen/features/Visual.feature.spec.js:615:9
+
+# Error details
+
+```
+Error: expect(page).toHaveScreenshot(expected) failed
+
+  48700 pixels (ratio 0.06 of all image pixels) are different.
+
+  Snapshot: visual-product-watermark.png
+
+Call log:
+  - Expect "toHaveScreenshot(visual-product-watermark.png)" with timeout 30000ms
+    - verifying given screenshot expectation
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - 49046 pixels (ratio 0.06 of all image pixels) are different.
+  - waiting 100ms before taking screenshot
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - 45216 pixels (ratio 0.05 of all image pixels) are different.
+  - waiting 250ms before taking screenshot
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - captured a stable screenshot
+  - 48700 pixels (ratio 0.06 of all image pixels) are different.
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - generic [ref=e10]:
+      - link "logo" [ref=e11] [cursor=pointer]:
+        - /url: https://www.mergedpdf.com/
+        - img "logo" [ref=e12]
+      - generic [ref=e13]:
+        - link "Most Used Forms" [ref=e15] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/forms
+          - generic [ref=e16]: Most Used Forms
+        - link "Login" [ref=e18] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/login
+          - generic [ref=e19]: Login
+    - generic [ref=e20]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - heading "Add a Watermark to a PDF" [level=1] [ref=e24]
+          - paragraph [ref=e26]: Watermark your PDF in a flash!
+        - generic [ref=e29]:
+          - button "Choose File" [ref=e30]
+          - generic [ref=e31]:
+            - text: Upload Document
+            - img "union icon" [ref=e34]
+          - generic [ref=e35]: or Drag and Drop
+          - generic [ref=e36]: Supports PDF up to 100 MB and other formats and extensions up to 25 MB
+      - generic [ref=e37]:
+        - generic [ref=e39]:
+          - img "watermark" [ref=e41]
+          - generic [ref=e42]:
+            - generic [ref=e43]: How to Add a Watermark to a PDF
+            - generic [ref=e45]:
+              - generic [ref=e48]: Click “Upload Document” or drag and drop your file
+              - generic [ref=e52]: Select the watermark option and edit as you wish
+              - generic [ref=e56]: Click “Convert” to update your document
+              - generic [ref=e60]: Download or share your new file
+            - generic [ref=e61]:
+              - generic [ref=e62]: Upload Document
+              - img "union icon" [ref=e65]
+        - generic [ref=e67]:
+          - generic [ref=e68]: Add a watermark to your file in seconds!
+          - generic [ref=e69]: Use our simple tool to add a customized watermark in a few clicks.
+        - generic [ref=e70]:
+          - heading "Why choose us?" [level=2] [ref=e72]
+          - generic [ref=e74]:
+            - generic [ref=e79]:
+              - generic [ref=e80]: Wide variety of essential tools
+              - generic [ref=e81]: Editor is a one-step portal to manage PDF files. It is tailored to meet all your PDF needs.
+            - generic [ref=e86]:
+              - generic [ref=e87]: Safety & Security
+              - generic [ref=e88]: Privacy protection is our top priority. Our editor is 100% safe to use, as no private information is stored. Your personal documents are highly secured.
+            - generic [ref=e93]:
+              - generic [ref=e94]: Time-saving
+              - generic [ref=e95]: Edit a PDF quickly and reliably, in a few very simple steps to get the results.
+            - generic [ref=e100]:
+              - generic [ref=e101]: Customer Support
+              - generic [ref=e102]: Our team of experts is at your disposal 24/7, ready to provide assistance in multiple languages.
+            - generic [ref=e107]:
+              - generic [ref=e108]: Instant & easy Editing
+              - generic [ref=e109]: Work with digital documents seamlessly. Quick start without any fuss.
+            - generic [ref=e114]:
+              - generic [ref=e115]: All-time availability
+              - generic [ref=e116]: Always accessible online and compatible with all devices, enabling you to manage PDFs on the go.
+        - generic [ref=e118]:
+          - heading "FAQs About Our Watermark Tool" [level=2] [ref=e119]
+          - generic [ref=e120]:
+            - heading "Can I customize the watermark?" [level=3] [ref=e122] [cursor=pointer]
+            - generic [ref=e124]:
+              - paragraph [ref=e125]: Yes, our handy tool allows you to adjust the text, font, size, opacity, color, and position of the watermark on your document.
+              - paragraph [ref=e126]: Simply customize the watermark until it meets your needs, then click “Convert” to add it to your file.
+          - generic [ref=e128]:
+            - heading "Can I remove a watermark once it´s added?" [level=3] [ref=e130] [cursor=pointer]
+            - generic [ref=e132]:
+              - paragraph [ref=e133]: If you’ve added a watermark to your document but you now want to remove it, just click on the delete option in the right-hand corner of the toolbar.
+              - paragraph [ref=e134]: You can then either add another watermark or make other changes to your file.
+          - generic [ref=e136]:
+            - heading "What is the primary function of adding a watermark to a document?" [level=3] [ref=e138] [cursor=pointer]
+            - paragraph [ref=e141]: Adding a watermark to a document helps you to protect and identify intellectual property. A watermark also serves as a visible reminder of the original creator.
+          - generic [ref=e143]:
+            - heading "If my document has more than one page, will the watermark be added to all pages?" [level=3] [ref=e145] [cursor=pointer]
+            - paragraph [ref=e148]: Yes, our tool automatically adds your customized watermark to each page of your document. This avoids the need to manually add each watermark yourself, saving you time and effort.
+        - generic [ref=e151]:
+          - heading "Unlimited access to all our tools" [level=2] [ref=e152]
+          - generic [ref=e153]:
+            - generic [ref=e154]:
+              - paragraph [ref=e157]: Security PDF
+              - link "Sign PDF" [ref=e158] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/sign-pdf
+                - generic [ref=e159]: Sign PDF
+              - generic [ref=e160]: Password Protect
+              - generic [ref=e161]: Share PDF
+              - generic [ref=e162]: Share Files
+            - generic [ref=e163]:
+              - paragraph [ref=e166]: Split and Merge
+              - link "Split PDF" [ref=e167] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/split-pdf
+                - generic [ref=e168]: Split PDF
+              - link "Merge PDF" [ref=e169] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/merge-pdf
+                - generic [ref=e170]: Merge PDF
+              - generic [ref=e171]: Combine PDF
+              - generic [ref=e172]: Reorder PDF
+              - generic [ref=e173]: Extract Pages
+            - generic [ref=e174]:
+              - paragraph [ref=e177]: Edit PDF
+              - link "Edit PDF" [ref=e178] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-pdf
+                - generic [ref=e179]: Edit PDF
+              - link "Edit & Fill PDF" [ref=e180] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-fill-pdf
+                - generic [ref=e181]: Edit & Fill PDF
+              - link "Edit Scanned PDF" [ref=e182] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-scanned-pdf
+                - generic [ref=e183]: Edit Scanned PDF
+              - link "Add Image to PDF" [ref=e184] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/insert-image
+                - generic [ref=e185]: Add Image to PDF
+              - link "Watermark" [ref=e186] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/watermark
+                - generic [ref=e187]: Watermark
+              - link "Rotate PDF" [ref=e188] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/rotate-pdf
+                - generic [ref=e189]: Rotate PDF
+              - link "Delete Pages" [ref=e190] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/delete-pdf-pages
+                - generic [ref=e191]: Delete Pages
+              - generic [ref=e192]: Pages Numbering
+              - link "PDF Reader" [ref=e193] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-reader
+                - generic [ref=e194]: PDF Reader
+            - generic [ref=e195]:
+              - paragraph [ref=e198]: Convert From PDF
+              - link "PDF to Word" [ref=e199] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-word
+                - generic [ref=e200]: PDF to Word
+              - link "PDF to JPG" [ref=e201] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-jpg
+                - generic [ref=e202]: PDF to JPG
+              - link "PDF to PNG" [ref=e203] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-png
+                - generic [ref=e204]: PDF to PNG
+              - link "PDF to Power Point" [ref=e205] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-powerpoint
+                - generic [ref=e206]: PDF to Power Point
+              - link "PDF to Excel" [ref=e207] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-excel
+                - generic [ref=e208]: PDF to Excel
+              - generic [ref=e209]: PDF to PDF/A
+            - generic [ref=e210]:
+              - link "Convert to PDF" [ref=e213] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-converter
+                - paragraph [ref=e214]: Convert to PDF
+              - link "Word to PDF" [ref=e215] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/word-to-pdf
+                - generic [ref=e216]: Word to PDF
+              - link "JPG to PDF" [ref=e217] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/jpg-to-pdf
+                - generic [ref=e218]: JPG to PDF
+              - link "PNG to PDF" [ref=e219] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/png-to-pdf
+                - generic [ref=e220]: PNG to PDF
+              - link "Power Point to PDF" [ref=e221] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/powerpoint-to-pdf
+                - generic [ref=e222]: Power Point to PDF
+              - link "Excel to PDF" [ref=e223] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/excel-to-pdf
+                - generic [ref=e224]: Excel to PDF
+              - generic [ref=e225]: OCR to PDF
+            - generic [ref=e226]:
+              - paragraph [ref=e229]: Compress
+              - link "Compress PDF" [ref=e230] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/compress-pdf
+                - generic [ref=e231]: Compress PDF
+              - generic [ref=e232]: Compress Image
+    - generic [ref=e233]:
+      - generic [ref=e234]:
+        - generic [ref=e235]:
+          - link "logo" [ref=e236] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e237]
+          - generic [ref=e238]:
+            - generic [ref=e239]: Powerful for
+            - generic [ref=e240]:
+              - generic [ref=e241]:
+                - img "mac-icon" [ref=e242]
+                - generic [ref=e243]: MacOS
+              - generic [ref=e244]:
+                - img "windows-icon" [ref=e245]
+                - generic [ref=e246]: Windows
+        - generic [ref=e247]:
+          - generic [ref=e249]:
+            - generic [ref=e250]: Tools
+            - link "PDF Forms" [ref=e251] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e252]: PDF Forms
+            - link "Downloads" [ref=e253] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e254]: Downloads
+          - generic [ref=e256]:
+            - generic [ref=e257]: Company
+            - link "About Us" [ref=e258] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e259]: About Us
+            - link "Terms of Use" [ref=e260] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e261]: Terms of Use
+            - link "Privacy Policy" [ref=e262] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e263]: Privacy Policy
+            - link "Terms and Conditions" [ref=e264] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e265]: Terms and Conditions
+            - link "Cookies Policy" [ref=e266] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e267]: Cookies Policy
+          - generic [ref=e269]:
+            - generic [ref=e270]: Support
+            - link "FAQs" [ref=e271] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e272]: FAQs
+            - generic [ref=e273]:
+              - generic [ref=e274]: Language
+              - generic [ref=e275] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e276]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e278]:
+            - generic [ref=e279]: Help
+            - link "Contact Us" [ref=e280] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e281]: Contact Us
+            - generic [ref=e283]:
+              - generic [ref=e284]: +1 844 590 0022
+              - generic [ref=e285]:
+                - generic [ref=e286]: "Contact Hours:"
+                - generic [ref=e287]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e292]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e293]
+```
+
+# Test source
+
+```ts
+      |                                  ^ Error: expect(page).toHaveScreenshot(expected) failed
+```

@@ -1,0 +1,298 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison of all products >> Example #10
+- Location: .features-gen/features/Visual.feature.spec.js:643:9
+
+# Error details
+
+```
+Error: expect(page).toHaveScreenshot(expected) failed
+
+  50089 pixels (ratio 0.06 of all image pixels) are different.
+
+  Snapshot: visual-product-word-to-pdf.png
+
+Call log:
+  - Expect "toHaveScreenshot(visual-product-word-to-pdf.png)" with timeout 30000ms
+    - verifying given screenshot expectation
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - 50089 pixels (ratio 0.06 of all image pixels) are different.
+  - waiting 100ms before taking screenshot
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - captured a stable screenshot
+  - 50089 pixels (ratio 0.06 of all image pixels) are different.
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - generic [ref=e10]:
+      - link "logo" [ref=e11] [cursor=pointer]:
+        - /url: https://www.mergedpdf.com/
+        - img "logo" [ref=e12]
+      - generic [ref=e13]:
+        - link "Most Used Forms" [ref=e15] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/forms
+          - generic [ref=e16]: Most Used Forms
+        - link "Login" [ref=e18] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/login
+          - generic [ref=e19]: Login
+    - generic [ref=e20]:
+      - generic [ref=e22]:
+        - heading "Convert Your Word Document to a PDF" [level=1] [ref=e24]
+        - generic [ref=e27]:
+          - button "Choose File" [ref=e28]
+          - generic [ref=e29]:
+            - text: Upload Document
+            - img "union icon" [ref=e32]
+          - generic [ref=e33]: or Drag and Drop
+          - generic [ref=e34]: Supports PDF up to 100 MB and other formats and extensions up to 25 MB
+      - generic [ref=e35]:
+        - generic [ref=e37]:
+          - img "wordToPDF" [ref=e39]
+          - generic [ref=e40]:
+            - generic [ref=e41]: How Does Word to PDF Work?
+            - generic [ref=e42]: "Convert your Word file to a PDF document in seconds:"
+            - generic [ref=e44]:
+              - generic [ref=e47]: Drag and drop your file or click “Upload Document”
+              - generic [ref=e51]: Make changes to your document
+              - generic [ref=e55]: Click “Convert” to automatically change your file
+              - generic [ref=e59]: Download or share your new PDF document
+            - generic [ref=e60]: It’s that simple!
+            - generic [ref=e61]:
+              - generic [ref=e62]: Upload Document
+              - img "union icon" [ref=e65]
+        - generic [ref=e67]:
+          - generic [ref=e68]: Convert your Word document in a flash
+          - generic [ref=e69]: Upload your Word file and immediately convert it to a PDF document with our convenient tool.
+        - generic [ref=e70]:
+          - heading "Why choose us?" [level=2] [ref=e72]
+          - generic [ref=e74]:
+            - generic [ref=e79]:
+              - generic [ref=e80]: Wide variety of essential tools
+              - generic [ref=e81]: Editor is a one-step portal to manage PDF files. It is tailored to meet all your PDF needs.
+            - generic [ref=e86]:
+              - generic [ref=e87]: Safety & Security
+              - generic [ref=e88]: Privacy protection is our top priority. Our editor is 100% safe to use, as no private information is stored. Your personal documents are highly secured.
+            - generic [ref=e93]:
+              - generic [ref=e94]: Time-saving
+              - generic [ref=e95]: Edit a PDF quickly and reliably, in a few very simple steps to get the results.
+            - generic [ref=e100]:
+              - generic [ref=e101]: Customer Support
+              - generic [ref=e102]: Our team of experts is at your disposal 24/7, ready to provide assistance in multiple languages.
+            - generic [ref=e107]:
+              - generic [ref=e108]: Instant & easy Editing
+              - generic [ref=e109]: Work with digital documents seamlessly. Quick start without any fuss.
+            - generic [ref=e114]:
+              - generic [ref=e115]: All-time availability
+              - generic [ref=e116]: Always accessible online and compatible with all devices, enabling you to manage PDFs on the go.
+        - generic [ref=e118]:
+          - heading "FAQs About Our Word to PDF Converter" [level=2] [ref=e119]
+          - generic [ref=e120]:
+            - heading "Can I upload a file from my phone?" [level=3] [ref=e122] [cursor=pointer]
+            - paragraph [ref=e125]: Absolutely! Our converter lets you upload documents from any device. This includes mobile devices, tablets, laptops, and computers.
+          - generic [ref=e127]:
+            - heading "What file formats can I convert to PDF?" [level=3] [ref=e129] [cursor=pointer]
+            - paragraph [ref=e132]: You can conveniently convert a range of file formats to PDF. Our tool accepts JPG, PNG, OCR, Word, Excel, and PowerPoint.
+          - generic [ref=e134]:
+            - heading "Is our file converter safe?" [level=3] [ref=e136] [cursor=pointer]
+            - generic [ref=e138]: Your documents are 100% safe with us. We never share documents or information with third parties.
+        - generic [ref=e141]:
+          - heading "Unlimited access to all our tools" [level=2] [ref=e142]
+          - generic [ref=e143]:
+            - generic [ref=e144]:
+              - paragraph [ref=e147]: Security PDF
+              - link "Sign PDF" [ref=e148] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/sign-pdf
+                - generic [ref=e149]: Sign PDF
+              - generic [ref=e150]: Password Protect
+              - generic [ref=e151]: Share PDF
+              - generic [ref=e152]: Share Files
+            - generic [ref=e153]:
+              - paragraph [ref=e156]: Split and Merge
+              - link "Split PDF" [ref=e157] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/split-pdf
+                - generic [ref=e158]: Split PDF
+              - link "Merge PDF" [ref=e159] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/merge-pdf
+                - generic [ref=e160]: Merge PDF
+              - generic [ref=e161]: Combine PDF
+              - generic [ref=e162]: Reorder PDF
+              - generic [ref=e163]: Extract Pages
+            - generic [ref=e164]:
+              - paragraph [ref=e167]: Edit PDF
+              - link "Edit PDF" [ref=e168] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-pdf
+                - generic [ref=e169]: Edit PDF
+              - link "Edit & Fill PDF" [ref=e170] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-fill-pdf
+                - generic [ref=e171]: Edit & Fill PDF
+              - link "Edit Scanned PDF" [ref=e172] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-scanned-pdf
+                - generic [ref=e173]: Edit Scanned PDF
+              - link "Add Image to PDF" [ref=e174] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/insert-image
+                - generic [ref=e175]: Add Image to PDF
+              - link "Watermark" [ref=e176] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/watermark
+                - generic [ref=e177]: Watermark
+              - link "Rotate PDF" [ref=e178] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/rotate-pdf
+                - generic [ref=e179]: Rotate PDF
+              - link "Delete Pages" [ref=e180] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/delete-pdf-pages
+                - generic [ref=e181]: Delete Pages
+              - generic [ref=e182]: Pages Numbering
+              - link "PDF Reader" [ref=e183] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-reader
+                - generic [ref=e184]: PDF Reader
+            - generic [ref=e185]:
+              - paragraph [ref=e188]: Convert From PDF
+              - link "PDF to Word" [ref=e189] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-word
+                - generic [ref=e190]: PDF to Word
+              - link "PDF to JPG" [ref=e191] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-jpg
+                - generic [ref=e192]: PDF to JPG
+              - link "PDF to PNG" [ref=e193] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-png
+                - generic [ref=e194]: PDF to PNG
+              - link "PDF to Power Point" [ref=e195] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-powerpoint
+                - generic [ref=e196]: PDF to Power Point
+              - link "PDF to Excel" [ref=e197] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-excel
+                - generic [ref=e198]: PDF to Excel
+              - generic [ref=e199]: PDF to PDF/A
+            - generic [ref=e200]:
+              - link "Convert to PDF" [ref=e203] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-converter
+                - paragraph [ref=e204]: Convert to PDF
+              - link "Word to PDF" [ref=e205] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/word-to-pdf
+                - generic [ref=e206]: Word to PDF
+              - link "JPG to PDF" [ref=e207] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/jpg-to-pdf
+                - generic [ref=e208]: JPG to PDF
+              - link "PNG to PDF" [ref=e209] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/png-to-pdf
+                - generic [ref=e210]: PNG to PDF
+              - link "Power Point to PDF" [ref=e211] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/powerpoint-to-pdf
+                - generic [ref=e212]: Power Point to PDF
+              - link "Excel to PDF" [ref=e213] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/excel-to-pdf
+                - generic [ref=e214]: Excel to PDF
+              - generic [ref=e215]: OCR to PDF
+            - generic [ref=e216]:
+              - paragraph [ref=e219]: Compress
+              - link "Compress PDF" [ref=e220] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/compress-pdf
+                - generic [ref=e221]: Compress PDF
+              - generic [ref=e222]: Compress Image
+    - generic [ref=e223]:
+      - generic [ref=e224]:
+        - generic [ref=e225]:
+          - link "logo" [ref=e226] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e227]
+          - generic [ref=e228]:
+            - generic [ref=e229]: Powerful for
+            - generic [ref=e230]:
+              - generic [ref=e231]:
+                - img "mac-icon" [ref=e232]
+                - generic [ref=e233]: MacOS
+              - generic [ref=e234]:
+                - img "windows-icon" [ref=e235]
+                - generic [ref=e236]: Windows
+        - generic [ref=e237]:
+          - generic [ref=e239]:
+            - generic [ref=e240]: Tools
+            - link "PDF Forms" [ref=e241] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e242]: PDF Forms
+            - link "Downloads" [ref=e243] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e244]: Downloads
+          - generic [ref=e246]:
+            - generic [ref=e247]: Company
+            - link "About Us" [ref=e248] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e249]: About Us
+            - link "Terms of Use" [ref=e250] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e251]: Terms of Use
+            - link "Privacy Policy" [ref=e252] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e253]: Privacy Policy
+            - link "Terms and Conditions" [ref=e254] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e255]: Terms and Conditions
+            - link "Cookies Policy" [ref=e256] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e257]: Cookies Policy
+          - generic [ref=e259]:
+            - generic [ref=e260]: Support
+            - link "FAQs" [ref=e261] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e262]: FAQs
+            - generic [ref=e263]:
+              - generic [ref=e264]: Language
+              - generic [ref=e265] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e266]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e268]:
+            - generic [ref=e269]: Help
+            - link "Contact Us" [ref=e270] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e271]: Contact Us
+            - generic [ref=e273]:
+              - generic [ref=e274]: +1 844 590 0022
+              - generic [ref=e275]:
+                - generic [ref=e276]: "Contact Hours:"
+                - generic [ref=e277]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e282]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e283]
+```
+
+# Test source
+
+```ts
+      |                                  ^ Error: expect(page).toHaveScreenshot(expected) failed
+```

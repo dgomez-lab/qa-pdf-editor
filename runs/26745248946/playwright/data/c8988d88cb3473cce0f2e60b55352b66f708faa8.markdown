@@ -1,0 +1,419 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/TransactionalEmails.feature.spec.js >> Transactional emails >> Payment confirmation email for <currency> with IP <ip> >> Payment confirmation email for AUD with IP AU
+- Location: .features-gen/features/TransactionalEmails.feature.spec.js:177:9
+
+# Error details
+
+```
+Error: expect(page).toHaveURL(expected) failed
+
+Expected pattern: /\/editor(\/|$|\?)/i
+Received string:  "https://red.mvps.website/tool/upload?uuid=7b7d763d-3e22-45d6-80ab-6e954aedd71b"
+Timeout: 120000ms
+
+Call log:
+  - Expect "toHaveURL" with timeout 120000ms
+    5 × unexpected value "https://red.mvps.website/?ip=AU&x-token-qa=niGqCYH7McqERAB"
+    117 × unexpected value "https://red.mvps.website/tool/upload?uuid=7b7d763d-3e22-45d6-80ab-6e954aedd71b"
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e8]:
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - img [ref=e12] [cursor=pointer]
+        - generic [ref=e17] [cursor=pointer]:
+          - paragraph [ref=e18]: sample
+          - img [ref=e19]
+      - generic [ref=e21]:
+        - button "Merge or Upload" [ref=e22] [cursor=pointer]:
+          - img [ref=e23]
+          - generic "Merge or Upload" [ref=e26]
+        - generic [ref=e28]:
+          - button "Share" [ref=e30] [cursor=pointer]:
+            - img [ref=e31]
+            - text: Share
+          - button "Convert" [ref=e35] [cursor=pointer]:
+            - img [ref=e36]
+            - text: Convert
+          - button "Print" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+            - text: Print
+          - button "Download" [ref=e43] [cursor=pointer]
+    - generic [ref=e46]:
+      - generic [ref=e51]:
+        - toolbar [ref=e52]:
+          - button "Show Pages" [ref=e53] [cursor=pointer]:
+            - img [ref=e56]
+          - separator
+          - button "Undo" [ref=e58] [cursor=pointer]:
+            - img [ref=e59]
+          - separator
+          - button "Redo" [ref=e61] [cursor=pointer]:
+            - img [ref=e62]
+          - separator
+          - button "Show Annotations" [ref=e64] [cursor=pointer]:
+            - img [ref=e67]
+          - separator
+          - button "Rearrange Pages" [ref=e69] [cursor=pointer]:
+            - img [ref=e72]
+          - separator
+          - button "Cursor" [ref=e77] [cursor=pointer]:
+            - generic [ref=e78]:
+              - img [ref=e80]
+              - generic [ref=e82]: Cursor
+          - separator
+          - button "Select" [ref=e83] [cursor=pointer]:
+            - generic [ref=e84]:
+              - img [ref=e86]
+              - generic [ref=e88]: Select
+          - separator
+          - button "Text" [ref=e89] [cursor=pointer]:
+            - generic [ref=e90]:
+              - img [ref=e92]
+              - generic [ref=e94]: Text
+          - separator
+          - button "Replace" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]:
+              - img [ref=e98]
+              - generic [ref=e101]: Replace
+          - separator
+          - button "Sign" [ref=e102] [cursor=pointer]:
+            - generic [ref=e103]:
+              - img [ref=e105]
+              - generic [ref=e108]: Sign
+          - separator
+          - button "Initials" [ref=e109] [cursor=pointer]:
+            - generic [ref=e110]:
+              - img [ref=e112]
+              - generic [ref=e114]: Initials
+          - separator
+          - button "Erase" [ref=e115] [cursor=pointer]:
+            - generic [ref=e116]:
+              - img [ref=e118]
+              - generic [ref=e121]: Erase
+          - separator
+          - group "image" [ref=e122]:
+            - button "Image" [ref=e123] [cursor=pointer]:
+              - generic [ref=e124]:
+                - img [ref=e126]
+                - generic [ref=e130]: Image
+            - generic [ref=e131]:
+              - combobox [ref=e134]
+              - button "Toggle image tools" [ref=e135] [cursor=pointer]
+          - separator
+          - button "Draw" [ref=e136] [cursor=pointer]:
+            - generic [ref=e137]:
+              - img [ref=e139]
+              - generic [ref=e141]: Draw
+          - separator
+          - button "Check" [ref=e142] [cursor=pointer]:
+            - generic [ref=e143]:
+              - img [ref=e145]
+              - generic [ref=e147]: Check
+          - separator
+          - button "Cross" [ref=e148] [cursor=pointer]:
+            - generic [ref=e149]:
+              - img [ref=e151]
+              - generic [ref=e154]: Cross
+          - separator
+          - button "Watermark" [ref=e155] [cursor=pointer]:
+            - generic [ref=e156]:
+              - img [ref=e158]
+              - generic [ref=e160]: Watermark
+          - separator
+          - button "Date" [ref=e161] [cursor=pointer]:
+            - generic [ref=e162]:
+              - img [ref=e164]
+              - generic [ref=e166]: Date
+          - separator
+          - button "Highlight" [ref=e167] [cursor=pointer]:
+            - generic [ref=e168]:
+              - img [ref=e170]
+              - generic [ref=e174]: Highlight
+          - separator
+          - button "Marker" [ref=e175] [cursor=pointer]:
+            - generic [ref=e176]:
+              - img [ref=e178]
+              - generic [ref=e180]: Marker
+          - separator
+          - button "Blackout" [ref=e181] [cursor=pointer]:
+            - generic [ref=e182]:
+              - img [ref=e184]
+              - generic [ref=e188]: Blackout
+          - separator
+          - button "Callout" [ref=e189] [cursor=pointer]:
+            - generic [ref=e190]:
+              - img [ref=e192]
+              - generic [ref=e195]: Callout
+          - separator
+          - button "Sticky" [ref=e196] [cursor=pointer]:
+            - generic [ref=e197]:
+              - img [ref=e199]
+              - generic [ref=e201]: Sticky
+          - separator
+          - group "shapes" [ref=e202]:
+            - button "Line" [ref=e203] [cursor=pointer]:
+              - img [ref=e204]
+            - generic [ref=e206]:
+              - combobox [ref=e209]
+              - button "Toggle shapes tools" [ref=e210] [cursor=pointer]
+          - separator
+          - button [ref=e211] [cursor=pointer]:
+            - img [ref=e212]
+          - separator
+          - button "Search" [ref=e213] [cursor=pointer]:
+            - generic [ref=e214]:
+              - img [ref=e216]
+              - generic [ref=e218]: Search
+          - separator
+        - generic [ref=e219]:
+          - generic [ref=e221]:
+            - listbox "Thumbnails" [ref=e223]:
+              - option "1" [selected] [ref=e224]:
+                - generic [ref=e231]: "1"
+            - separator "Resizer handle" [ref=e233]
+          - region "Page 1" [ref=e249]:
+            - generic [ref=e253]:
+              - paragraph
+          - iframe [ref=e254]:
+            
+      - status [ref=e255]
+    - group "Document pager" [ref=e256]:
+      - generic [ref=e257]:
+        - button "Previous page" [ref=e258]:
+          - img [ref=e259]
+        - textbox "Current page" [ref=e262]: "1"
+        - generic [ref=e263]: /
+        - generic [ref=e264]: "1"
+        - button "Next page" [ref=e265]:
+          - img [ref=e266]
+      - generic [ref=e269]:
+        - button "Zoom out" [ref=e270] [cursor=pointer]:
+          - img [ref=e271]
+        - generic [ref=e273]: 208%
+        - button "Zoom in" [ref=e274] [cursor=pointer]:
+          - img [ref=e275]
+        - button "Fit" [ref=e278] [cursor=pointer]:
+          - img [ref=e279]
+          - text: Fit
+  - alert [ref=e281]: pdf Editor
+```
+
+# Test source
+
+```ts
+  33  | import {
+  34  |   getSubscriptionId,
+  35  |   getAccountId,
+  36  |   refundLastPaymentLikeLegacy,
+  37  |   assertLastPaymentTableDeepEqual,
+  38  |   assertLastTransactionDatesAreToday,
+  39  |   extractLastTransactionIdFromGrid,
+  40  |   confirmSubscriptionCancellation,
+  41  |   unsubscribeCustomer,
+  42  |   waitForSubscriptionStatus,
+  43  |   filterCrmCustomersByEmail
+  44  | } from '../../helpers/crmStaging'
+  45  | import { payLegacyRecurrence, waitForRecurrenceToFinish, blockCustomerApi } from '../../helpers/recurrencesApi'
+  46  | import { appUrl } from '../../helpers/appUrl'
+  47  | import { gotoMarketingPath } from '../../helpers/mvpsUrl'
+  48  | import {
+  49  |   toCatcherEmail,
+  50  |   waitForMessageDetail,
+  51  |   waitForMessageDetailSubjectMatchesOne,
+  52  |   subjectFragmentFor,
+  53  |   extractDownloadCode,
+  54  |   extractFirstHttpsUrl
+  55  | } from '../../helpers/mailpitClient'
+  56  | import { assertAccountCreatedEmail } from '../../helpers/accountCreatedEmailAssertions'
+  57  | import { assertMagicLinkEmailInExpectedLanguage } from '../../helpers/magicLinkEmailAssertions'
+  58  | import { assertSubscriptionCancellationEmailLocalized } from '../../helpers/subscriptionCancellationEmailAssertions'
+  59  | import {
+  60  |   assertPaymentConfirmationEmailContainsExpectedPlanAmountAccountBankStatement,
+  61  |   paymentConfirmationSubjectFragmentForLocale
+  62  | } from '../../helpers/paymentConfirmationEmailStrictAssertions'
+  63  | import {
+  64  |   collectHeaderAbsoluteHrefErrors,
+  65  |   collectLandingAbsoluteHrefErrors,
+  66  |   collectFooterAbsoluteHrefErrors,
+  67  |   collectFormsPageAbsoluteHrefErrors,
+  68  |   waitForMvpsFormsGridHydration
+  69  | } from '../../helpers/seoAbsoluteHrefs'
+  70  | import {
+  71  |   headerLinkChecksForBaseUrl,
+  72  |   landingPathnamesForSite,
+  73  |   footerPathnamesForSite,
+  74  |   hrefPolicyForSite,
+  75  |   footerRootSelectorForSite
+  76  | } from '../../helpers/seoExpectations'
+  77  | import { isPdfhintScenario } from '../../helpers/pdfhintScenario'
+  78  | import { collectPdfhintHeaderSeoErrors } from '../../helpers/pdfhintHeaderSeo'
+  79  | 
+  80  | function normalized(s: string): string {
+  81  |   return s.trim().toLowerCase()
+  82  | }
+  83  | 
+  84  | function urlRegexForPage(pageName: string): RegExp {
+  85  |   const n = normalized(pageName)
+  86  |   if (n === 'home') return /\/([a-z]{2}\/)?($|\?)/i
+  87  |   if (n === 'login') return /\/login/i
+  88  |   if (n === 'editor') return /\/editor(\/|$|\?)/i
+  89  |   if (n === 'dashboard') return /\/dashboard/i
+  90  |   if (n === 'account') return /\/account/i
+  91  |   if (n === 'downloads') return /\/downloads/i
+  92  |   if (n === 'contact') return /\/contact/i
+  93  |   return new RegExp(n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+  94  | }
+  95  | 
+  96  | async function assertElementTextContainsFromStep(
+  97  |   locator: ReturnType<typeof bddLocator>,
+  98  |   expected: string
+  99  | ): Promise<void> {
+  100 |   await expect(locator.first()).toContainText(expected, { timeout: 120_000 })
+  101 | }
+  102 | 
+  103 | Given('I am in Home page', async ({ page, bddWorld }) => {
+  104 |   await loadHomePage(page, bddWorld)
+  105 | })
+  106 | 
+  107 | Given('I am in Home page in locale {word}', async ({ page, bddWorld }, locale: string) => {
+  108 |   bddWorld.testData.locale = locale
+  109 |   await loadHomePage(page, bddWorld)
+  110 | })
+  111 | 
+  112 | Given('I am in Login page', async ({ page, bddWorld }) => {
+  113 |   await loadLoginPage(page, bddWorld)
+  114 | })
+  115 | 
+  116 | Given('I am in Login page in the current test locale', async ({ page, bddWorld }) => {
+  117 |   await loadLoginPage(page, bddWorld)
+  118 | })
+  119 | 
+  120 | Given('I am in Editor page', async ({ page, bddWorld }) => {
+  121 |   await loadEditorPage(page, bddWorld)
+  122 | })
+  123 | 
+  124 | Given('I am in Dashboard page', async ({ page, bddWorld }) => {
+  125 |   await loadDashboardPage(page, bddWorld)
+  126 | })
+  127 | 
+  128 | Given('I am in Account page', async ({ page, bddWorld }) => {
+  129 |   await loadAccountPage(page, bddWorld)
+  130 | })
+  131 | 
+  132 | Given('I am in Contact page', async ({ page, bddWorld }) => {
+> 133 |   await loadContactPage(page, bddWorld)
+      |                                  ^ Error: expect(page).toHaveURL(expected) failed
+  134 | })
+  135 | 
+  136 | Given('I am in Downloads page', async ({ page, bddWorld }) => {
+  137 |   await loadDownloadsPage(page, bddWorld)
+  138 | })
+  139 | 
+  140 | When('I am in product landing page {word}', async ({ page, bddWorld }, landingAlt: string) => {
+  141 |   await loadLandingProductPage(page, landingAlt, bddWorld)
+  142 | })
+  143 | 
+  144 | Given('I am in CrmCustomersTable page', async ({ page, context, bddWorld }) => {
+  145 |   await loadCrmCustomersTable(page, bddWorld, context)
+  146 | })
+  147 | 
+  148 | Given('I am in CrmCustomer page', async ({ page, context, bddWorld }) => {
+  149 |   await loadCrmCustomerForCurrentUser(page, bddWorld, context)
+  150 | })
+  151 | 
+  152 | When('I search the current customer', async ({ bddWorld }) => {
+  153 |   if (!bddWorld.crmPage) throw new Error('CRM page is not open')
+  154 |   await filterCrmCustomersByEmail(bddWorld.crmPage, bddWorld.email)
+  155 | })
+  156 | 
+  157 | Then('I am redirected to {word} page', async ({ page, bddWorld }, target: string) => {
+  158 |   const p = marketingPage(bddWorld, page)
+  159 |   await expect(p).toHaveURL(urlRegexForPage(target), { timeout: 120_000 })
+  160 | })
+  161 | 
+  162 | Then('I am redirected to {string} page', async ({ page, bddWorld }, target: string) => {
+  163 |   const p = marketingPage(bddWorld, page)
+  164 |   await expect(p).toHaveURL(urlRegexForPage(target), { timeout: 120_000 })
+  165 | })
+  166 | 
+  167 | When('I click next button', async ({ page, bddWorld }) => {
+  168 |   await clickNextButton(bddPage(bddWorld, page), { flow: bddWorld.testData.flow })
+  169 | })
+  170 | 
+  171 | Then('I create a new user from the editor', async ({ page, bddWorld }) => {
+  172 |   const p = bddPage(bddWorld, page)
+  173 |   await createNewUserFromEditor(p, bddWorld.email)
+  174 | })
+  175 | 
+  176 | Then('I register a new user', async ({ page, bddWorld }) => {
+  177 |   await registerNewUserFromLogin(bddPage(bddWorld, page), bddWorld.email)
+  178 | })
+  179 | 
+  180 | When('I register a new user from login', async ({ page, bddWorld }) => {
+  181 |   await registerNewUserFromLogin(bddPage(bddWorld, page), bddWorld.email)
+  182 | })
+  183 | 
+  184 | When('I register a new user from login tracking account creation email', async ({ page, bddWorld }) => {
+  185 |   bddWorld.accountCreatedEmailRequestedAtMs = Date.now()
+  186 |   await registerNewUserFromLogin(bddPage(bddWorld, page), bddWorld.email)
+  187 | })
+  188 | 
+  189 | Then('I login with an existing user', async ({ page, bddWorld }) => {
+  190 |   await loginExistingUserFromLogin(bddPage(bddWorld, page), bddWorld.email)
+  191 | })
+  192 | 
+  193 | Then('I login with the last user created', async ({ page, bddWorld }) => {
+  194 |   await loginExistingUserFromEditor(bddPage(bddWorld, page), bddWorld.email)
+  195 | })
+  196 | 
+  197 | Then('I try login with a blocked user', async ({ page, bddWorld }) => {
+  198 |   await tryLoginBlockedUser(bddPage(bddWorld, page), bddWorld.email)
+  199 | })
+  200 | 
+  201 | When('I upload a {word} document', async ({ page, bddWorld }, format: string) => {
+  202 |   await uploadDocumentForFormat(bddPage(bddWorld, page), bddWorld, format)
+  203 | })
+  204 | 
+  205 | When('I make the initial payment', async ({ page, bddWorld }) => {
+  206 |   const p = bddPage(bddWorld, page)
+  207 |   const cardName = bddWorld.testData.card || 'Visa'
+  208 |   const card = stripeCardForName(cardName)
+  209 |   logElementAction('Filling', 'stripe card number input', `${cardName} → ${card.number}`)
+  210 |   await fillStripePaymentLikeLegacy(p, card, { testIp: bddWorld.testData.ip })
+  211 |   await p.locator('[data-id="confirm-payment-button"]').first().click({ timeout: 15_000 }).catch(() => {})
+  212 |   await p.waitForTimeout(2000)
+  213 | })
+  214 | 
+  215 | Then('I save my document', async ({ page, bddWorld }) => {
+  216 |   await openDashboardViaPaymentSuccessModal(bddPage(bddWorld, page))
+  217 |   bddWorld.currentPage = 'Dashboard'
+  218 | })
+  219 | 
+  220 | When('I wait for element {string}', async ({ page, bddWorld }, elementLabel: string) => {
+  221 |   logElementAction('Waiting for', elementLabel)
+  222 |   const p = bddPage(bddWorld, page)
+  223 |   if (elementLabel === 'transaction price text' || elementLabel === 'transaction monthly price text') {
+  224 |     await gotoMembership(p)
+  225 |   }
+  226 |   await bddLocator(bddWorld, page, elementLabel).first().waitFor({ state: 'visible', timeout: 120_000 })
+  227 | })
+  228 | 
+  229 | When(/^I wait for element (.+)$/, async ({ page, bddWorld }, elementLabel: string) => {
+  230 |   const label = elementLabel.trim()
+  231 |   logElementAction('Waiting for', label)
+  232 |   const p = bddPage(bddWorld, page)
+  233 |   if (label === 'transaction price text' || label === 'transaction monthly price text') {
+```

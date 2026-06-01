@@ -1,0 +1,157 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison of base pages >> Example #2
+- Location: .features-gen/features/Visual.feature.spec.js:16:9
+
+# Error details
+
+```
+Error: expect(page).toHaveScreenshot(expected) failed
+
+  23245 pixels (ratio 0.03 of all image pixels) are different.
+
+  Snapshot: visual-login.png
+
+Call log:
+  - Expect "toHaveScreenshot(visual-login.png)" with timeout 30000ms
+    - verifying given screenshot expectation
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - 23245 pixels (ratio 0.03 of all image pixels) are different.
+  - waiting 100ms before taking screenshot
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - captured a stable screenshot
+  - 23245 pixels (ratio 0.03 of all image pixels) are different.
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - link "logo" [ref=e13] [cursor=pointer]:
+      - /url: https://www.mergedpdf.com/
+      - img "logo" [ref=e14]
+    - generic [ref=e19]:
+      - heading "Login to your account" [level=1] [ref=e21]
+      - generic [ref=e22]:
+        - generic [ref=e24]:
+          - img "Google" [ref=e25]
+          - paragraph [ref=e26]: Sign up with Google
+        - generic [ref=e29]: Or sign up with email
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e37]: Email
+          - textbox "email@example.com" [ref=e39]
+        - generic [ref=e40]: Login
+        - paragraph [ref=e41]:
+          - text: By continuing, you accept the
+          - link "Terms and Conditions" [ref=e42] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/terms-and-conditions
+          - text: and
+          - link "Privacy Policy" [ref=e43] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/privacy-policy
+          - text: .
+    - generic [ref=e44]:
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - link "logo" [ref=e47] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: Powerful for
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - img "mac-icon" [ref=e53]
+                - generic [ref=e54]: MacOS
+              - generic [ref=e55]:
+                - img "windows-icon" [ref=e56]
+                - generic [ref=e57]: Windows
+        - generic [ref=e58]:
+          - generic [ref=e60]:
+            - generic [ref=e61]: Tools
+            - link "PDF Forms" [ref=e62] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e63]: PDF Forms
+            - link "Downloads" [ref=e64] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e65]: Downloads
+          - generic [ref=e67]:
+            - generic [ref=e68]: Company
+            - link "About Us" [ref=e69] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e70]: About Us
+            - link "Terms of Use" [ref=e71] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e72]: Terms of Use
+            - link "Privacy Policy" [ref=e73] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e74]: Privacy Policy
+            - link "Terms and Conditions" [ref=e75] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e76]: Terms and Conditions
+            - link "Cookies Policy" [ref=e77] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e78]: Cookies Policy
+          - generic [ref=e80]:
+            - generic [ref=e81]: Support
+            - link "FAQs" [ref=e82] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e83]: FAQs
+            - generic [ref=e84]:
+              - generic [ref=e85]: Language
+              - generic [ref=e86] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e87]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e89]:
+            - generic [ref=e90]: Help
+            - link "Contact Us" [ref=e91] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e92]: Contact Us
+            - generic [ref=e94]:
+              - generic [ref=e95]: +1 844 590 0022
+              - generic [ref=e96]:
+                - generic [ref=e97]: "Contact Hours:"
+                - generic [ref=e98]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e103]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e104]: Log In to Access Your Account | mergedPDF
+```
+
+# Test source
+
+```ts
+      |                                  ^ Error: expect(page).toHaveScreenshot(expected) failed
+```

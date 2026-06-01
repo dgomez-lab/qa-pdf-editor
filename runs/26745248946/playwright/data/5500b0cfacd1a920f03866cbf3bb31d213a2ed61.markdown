@@ -1,0 +1,310 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison of other base pages >> Example #3
+- Location: .features-gen/features/Visual.feature.spec.js:169:9
+
+# Error details
+
+```
+Error: expect(page).toHaveScreenshot(expected) failed
+
+  54602 pixels (ratio 0.06 of all image pixels) are different.
+
+  Snapshot: visual-faqs.png
+
+Call log:
+  - Expect "toHaveScreenshot(visual-faqs.png)" with timeout 30000ms
+    - verifying given screenshot expectation
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - 54602 pixels (ratio 0.06 of all image pixels) are different.
+  - waiting 100ms before taking screenshot
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - captured a stable screenshot
+  - 54602 pixels (ratio 0.06 of all image pixels) are different.
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - generic [ref=e10]:
+      - link "logo" [ref=e11] [cursor=pointer]:
+        - /url: https://www.mergedpdf.com/
+        - img "logo" [ref=e12]
+      - generic [ref=e13]:
+        - link "Most Used Forms" [ref=e15] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/forms
+          - generic [ref=e16]: Most Used Forms
+        - link "Login" [ref=e18] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/login
+          - generic [ref=e19]: Login
+    - generic [ref=e21]:
+      - generic [ref=e24]: Frequently Asked Questions
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]: About Us
+          - heading "Who are we?" [level=3] [ref=e29] [cursor=pointer]:
+            - generic [ref=e30]: Who are we?
+          - heading "How does our service work?" [level=3] [ref=e33] [cursor=pointer]:
+            - generic [ref=e34]: How does our service work?
+          - heading "Do I need to download or install any software to use the online PDF editor?" [level=3] [ref=e37] [cursor=pointer]:
+            - generic [ref=e38]: Do I need to download or install any software to use the online PDF editor?
+        - generic [ref=e41]:
+          - generic [ref=e42]: Security and Compliance
+          - heading "Is my payment information secure?" [level=3] [ref=e43] [cursor=pointer]:
+            - generic [ref=e44]: Is my payment information secure?
+          - heading "What is this website’s privacy and security policy?" [level=3] [ref=e47] [cursor=pointer]:
+            - generic [ref=e48]: What is this website’s privacy and security policy?
+          - heading "How long will my documents be saved on your servers after I cancel my membership?" [level=3] [ref=e51] [cursor=pointer]:
+            - generic [ref=e52]: How long will my documents be saved on your servers after I cancel my membership?
+        - generic [ref=e55]:
+          - generic [ref=e56]: My Account
+          - heading "What does a subscription get me?" [level=3] [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: What does a subscription get me?
+          - heading "Is there a limit to the number of documents they can save on our site while working on them?" [level=3] [ref=e61] [cursor=pointer]:
+            - generic [ref=e62]: Is there a limit to the number of documents they can save on our site while working on them?
+        - generic [ref=e65]:
+          - generic [ref=e66]: Editing Files
+          - heading "How do I fill out a document or form?" [level=3] [ref=e67] [cursor=pointer]:
+            - generic [ref=e68]: How do I fill out a document or form?
+          - heading "How do I write on a document?" [level=3] [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]: How do I write on a document?
+          - heading "How do I add my signature to a document?" [level=3] [ref=e75] [cursor=pointer]:
+            - generic [ref=e76]: How do I add my signature to a document?
+          - heading "Can I convert my document to a PDF?" [level=3] [ref=e79] [cursor=pointer]:
+            - generic [ref=e80]: Can I convert my document to a PDF?
+          - heading "Can I convert my PDFs into other formats?" [level=3] [ref=e83] [cursor=pointer]:
+            - generic [ref=e84]: Can I convert my PDFs into other formats?
+          - heading "Is my digital signature legal?" [level=3] [ref=e87] [cursor=pointer]:
+            - generic [ref=e88]: Is my digital signature legal?
+        - generic [ref=e91]:
+          - generic [ref=e92]: Trial and Billing
+          - heading "How does the 7-day trial work?" [level=3] [ref=e93] [cursor=pointer]:
+            - generic [ref=e94]: How does the 7-day trial work?
+          - heading "When will I be charged after the 7-Day trial expires?" [level=3] [ref=e97] [cursor=pointer]:
+            - generic [ref=e98]: When will I be charged after the 7-Day trial expires?
+        - generic [ref=e101]:
+          - generic [ref=e102]: Sharing and Sending Documents
+          - heading "Can I email documents to someone else after I finish editing?" [level=3] [ref=e103] [cursor=pointer]:
+            - generic [ref=e104]: Can I email documents to someone else after I finish editing?
+          - heading "I sent a document, but it hasn´t arrived. Where is it?" [level=3] [ref=e107] [cursor=pointer]:
+            - generic [ref=e108]: I sent a document, but it hasn´t arrived. Where is it?
+          - heading "Can I share my documents?" [level=3] [ref=e111] [cursor=pointer]:
+            - generic [ref=e112]: Can I share my documents?
+        - generic [ref=e115]:
+          - generic [ref=e116]: Refund and Membership Cancellation
+          - heading "How do I change or cancel my subscription?" [level=3] [ref=e117] [cursor=pointer]:
+            - generic [ref=e118]: How do I change or cancel my subscription?
+          - heading "What steps can I take to cancel my membership?" [level=3] [ref=e121] [cursor=pointer]:
+            - generic [ref=e122]: What steps can I take to cancel my membership?
+          - heading "Can I get a refund?" [level=3] [ref=e125] [cursor=pointer]:
+            - generic [ref=e126]: Can I get a refund?
+        - generic [ref=e129]:
+          - generic [ref=e130]: More Questions? Contact Us!
+          - generic [ref=e131]:
+            - generic [ref=e134]: Most inquiries are solved within 10 min
+            - generic [ref=e137]: You’ll never have to wait more than 48 hours to hear from us.
+            - generic [ref=e138]: Our customer service team will endeavor to get back to you as soon as possible, and certainly within 48 hours.
+          - link "Contact Us" [ref=e139] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/contact
+            - generic [ref=e140]: Contact Us
+      - generic [ref=e142]:
+        - generic [ref=e143]:
+          - heading "Our pdf editor is an all-in-one solution for managing and editing PDF documents" [level=2] [ref=e144]
+          - img "feature-image" [ref=e146]
+        - generic [ref=e147]:
+          - generic [ref=e148]:
+            - paragraph [ref=e151]: Compress
+            - link "Compress PDF" [ref=e152] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/compress-pdf
+              - generic [ref=e153]: Compress PDF
+            - generic [ref=e154]: Compress Image
+          - generic [ref=e155]:
+            - paragraph [ref=e158]: Edit PDF
+            - link "Edit PDF" [ref=e159] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/edit-pdf
+              - generic [ref=e160]: Edit PDF
+            - link "Edit & Fill PDF" [ref=e161] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/edit-fill-pdf
+              - generic [ref=e162]: Edit & Fill PDF
+            - link "Edit Scanned PDF" [ref=e163] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/edit-scanned-pdf
+              - generic [ref=e164]: Edit Scanned PDF
+            - link "Add Image to PDF" [ref=e165] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/insert-image
+              - generic [ref=e166]: Add Image to PDF
+            - link "Watermark" [ref=e167] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/watermark
+              - generic [ref=e168]: Watermark
+            - link "Rotate PDF" [ref=e169] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/rotate-pdf
+              - generic [ref=e170]: Rotate PDF
+            - link "Delete Pages" [ref=e171] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/delete-pdf-pages
+              - generic [ref=e172]: Delete Pages
+            - generic [ref=e173]: Pages Numbering
+            - link "PDF Reader" [ref=e174] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/pdf-reader
+              - generic [ref=e175]: PDF Reader
+          - generic [ref=e176]:
+            - link "Convert to PDF" [ref=e179] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/pdf-converter
+              - paragraph [ref=e180]: Convert to PDF
+            - link "Word to PDF" [ref=e181] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/word-to-pdf
+              - generic [ref=e182]: Word to PDF
+            - link "JPG to PDF" [ref=e183] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/jpg-to-pdf
+              - generic [ref=e184]: JPG to PDF
+            - link "PNG to PDF" [ref=e185] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/png-to-pdf
+              - generic [ref=e186]: PNG to PDF
+            - link "Power Point to PDF" [ref=e187] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/powerpoint-to-pdf
+              - generic [ref=e188]: Power Point to PDF
+            - link "Excel to PDF" [ref=e189] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/excel-to-pdf
+              - generic [ref=e190]: Excel to PDF
+            - generic [ref=e191]: OCR to PDF
+          - generic [ref=e192]:
+            - paragraph [ref=e195]: Security PDF
+            - link "Sign PDF" [ref=e196] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/sign-pdf
+              - generic [ref=e197]: Sign PDF
+            - generic [ref=e198]: Password Protect
+            - generic [ref=e199]: Share PDF
+            - generic [ref=e200]: Share Files
+          - generic [ref=e201]:
+            - paragraph [ref=e204]: Convert From PDF
+            - link "PDF to Word" [ref=e205] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/pdf-to-word
+              - generic [ref=e206]: PDF to Word
+            - link "PDF to JPG" [ref=e207] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/pdf-to-jpg
+              - generic [ref=e208]: PDF to JPG
+            - link "PDF to PNG" [ref=e209] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/pdf-to-png
+              - generic [ref=e210]: PDF to PNG
+            - link "PDF to Power Point" [ref=e211] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/pdf-to-powerpoint
+              - generic [ref=e212]: PDF to Power Point
+            - link "PDF to Excel" [ref=e213] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/pdf-to-excel
+              - generic [ref=e214]: PDF to Excel
+            - generic [ref=e215]: PDF to PDF/A
+          - generic [ref=e216]:
+            - paragraph [ref=e219]: Split and Merge
+            - link "Split PDF" [ref=e220] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/split-pdf
+              - generic [ref=e221]: Split PDF
+            - link "Merge PDF" [ref=e222] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/lp/merge-pdf
+              - generic [ref=e223]: Merge PDF
+            - generic [ref=e224]: Combine PDF
+            - generic [ref=e225]: Reorder PDF
+            - generic [ref=e226]: Extract Pages
+    - generic [ref=e227]:
+      - generic [ref=e228]:
+        - generic [ref=e229]:
+          - link "logo" [ref=e230] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e231]
+          - generic [ref=e232]:
+            - generic [ref=e233]: Powerful for
+            - generic [ref=e234]:
+              - generic [ref=e235]:
+                - img "mac-icon" [ref=e236]
+                - generic [ref=e237]: MacOS
+              - generic [ref=e238]:
+                - img "windows-icon" [ref=e239]
+                - generic [ref=e240]: Windows
+        - generic [ref=e241]:
+          - generic [ref=e243]:
+            - generic [ref=e244]: Tools
+            - link "PDF Forms" [ref=e245] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e246]: PDF Forms
+            - link "Downloads" [ref=e247] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e248]: Downloads
+          - generic [ref=e250]:
+            - generic [ref=e251]: Company
+            - link "About Us" [ref=e252] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e253]: About Us
+            - link "Terms of Use" [ref=e254] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e255]: Terms of Use
+            - link "Privacy Policy" [ref=e256] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e257]: Privacy Policy
+            - link "Terms and Conditions" [ref=e258] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e259]: Terms and Conditions
+            - link "Cookies Policy" [ref=e260] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e261]: Cookies Policy
+          - generic [ref=e263]:
+            - generic [ref=e264]: Support
+            - link "FAQs" [ref=e265] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e266]: FAQs
+            - generic [ref=e267]:
+              - generic [ref=e268]: Language
+              - generic [ref=e269] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e270]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e272]:
+            - generic [ref=e273]: Help
+            - link "Contact Us" [ref=e274] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e275]: Contact Us
+            - generic [ref=e277]:
+              - generic [ref=e278]: +1 844 590 0022
+              - generic [ref=e279]:
+                - generic [ref=e280]: "Contact Hours:"
+                - generic [ref=e281]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e286]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e287]: PDF editor FAQs
+```
+
+# Test source
+
+```ts
+      |                                  ^ Error: expect(page).toHaveScreenshot(expected) failed
+```

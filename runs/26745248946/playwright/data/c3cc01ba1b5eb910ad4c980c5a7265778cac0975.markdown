@@ -1,0 +1,775 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison for Account page
+- Location: .features-gen/features/Visual.feature.spec.js:40:7
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: locator('div[class*=\'SelectFormatModal\'] label[data-id=\'pdf\']').first()
+Expected: visible
+Timeout: 120000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" with timeout 120000ms
+  - waiting for locator('div[class*=\'SelectFormatModal\'] label[data-id=\'pdf\']').first()
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e6]:
+    - dialog:
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - heading "Your document is ready" [level=2] [ref=e13]
+          - list [ref=e14]:
+            - listitem [ref=e15]:
+              - img "Check" [ref=e16]
+              - text: Access to a complete set of editing tools
+            - listitem [ref=e17]:
+              - img "Check" [ref=e18]
+              - text: Unlimited edits and downloads
+            - listitem [ref=e19]:
+              - img "Check" [ref=e20]
+              - text: Convert and compress any format
+            - listitem [ref=e21]:
+              - img "Check" [ref=e22]
+              - text: Add a digital signature
+            - listitem [ref=e23]:
+              - img "Check" [ref=e24]
+              - text: Library of most used forms and templates
+            - listitem [ref=e25]:
+              - img "Check" [ref=e26]
+              - text: Share your documents with others
+          - paragraph [ref=e29]: "After 7 days, €49.95 billed every four weeks You can cancel any time, either through your Account Settings or by contacting our Customer Support team. Support email: info@mergedpdf.com"
+          - generic [ref=e31]:
+            - generic [ref=e32]: Excellent 4.6 out of 5
+            - img "Trustpilot Stars" [ref=e33]
+            - img "Trustpilot Logo" [ref=e34]
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - button [ref=e38] [cursor=pointer]:
+              - img [ref=e39]
+            - heading "Download now!" [level=2] [ref=e41]
+            - generic [ref=e42]:
+              - generic [ref=e43]:
+                - img "Discount" [ref=e44]
+                - paragraph [ref=e46]: Exclusive limited-time discount
+              - generic [ref=e47]:
+                - text: 1:31
+                - generic [ref=e48]: min
+          - generic [ref=e49]:
+            - paragraph [ref=e50]: Total
+            - generic [ref=e51]: €1.95 EUR
+          - generic [ref=e54]:
+            - iframe [ref=e58]:
+              - button "Pay with Link" [ref=f3e8] [cursor=pointer]:
+                - generic [ref=f3e9]:
+                  - generic [ref=f3e10]:
+                    - text: Pay with
+                    - img [ref=f3e11]
+                  - generic [ref=f3e14]:
+                    - img [ref=f3e15]
+                    - generic [ref=f3e22]: "0000"
+            - iframe [ref=e61]:
+              - generic [ref=f6e7]:
+                - tablist "Payment Methods" [ref=f6e8]:
+                  - tab "Card" [selected] [ref=f6e9]:
+                    - generic [ref=f6e12]: Card
+                  - tab "PayPal" [ref=f6e13] [cursor=pointer]:
+                    - generic [ref=f6e15]: PayPal
+                  - tab "Klarna" [ref=f6e16] [cursor=pointer]:
+                    - generic [ref=f6e21]: Klarna
+                  - combobox "Additional Payment Methods" [ref=f6e23] [cursor=pointer]:
+                    - option "Card" [disabled] [selected]
+                    - option "Amazon Pay"
+                - tabpanel "Card" [ref=f6e24]:
+                  - generic [ref=f6e27]:
+                    - generic [ref=f6e29]:
+                      - generic [ref=f6e30]:
+                        - generic [ref=f6e32]:
+                          - generic [ref=f6e33]: Card number
+                          - generic [ref=f6e35]:
+                            - textbox "Card number" [ref=f6e37]:
+                              - /placeholder: 1234 1234 1234 1234
+                              - text: 4242 4242 4242 4242
+                            - generic:
+                              - option "Select card brand (optional)" [disabled] [selected]
+                              - option "Visa"
+                            - generic:
+                              - generic:
+                                - generic:
+                                  - paragraph: Supported cards include Visa, Mastercard, American Express, and Discover.
+                                  - generic:
+                                    - img
+                                    - img
+                                - generic:
+                                  - img
+                                  - generic: Current card brand is Visa.
+                        - generic [ref=f6e39]:
+                          - generic [ref=f6e40]:
+                            - text: Expiration (MM/YY)
+                            - generic [ref=f6e41]: MM / YY
+                          - textbox "Expiration (MM/YY) MM / YY" [ref=f6e45]:
+                            - /placeholder: MM / YY
+                            - text: 12 / 34
+                        - generic [ref=f6e47]:
+                          - generic [ref=f6e48]: Security code
+                          - generic [ref=f6e50]:
+                            - textbox "Security code" [ref=f6e52]:
+                              - /placeholder: CVC
+                              - text: "123"
+                            - generic:
+                              - generic: 3-digit code on back of card
+                              - generic:
+                                - img
+                      - generic [ref=f6e55]:
+                        - generic [ref=f6e57]:
+                          - generic [ref=f6e58]: Country
+                          - combobox "Country" [ref=f6e61] [cursor=pointer]:
+                            - option "Select" [disabled]
+                            - option "Afghanistan"
+                            - option "Åland Islands"
+                            - option "Albania"
+                            - option "Algeria"
+                            - option "Andorra"
+                            - option "Angola"
+                            - option "Anguilla"
+                            - option "Antarctica"
+                            - option "Antigua & Barbuda"
+                            - option "Argentina"
+                            - option "Armenia"
+                            - option "Aruba"
+                            - option "Ascension Island"
+                            - option "Australia"
+                            - option "Austria"
+                            - option "Azerbaijan"
+                            - option "Bahamas"
+                            - option "Bahrain"
+                            - option "Bangladesh"
+                            - option "Barbados"
+                            - option "Belarus"
+                            - option "Belgium"
+                            - option "Belize"
+                            - option "Benin"
+                            - option "Bermuda"
+                            - option "Bhutan"
+                            - option "Bolivia"
+                            - option "Bosnia & Herzegovina"
+                            - option "Botswana"
+                            - option "Bouvet Island"
+                            - option "Brazil"
+                            - option "British Indian Ocean Territory"
+                            - option "British Virgin Islands"
+                            - option "Brunei"
+                            - option "Bulgaria"
+                            - option "Burkina Faso"
+                            - option "Burundi"
+                            - option "Cambodia"
+                            - option "Cameroon"
+                            - option "Canada"
+                            - option "Cape Verde"
+                            - option "Caribbean Netherlands"
+                            - option "Cayman Islands"
+                            - option "Central African Republic"
+                            - option "Chad"
+                            - option "Chile"
+                            - option "China"
+                            - option "Colombia"
+                            - option "Comoros"
+                            - option "Congo - Brazzaville"
+                            - option "Congo - Kinshasa"
+                            - option "Cook Islands"
+                            - option "Costa Rica"
+                            - option "Côte d’Ivoire"
+                            - option "Croatia"
+                            - option "Curaçao"
+                            - option "Cyprus"
+                            - option "Czechia"
+                            - option "Denmark"
+                            - option "Djibouti"
+                            - option "Dominica"
+                            - option "Dominican Republic"
+                            - option "Ecuador"
+                            - option "Egypt"
+                            - option "El Salvador"
+                            - option "Equatorial Guinea"
+                            - option "Eritrea"
+                            - option "Estonia"
+                            - option "Eswatini"
+                            - option "Ethiopia"
+                            - option "Falkland Islands"
+                            - option "Faroe Islands"
+                            - option "Fiji"
+                            - option "Finland"
+                            - option "France"
+                            - option "French Guiana"
+                            - option "French Polynesia"
+                            - option "French Southern Territories"
+                            - option "Gabon"
+                            - option "Gambia"
+                            - option "Georgia"
+                            - option "Germany"
+                            - option "Ghana"
+                            - option "Gibraltar"
+                            - option "Greece"
+                            - option "Greenland"
+                            - option "Grenada"
+                            - option "Guadeloupe"
+                            - option "Guam"
+                            - option "Guatemala"
+                            - option "Guernsey"
+                            - option "Guinea"
+                            - option "Guinea-Bissau"
+                            - option "Guyana"
+                            - option "Haiti"
+                            - option "Honduras"
+                            - option "Hong Kong SAR China"
+                            - option "Hungary"
+                            - option "Iceland"
+                            - option "India"
+                            - option "Indonesia"
+                            - option "Iraq"
+                            - option "Ireland"
+                            - option "Isle of Man"
+                            - option "Israel"
+                            - option "Italy"
+                            - option "Jamaica"
+                            - option "Japan"
+                            - option "Jersey"
+                            - option "Jordan"
+                            - option "Kazakhstan"
+                            - option "Kenya"
+                            - option "Kiribati"
+                            - option "Kosovo"
+                            - option "Kuwait"
+                            - option "Kyrgyzstan"
+                            - option "Laos"
+                            - option "Latvia"
+                            - option "Lebanon"
+                            - option "Lesotho"
+                            - option "Liberia"
+                            - option "Libya"
+                            - option "Liechtenstein"
+                            - option "Lithuania"
+                            - option "Luxembourg"
+                            - option "Macao SAR China"
+                            - option "Madagascar"
+                            - option "Malawi"
+                            - option "Malaysia"
+                            - option "Maldives"
+                            - option "Mali"
+                            - option "Malta"
+                            - option "Martinique"
+                            - option "Mauritania"
+                            - option "Mauritius"
+                            - option "Mayotte"
+                            - option "Mexico"
+                            - option "Moldova"
+                            - option "Monaco"
+                            - option "Mongolia"
+                            - option "Montenegro"
+                            - option "Montserrat"
+                            - option "Morocco"
+                            - option "Mozambique"
+                            - option "Myanmar (Burma)"
+                            - option "Namibia"
+                            - option "Nauru"
+                            - option "Nepal"
+                            - option "Netherlands"
+                            - option "New Caledonia"
+                            - option "New Zealand"
+                            - option "Nicaragua"
+                            - option "Niger"
+                            - option "Nigeria"
+                            - option "Niue"
+                            - option "North Macedonia"
+                            - option "Norway"
+                            - option "Oman"
+                            - option "Pakistan"
+                            - option "Palestinian Territories"
+                            - option "Panama"
+                            - option "Papua New Guinea"
+                            - option "Paraguay"
+                            - option "Peru"
+                            - option "Philippines"
+                            - option "Pitcairn Islands"
+                            - option "Poland"
+                            - option "Portugal"
+                            - option "Puerto Rico"
+                            - option "Qatar"
+                            - option "Réunion"
+                            - option "Romania"
+                            - option "Russia"
+                            - option "Rwanda"
+                            - option "Samoa"
+                            - option "San Marino"
+                            - option "São Tomé & Príncipe"
+                            - option "Saudi Arabia"
+                            - option "Senegal"
+                            - option "Serbia"
+                            - option "Seychelles"
+                            - option "Sierra Leone"
+                            - option "Singapore"
+                            - option "Sint Maarten"
+                            - option "Slovakia"
+                            - option "Slovenia"
+                            - option "Solomon Islands"
+                            - option "Somalia"
+                            - option "South Africa"
+                            - option "South Georgia & South Sandwich Islands"
+                            - option "South Korea"
+                            - option "South Sudan"
+                            - option "Spain"
+                            - option "Sri Lanka"
+                            - option "St. Barthélemy"
+                            - option "St. Helena"
+                            - option "St. Kitts & Nevis"
+                            - option "St. Lucia"
+                            - option "St. Martin"
+                            - option "St. Pierre & Miquelon"
+                            - option "St. Vincent & Grenadines"
+                            - option "Sudan"
+                            - option "Suriname"
+                            - option "Svalbard & Jan Mayen"
+                            - option "Sweden"
+                            - option "Switzerland"
+                            - option "Taiwan"
+                            - option "Tajikistan"
+                            - option "Tanzania"
+                            - option "Thailand"
+                            - option "Timor-Leste"
+                            - option "Togo"
+                            - option "Tokelau"
+                            - option "Tonga"
+                            - option "Trinidad & Tobago"
+                            - option "Tristan da Cunha"
+                            - option "Tunisia"
+                            - option "Türkiye"
+                            - option "Turkmenistan"
+                            - option "Turks & Caicos Islands"
+                            - option "Tuvalu"
+                            - option "Uganda"
+                            - option "Ukraine"
+                            - option "United Arab Emirates"
+                            - option "United Kingdom"
+                            - option "United States" [selected]
+                            - option "Uruguay"
+                            - option "Uzbekistan"
+                            - option "Vanuatu"
+                            - option "Vatican City"
+                            - option "Venezuela"
+                            - option "Vietnam"
+                            - option "Wallis & Futuna"
+                            - option "Western Sahara"
+                            - option "Yemen"
+                            - option "Zambia"
+                            - option "Zimbabwe"
+                        - generic [ref=f6e63]:
+                          - generic [ref=f6e64]: ZIP code
+                          - textbox "ZIP code" [ref=f6e67]:
+                            - /placeholder: "12345"
+                          - alert [ref=f6e70]: Your ZIP is invalid.
+                    - button
+            - button "Pay and Download" [ref=e62] [cursor=pointer]
+          - paragraph [ref=e64]:
+            - text: By continuing, you accept the
+            - link "Terms and Conditions" [ref=e65] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/en/terms-and-conditions
+            - text: and
+            - link "Privacy Policy" [ref=e66] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/en/privacy-policy
+          - generic [ref=e68]:
+            - paragraph [ref=e69]:
+              - img "Lock icon" [ref=e70]
+              - text: This site is SSL secured
+            - generic [ref=e71]:
+              - img "Comodo Secure" [ref=e72]
+              - img "Money Back Guarantee" [ref=e73]
+              - img "SSL Certificate" [ref=e74]
+    - generic [ref=e76]:
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - img [ref=e80] [cursor=pointer]
+          - generic [ref=e85] [cursor=pointer]:
+            - paragraph [ref=e86]: sample
+            - img [ref=e87]
+        - generic [ref=e89]:
+          - button "Merge or Upload" [ref=e90] [cursor=pointer]:
+            - img [ref=e91]
+            - generic "Merge or Upload" [ref=e94]
+          - generic [ref=e96]:
+            - button "Share" [ref=e98] [cursor=pointer]:
+              - img [ref=e99]
+              - text: Share
+            - button "Convert" [ref=e103] [cursor=pointer]:
+              - img [ref=e104]
+              - text: Convert
+            - button "Print" [ref=e108] [cursor=pointer]:
+              - img [ref=e109]
+              - text: Print
+            - button "Download" [ref=e111] [cursor=pointer]
+      - generic [ref=e114]:
+        - generic [ref=e119]:
+          - toolbar [ref=e120]:
+            - button "Show Pages" [ref=e121] [cursor=pointer]:
+              - img [ref=e124]
+            - separator
+            - button "Undo" [ref=e126] [cursor=pointer]:
+              - img [ref=e127]
+            - separator
+            - button "Redo" [ref=e129] [cursor=pointer]:
+              - img [ref=e130]
+            - separator
+            - button "Show Annotations" [ref=e132] [cursor=pointer]:
+              - img [ref=e135]
+            - separator
+            - button "Rearrange Pages" [ref=e137] [cursor=pointer]:
+              - img [ref=e140]
+            - separator
+            - button "Cursor" [ref=e145] [cursor=pointer]:
+              - generic [ref=e146]:
+                - img [ref=e148]
+                - generic [ref=e150]: Cursor
+            - separator
+            - button "Select" [ref=e151] [cursor=pointer]:
+              - generic [ref=e152]:
+                - img [ref=e154]
+                - generic [ref=e156]: Select
+            - separator
+            - button "Text" [ref=e157] [cursor=pointer]:
+              - generic [ref=e158]:
+                - img [ref=e160]
+                - generic [ref=e162]: Text
+            - separator
+            - button "Replace" [ref=e163] [cursor=pointer]:
+              - generic [ref=e164]:
+                - img [ref=e166]
+                - generic [ref=e169]: Replace
+            - separator
+            - button "Sign" [ref=e170] [cursor=pointer]:
+              - generic [ref=e171]:
+                - img [ref=e173]
+                - generic [ref=e176]: Sign
+            - separator
+            - button "Initials" [ref=e177] [cursor=pointer]:
+              - generic [ref=e178]:
+                - img [ref=e180]
+                - generic [ref=e182]: Initials
+            - separator
+            - button "Erase" [ref=e183] [cursor=pointer]:
+              - generic [ref=e184]:
+                - img [ref=e186]
+                - generic [ref=e189]: Erase
+            - separator
+            - group "image" [ref=e190]:
+              - button "Image" [ref=e191] [cursor=pointer]:
+                - generic [ref=e192]:
+                  - img [ref=e194]
+                  - generic [ref=e198]: Image
+              - generic [ref=e199]:
+                - combobox [ref=e202]
+                - button "Toggle image tools" [ref=e203] [cursor=pointer]
+            - separator
+            - button "Draw" [ref=e204] [cursor=pointer]:
+              - generic [ref=e205]:
+                - img [ref=e207]
+                - generic [ref=e209]: Draw
+            - separator
+            - button "Check" [ref=e210] [cursor=pointer]:
+              - generic [ref=e211]:
+                - img [ref=e213]
+                - generic [ref=e215]: Check
+            - separator
+            - button "Cross" [ref=e216] [cursor=pointer]:
+              - generic [ref=e217]:
+                - img [ref=e219]
+                - generic [ref=e222]: Cross
+            - separator
+            - button "Watermark" [ref=e223] [cursor=pointer]:
+              - generic [ref=e224]:
+                - img [ref=e226]
+                - generic [ref=e228]: Watermark
+            - separator
+            - button "Date" [ref=e229] [cursor=pointer]:
+              - generic [ref=e230]:
+                - img [ref=e232]
+                - generic [ref=e234]: Date
+            - separator
+            - button "Highlight" [ref=e235] [cursor=pointer]:
+              - generic [ref=e236]:
+                - img [ref=e238]
+                - generic [ref=e242]: Highlight
+            - separator
+            - button "Marker" [ref=e243] [cursor=pointer]:
+              - generic [ref=e244]:
+                - img [ref=e246]
+                - generic [ref=e248]: Marker
+            - separator
+            - button "Blackout" [ref=e249] [cursor=pointer]:
+              - generic [ref=e250]:
+                - img [ref=e252]
+                - generic [ref=e256]: Blackout
+            - separator
+            - button "Callout" [ref=e257] [cursor=pointer]:
+              - generic [ref=e258]:
+                - img [ref=e260]
+                - generic [ref=e263]: Callout
+            - separator
+            - button "Sticky" [ref=e264] [cursor=pointer]:
+              - generic [ref=e265]:
+                - img [ref=e267]
+                - generic [ref=e269]: Sticky
+            - separator
+            - group "shapes" [ref=e270]:
+              - button "Line" [ref=e271] [cursor=pointer]:
+                - img [ref=e272]
+              - generic [ref=e274]:
+                - combobox [ref=e277]
+                - button "Toggle shapes tools" [ref=e278] [cursor=pointer]
+            - separator
+            - button [ref=e279] [cursor=pointer]:
+              - img [ref=e280]
+            - separator
+            - button "Search" [ref=e281] [cursor=pointer]:
+              - generic [ref=e282]:
+                - img [ref=e284]
+                - generic [ref=e286]: Search
+            - separator
+          - generic [ref=e287]:
+            - generic [ref=e289]:
+              - listbox "Thumbnails" [ref=e291]:
+                - option "1" [selected] [ref=e292]:
+                  - generic [ref=e299]: "1"
+              - separator "Resizer handle" [ref=e301]
+            - region "Page 1" [ref=e317]:
+              - generic [ref=e321]:
+                - paragraph
+            - iframe [ref=e322]:
+              
+        - status [ref=e323]
+      - group "Document pager" [ref=e324]:
+        - generic [ref=e325]:
+          - button "Previous page" [ref=e326]:
+            - img [ref=e327]
+          - textbox "Current page" [ref=e330]: "1"
+          - generic [ref=e331]: /
+          - generic [ref=e332]: "1"
+          - button "Next page" [ref=e333]:
+            - img [ref=e334]
+        - generic [ref=e337]:
+          - button "Zoom out" [ref=e338] [cursor=pointer]:
+            - img [ref=e339]
+          - generic [ref=e341]: 208%
+          - button "Zoom in" [ref=e342] [cursor=pointer]:
+            - img [ref=e343]
+          - button "Fit" [ref=e346] [cursor=pointer]:
+            - img [ref=e347]
+            - text: Fit
+  - alert [ref=e349]: pdf Editor
+  - iframe [ref=e350]:
+    - button "Open Stripe Developer Tools" [ref=f4e5] [cursor=pointer]:
+      - banner [ref=f4e8]:
+        - generic "View Errors" [ref=f4e9]:
+          - status [ref=f4e10]: "1"
+        - img [ref=f4e11]
+        - img [ref=f4e13]
+```
+
+# Test source
+
+```ts
+  1   | import * as path from 'path'
+  2   | import type { Page } from '@playwright/test'
+  3   | import { expect } from '@playwright/test'
+  4   | import { openHome } from './navigation'
+  5   | import { isPdfhintScenario } from './pdfhintScenario'
+  6   | import { fillStripePaymentLikeLegacy } from './stripePayment'
+  7   | import { editor, home } from '../pages/editorSelectors'
+  8   | import { waitForEditorAfterUpload } from './editorActions'
+  9   | 
+  10  | const samplePdf = path.join(__dirname, '..', 'fixtures', 'sample.pdf')
+  11  | 
+  12  | export type EditorPaymentOptions = {
+  13  |   /** Email para registro en el editor (flujo Direct + upload). */
+  14  |   email: string
+  15  |   stripe?: { number: string; exp: string; cvc: string }
+  16  |   /** Parámetros en la URL inicial (`/` o `/?…`) antes del upload (p. ej. UTM, `ip`). */
+  17  |   homeQuery?: Record<string, string>
+  18  |   /** Paridad `HomePage.loadPageWithLocale` — ver `openHome({ locale })`. */
+  19  |   homeLocale?: string
+  20  |   /** Paridad `TransactionalEmails.feature`: textos en transaction-price / monthlyTransactionPrice tras registro, antes de Stripe. */
+  21  |   prePaymentEditorContains?: { priceContains: string; monthlyContains: string }
+  22  | }
+  23  | 
+  24  | /** Stripe test: mensajes de declinación / fondos insuficientes (EN + fragmentos localizables). */
+  25  | const declineMessageRe =
+  26  |   /declined|rechazad|declin[ée]|abgelehnt|rifiutat|recusad|your card (has been|was)|card (couldn't be|cannot be)|payment failed|pago.*fall|insufficient|insuffisant|insuficiente|unzureichend|non sufficienti|insufficiente|expired|expiration|expir[ée]|ablauf|caducad|scadut|만료|期限切れ|lost|stolen|perdue|robada|furto|verloren|gestolen|incorrect.*cvc|cvc.*invalid|invalid.*cvc|security code|sicherheitscode|codice.*sicurezza/i
+  27  | 
+  28  | async function runEditorDirectUploadAndOpenPayment(
+  29  |   page: Page,
+  30  |   opts: Pick<EditorPaymentOptions, 'email' | 'homeQuery' | 'homeLocale' | 'prePaymentEditorContains'>
+  31  | ): Promise<void> {
+  32  |   const hasQuery = opts.homeQuery && Object.keys(opts.homeQuery).length > 0
+  33  |   await openHome(page, {
+  34  |     ...(hasQuery ? { query: opts.homeQuery } : {}),
+  35  |     ...(opts.homeLocale ? { locale: opts.homeLocale } : {})
+  36  |   })
+  37  |   if (isPdfhintScenario()) {
+  38  |     const hero = page.locator(home.uploadDocumentHeroInput).first()
+  39  |     await hero.waitFor({ state: 'attached', timeout: 120_000 })
+  40  |     await hero.setInputFiles(samplePdf)
+  41  |     await page
+  42  |       .locator(home.uploadLoadingOverlay)
+  43  |       .first()
+  44  |       .waitFor({ state: 'hidden', timeout: 120_000 })
+  45  |       .catch(() => {})
+  46  |   } else {
+  47  |     await page.locator(home.uploadDocumentButton).first().setInputFiles(samplePdf)
+  48  |   }
+  49  |   await waitForEditorAfterUpload(page)
+  50  |   await page.locator(editor.downloadButton).first().click({ force: true })
+  51  | 
+  52  |   await page.locator(editor.emailInput).waitFor({ state: 'visible', timeout: 60_000 })
+  53  |   await page.locator(editor.emailInput).fill(opts.email)
+  54  |   await page.locator(editor.downloadLoginButton).click()
+  55  | 
+  56  |   if (opts.prePaymentEditorContains) {
+  57  |     const priceLoc = page.locator(editor.transactionPrice)
+  58  |     const monthlyLoc = page.locator(editor.monthlyTransactionPrice)
+  59  |     await expect(priceLoc).toBeVisible({ timeout: 90_000 })
+  60  |     await expect(monthlyLoc).toBeVisible({ timeout: 90_000 })
+  61  |     await expect(priceLoc).toContainText(opts.prePaymentEditorContains.priceContains, { timeout: 30_000 })
+  62  |     await expect(monthlyLoc).toContainText(opts.prePaymentEditorContains.monthlyContains, { timeout: 30_000 })
+  63  |   }
+  64  | }
+  65  | 
+  66  | async function anyFrameBodyMatchesDecline(page: Page): Promise<boolean> {
+  67  |   for (const frame of page.frames()) {
+  68  |     const txt = await frame.locator('body').innerText().catch(() => '')
+  69  |     if (declineMessageRe.test(txt)) return true
+  70  |   }
+  71  |   return false
+  72  | }
+  73  | 
+  74  | /**
+  75  |  * Paridad con el tronco común de @PDFEDITOR_PDFHINT_SMOKE_VISA / smoke de pago:
+  76  |  * Home → upload → descarga → email → Stripe → botón confirmar → descarga visible.
+  77  |  */
+  78  | export async function runEditorUploadRegisterAndVisaPayment(page: Page, opts: EditorPaymentOptions): Promise<void> {
+  79  |   const number = opts.stripe?.number ?? process.env.STRIPE_TEST_CARD_NUMBER ?? '4242424242424242'
+  80  |   const exp = opts.stripe?.exp ?? process.env.STRIPE_TEST_CARD_EXP ?? '1234'
+  81  |   const cvc = opts.stripe?.cvc ?? process.env.STRIPE_TEST_CARD_CVC ?? '123'
+  82  | 
+  83  |   await runEditorDirectUploadAndOpenPayment(page, {
+  84  |     email: opts.email,
+  85  |     homeQuery: opts.homeQuery,
+  86  |     homeLocale: opts.homeLocale,
+  87  |     prePaymentEditorContains: opts.prePaymentEditorContains
+  88  |   })
+  89  |   await fillStripePaymentLikeLegacy(page, { number, exp, cvc })
+  90  |   await page.locator(editor.continuePayment).click()
+  91  |   await expect(page.locator(editor.pdfRadioButton).first()).toBeVisible({ timeout: 120_000 })
+  92  | }
+  93  | 
+  94  | /**
+  95  |  * Mismo tronco que el pago Visa hasta confirmar; con número de prueba declinado (p. ej. `4000000000000002`)
+  96  |  * espera mensaje de error en página o iframes Stripe (no descarga post-pago).
+  97  |  */
+  98  | export async function runEditorUploadRegisterStripePaymentExpectDecline(
+  99  |   page: Page,
+> 100 |   opts: EditorPaymentOptions
+      |                                                                                         ^ Error: expect(locator).toBeVisible() failed
+  101 | ): Promise<void> {
+  102 |   const number =
+  103 |     opts.stripe?.number ?? process.env.STRIPE_TEST_DECLINE_NUMBER?.trim() ?? '4000000000000002'
+  104 |   const exp = opts.stripe?.exp ?? process.env.STRIPE_TEST_DECLINE_EXP?.trim() ?? '1234'
+  105 |   const cvc = opts.stripe?.cvc ?? process.env.STRIPE_TEST_DECLINE_CVC?.trim() ?? '123'
+  106 | 
+  107 |   await runEditorDirectUploadAndOpenPayment(page, {
+  108 |     email: opts.email,
+  109 |     homeQuery: opts.homeQuery,
+  110 |     homeLocale: opts.homeLocale,
+  111 |     prePaymentEditorContains: opts.prePaymentEditorContains
+  112 |   })
+  113 |   await fillStripePaymentLikeLegacy(page, { number, exp, cvc })
+  114 |   await page.locator(editor.continuePayment).click()
+  115 |   await expect.poll(async () => anyFrameBodyMatchesDecline(page), { timeout: 90_000, intervals: [500, 1500, 3000] }).toBeTruthy()
+  116 | }
+  117 | 
+  118 | /**
+  119 |  * Paridad con `EditorPage.downloadDocument()` (legacy): tras el pago, el modal
+  120 |  * "Payment Success!" muestra una selección de formato (PDF/PNG/JPG/Word/...) con
+  121 |  * el botón Download deshabilitado por defecto. Hay que activar PDF (radio
+  122 |  * `[checked]` puede no bastar) y luego pulsar Download para volver al dashboard.
+  123 |  *
+  124 |  * Estrategia robusta:
+  125 |  *  1. Esperar al heading "Payment Success!" o al xpath legacy.
+  126 |  *  2. Si el botón Download (con xpath legacy) ya es clickeable, clicarlo.
+  127 |  *  3. Si no, clic explícito en la tarjeta PDF y luego en el botón Download.
+  128 |  *  4. Como último recurso, cerrar el modal (X) y navegar a /dashboard manualmente.
+  129 |  */
+  130 | export async function openDashboardViaPaymentSuccessModal(page: Page): Promise<void> {
+  131 |   await page.waitForTimeout(1500)
+  132 | 
+  133 |   const successHeader = page.getByRole('heading', { name: /payment success/i }).first()
+  134 |   await successHeader.waitFor({ state: 'visible', timeout: 120_000 }).catch(() => {})
+  135 | 
+  136 |   const legacyBtn = page.locator(`xpath=${editor.paymentSuccessDownloadButton}`).first()
+  137 |   const tryClickEnabled = async (locator: ReturnType<Page['locator']>): Promise<boolean> => {
+  138 |     try {
+  139 |       const visible = await locator.isVisible({ timeout: 1500 }).catch(() => false)
+  140 |       if (!visible) return false
+  141 |       const enabled = await locator.isEnabled({ timeout: 500 }).catch(() => false)
+  142 |       if (!enabled) return false
+  143 |       await locator.click({ timeout: 5000, force: true }).catch(() => {})
+  144 |       return true
+  145 |     } catch {
+  146 |       return false
+  147 |     }
+  148 |   }
+  149 | 
+  150 |   if (await tryClickEnabled(legacyBtn)) {
+  151 |     await page.locator('main, body').first().waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {})
+  152 |     return
+  153 |   }
+  154 | 
+  155 |   /**
+  156 |    * Activa el formato PDF si está deshabilitado el botón Download.
+  157 |    * El layout actual: `<div role="radio">PDF PDF</div>` que requiere click manual.
+  158 |    */
+  159 |   const pdfRadio = page.getByRole('radio', { name: /^PDF\s+PDF$/ }).first()
+  160 |   if (await pdfRadio.isVisible({ timeout: 4_000 }).catch(() => false)) {
+  161 |     await pdfRadio.click({ force: true }).catch(() => {})
+  162 |     await page.waitForTimeout(500)
+  163 |   } else {
+  164 |     const pdfCard = page.getByText(/^PDF$/, { exact: false }).first()
+  165 |     await pdfCard.click({ force: true }).catch(() => {})
+  166 |   }
+  167 | 
+  168 |   if (await tryClickEnabled(legacyBtn)) return
+  169 | 
+  170 |   const downloadBtn = page.getByRole('button', { name: /^download$/i }).first()
+  171 |   if (await tryClickEnabled(downloadBtn)) return
+  172 | 
+  173 |   /**
+  174 |    * Fallback: cerrar el modal (botón X) y navegar a /dashboard. El usuario ya
+  175 |    * está logueado, así que la nav directa equivale a "post-payment redirect".
+  176 |    */
+  177 |   const closeBtn = page.locator('dialog button').first()
+  178 |   await closeBtn.click({ force: true }).catch(() => {})
+  179 | }
+  180 | 
+```

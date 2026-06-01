@@ -1,0 +1,331 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison of all products >> Example #7
+- Location: .features-gen/features/Visual.feature.spec.js:622:9
+
+# Error details
+
+```
+Error: expect(page).toHaveScreenshot(expected) failed
+
+  48771 pixels (ratio 0.06 of all image pixels) are different.
+
+  Snapshot: visual-product-rotate.png
+
+Call log:
+  - Expect "toHaveScreenshot(visual-product-rotate.png)" with timeout 30000ms
+    - verifying given screenshot expectation
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - 48771 pixels (ratio 0.06 of all image pixels) are different.
+  - waiting 100ms before taking screenshot
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - captured a stable screenshot
+  - 48771 pixels (ratio 0.06 of all image pixels) are different.
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - generic [ref=e10]:
+      - link "logo" [ref=e11] [cursor=pointer]:
+        - /url: https://www.mergedpdf.com/
+        - img "logo" [ref=e12]
+      - generic [ref=e13]:
+        - link "Most Used Forms" [ref=e15] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/forms
+          - generic [ref=e16]: Most Used Forms
+        - link "Login" [ref=e18] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/login
+          - generic [ref=e19]: Login
+    - generic [ref=e20]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - heading "Rotate Your PDF" [level=1] [ref=e24]
+          - paragraph [ref=e26]: Rotate and reposition your PDF document using our simple online tool. Upload and edit your PDF now!
+        - generic [ref=e29]:
+          - button "Choose File" [ref=e30]
+          - generic [ref=e31]:
+            - text: Upload Document
+            - img "union icon" [ref=e34]
+          - generic [ref=e35]: or Drag and Drop
+          - generic [ref=e36]: Supports PDF up to 100 MB and other formats and extensions up to 25 MB
+      - generic [ref=e37]:
+        - generic [ref=e39]:
+          - img "rotatePDF" [ref=e41]
+          - generic [ref=e42]:
+            - generic [ref=e43]: "Rotating Documents Online: Quick and Easy"
+            - paragraph [ref=e45]: "Our handy tool makes it simple to rotate your PDF documents. Follow these easy steps:"
+            - generic [ref=e47]:
+              - generic [ref=e50]: Click “Upload Document” or drag and drop your PDF
+              - generic [ref=e54]: Select the page(s) you wish to rotate using the “Select Page” button on the toolbar
+              - generic [ref=e58]: Click on the “Rotate Left” or “Rotate Right” button
+              - generic [ref=e62]: Rotate as many times as you need — each click rotates the page 90 degrees
+              - generic [ref=e66]: Download or share the finished document
+            - img "union icon" [ref=e70]
+        - generic [ref=e72]:
+          - generic [ref=e73]: Upload and rotate your document at your leisure!
+          - generic [ref=e74]: Our online tool makes it easy to rotate PDFs at the click of a button.
+        - generic [ref=e75]:
+          - heading "Why choose us?" [level=2] [ref=e77]
+          - generic [ref=e79]:
+            - generic [ref=e84]:
+              - generic [ref=e85]: Wide variety of essential tools
+              - generic [ref=e86]: Editor is a one-step portal to manage PDF files. It is tailored to meet all your PDF needs.
+            - generic [ref=e91]:
+              - generic [ref=e92]: Safety & Security
+              - generic [ref=e93]: Privacy protection is our top priority. Our editor is 100% safe to use, as no private information is stored. Your personal documents are highly secured.
+            - generic [ref=e98]:
+              - generic [ref=e99]: Time-saving
+              - generic [ref=e100]: Edit a PDF quickly and reliably, in a few very simple steps to get the results.
+            - generic [ref=e105]:
+              - generic [ref=e106]: Customer Support
+              - generic [ref=e107]: Our team of experts is at your disposal 24/7, ready to provide assistance in multiple languages.
+            - generic [ref=e112]:
+              - generic [ref=e113]: Instant & easy Editing
+              - generic [ref=e114]: Work with digital documents seamlessly. Quick start without any fuss.
+            - generic [ref=e119]:
+              - generic [ref=e120]: All-time availability
+              - generic [ref=e121]: Always accessible online and compatible with all devices, enabling you to manage PDFs on the go.
+        - generic [ref=e123]:
+          - heading "Rotating PDFs — Frequently Asked Questions" [level=2] [ref=e124]
+          - generic [ref=e125]:
+            - heading "How can I rotate a PDF?" [level=3] [ref=e127] [cursor=pointer]
+            - generic [ref=e129]:
+              - paragraph [ref=e130]: "Our online tool is ideal for all your PDF rotating needs. Using our site, you can rotate your PDF with the following steps:"
+              - list [ref=e131]:
+                - listitem [ref=e132]: "- Upload the document you want to rotate"
+                - listitem [ref=e133]: "- Select the page or pages you wish to rotate"
+                - listitem [ref=e134]: "- Click the “Rotate Left” or “Rotate Right” button to rotate your document by 90 degrees at a time"
+                - listitem [ref=e135]: "- Make any other necessary edits"
+                - listitem [ref=e136]: "- When you are happy, download or share your PDF"
+          - generic [ref=e138]:
+            - heading "Can I flip a PDF document horizontally?" [level=3] [ref=e140] [cursor=pointer]
+            - generic [ref=e142]:
+              - paragraph [ref=e143]: Yes, you can use our tool to flip a PDF horizontally.
+              - paragraph [ref=e144]: Simply open your document on our site by dragging and dropping or by clicking the “Upload Document” button.
+              - paragraph [ref=e145]: Next, click the “Select page” icon (4 squares — 5th from the left in the toolbar). Then you can use the rotate tool to flip the selected page(s).
+              - paragraph [ref=e146]: Click the “Rotate Left” or “Rotate Right” button once to flip by 90 degrees in the appropriate direction. This will flip a vertical page horizontally. If you need to rotate to a different angle, keep clicking the button until your page appears in the position you want.
+          - generic [ref=e148]:
+            - heading "Can I make my PDF vertical?" [level=3] [ref=e150] [cursor=pointer]
+            - generic [ref=e152]:
+              - paragraph [ref=e153]: Yes, the rotate function on our tool allows you to flip a PDF document from horizontal to vertical.
+              - paragraph [ref=e154]: Once you have opened your document on our site, select the pages you wish to rotate. Then click the “Rotate Left” or “Rotate Right” icon to change the orientation of the selected page or pages. Each click turns the page(s) by 90 degrees.
+          - generic [ref=e156]:
+            - heading "Can I rotate individual pages of my PDF?" [level=3] [ref=e158] [cursor=pointer]
+            - generic [ref=e160]:
+              - paragraph [ref=e161]: Yes, you can select individual pages to rotate. Alternatively, you can select multiple pages and rotate them at the same time.
+              - paragraph [ref=e162]: Use the “select pages” icon (5th from the top left), which looks like 4 squares. You can then select the pages you want to rotate and click either “rotate right” or “rotate left”.
+          - generic [ref=e164]:
+            - heading "Is there a limit to the number of PDF document pages I can rotate?" [level=3] [ref=e166] [cursor=pointer]
+            - generic [ref=e168]:
+              - paragraph [ref=e169]: No, you can rotate as many pages of the document as you like. You can rotate the entire PDF document if you wish.
+              - paragraph [ref=e170]: Our site provides a convenient tool to help you edit and orient your documents quickly and easily.
+          - generic [ref=e172]:
+            - heading "Does rotating a PDF affect the quality?" [level=3] [ref=e174] [cursor=pointer]
+            - generic [ref=e176]:
+              - paragraph [ref=e177]: No, there is no loss of quality when you use our tool to flip your PDF. The rotation tool on our site is specially designed to preserve the original content of your document.
+              - paragraph [ref=e178]: The PDF will retain the same definition no matter how many times you rotate it.
+          - generic [ref=e180]:
+            - heading "Does rotating a PDF affect the formatting?" [level=3] [ref=e182] [cursor=pointer]
+            - generic [ref=e184]:
+              - paragraph [ref=e185]: No, the original formatting is preserved when you use our tool to rotate a document.
+              - paragraph [ref=e186]: The layout will not change; only the orientation. Your document will retain its formatting and quality.
+        - generic [ref=e189]:
+          - heading "Unlimited access to all our tools" [level=2] [ref=e190]
+          - generic [ref=e191]:
+            - generic [ref=e192]:
+              - paragraph [ref=e195]: Security PDF
+              - link "Sign PDF" [ref=e196] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/sign-pdf
+                - generic [ref=e197]: Sign PDF
+              - generic [ref=e198]: Password Protect
+              - generic [ref=e199]: Share PDF
+              - generic [ref=e200]: Share Files
+            - generic [ref=e201]:
+              - paragraph [ref=e204]: Split and Merge
+              - link "Split PDF" [ref=e205] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/split-pdf
+                - generic [ref=e206]: Split PDF
+              - link "Merge PDF" [ref=e207] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/merge-pdf
+                - generic [ref=e208]: Merge PDF
+              - generic [ref=e209]: Combine PDF
+              - generic [ref=e210]: Reorder PDF
+              - generic [ref=e211]: Extract Pages
+            - generic [ref=e212]:
+              - paragraph [ref=e215]: Edit PDF
+              - link "Edit PDF" [ref=e216] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-pdf
+                - generic [ref=e217]: Edit PDF
+              - link "Edit & Fill PDF" [ref=e218] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-fill-pdf
+                - generic [ref=e219]: Edit & Fill PDF
+              - link "Edit Scanned PDF" [ref=e220] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-scanned-pdf
+                - generic [ref=e221]: Edit Scanned PDF
+              - link "Add Image to PDF" [ref=e222] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/insert-image
+                - generic [ref=e223]: Add Image to PDF
+              - link "Watermark" [ref=e224] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/watermark
+                - generic [ref=e225]: Watermark
+              - link "Rotate PDF" [ref=e226] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/rotate-pdf
+                - generic [ref=e227]: Rotate PDF
+              - link "Delete Pages" [ref=e228] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/delete-pdf-pages
+                - generic [ref=e229]: Delete Pages
+              - generic [ref=e230]: Pages Numbering
+              - link "PDF Reader" [ref=e231] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-reader
+                - generic [ref=e232]: PDF Reader
+            - generic [ref=e233]:
+              - paragraph [ref=e236]: Convert From PDF
+              - link "PDF to Word" [ref=e237] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-word
+                - generic [ref=e238]: PDF to Word
+              - link "PDF to JPG" [ref=e239] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-jpg
+                - generic [ref=e240]: PDF to JPG
+              - link "PDF to PNG" [ref=e241] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-png
+                - generic [ref=e242]: PDF to PNG
+              - link "PDF to Power Point" [ref=e243] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-powerpoint
+                - generic [ref=e244]: PDF to Power Point
+              - link "PDF to Excel" [ref=e245] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-excel
+                - generic [ref=e246]: PDF to Excel
+              - generic [ref=e247]: PDF to PDF/A
+            - generic [ref=e248]:
+              - link "Convert to PDF" [ref=e251] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-converter
+                - paragraph [ref=e252]: Convert to PDF
+              - link "Word to PDF" [ref=e253] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/word-to-pdf
+                - generic [ref=e254]: Word to PDF
+              - link "JPG to PDF" [ref=e255] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/jpg-to-pdf
+                - generic [ref=e256]: JPG to PDF
+              - link "PNG to PDF" [ref=e257] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/png-to-pdf
+                - generic [ref=e258]: PNG to PDF
+              - link "Power Point to PDF" [ref=e259] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/powerpoint-to-pdf
+                - generic [ref=e260]: Power Point to PDF
+              - link "Excel to PDF" [ref=e261] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/excel-to-pdf
+                - generic [ref=e262]: Excel to PDF
+              - generic [ref=e263]: OCR to PDF
+            - generic [ref=e264]:
+              - paragraph [ref=e267]: Compress
+              - link "Compress PDF" [ref=e268] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/compress-pdf
+                - generic [ref=e269]: Compress PDF
+              - generic [ref=e270]: Compress Image
+    - generic [ref=e271]:
+      - generic [ref=e272]:
+        - generic [ref=e273]:
+          - link "logo" [ref=e274] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e275]
+          - generic [ref=e276]:
+            - generic [ref=e277]: Powerful for
+            - generic [ref=e278]:
+              - generic [ref=e279]:
+                - img "mac-icon" [ref=e280]
+                - generic [ref=e281]: MacOS
+              - generic [ref=e282]:
+                - img "windows-icon" [ref=e283]
+                - generic [ref=e284]: Windows
+        - generic [ref=e285]:
+          - generic [ref=e287]:
+            - generic [ref=e288]: Tools
+            - link "PDF Forms" [ref=e289] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e290]: PDF Forms
+            - link "Downloads" [ref=e291] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e292]: Downloads
+          - generic [ref=e294]:
+            - generic [ref=e295]: Company
+            - link "About Us" [ref=e296] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e297]: About Us
+            - link "Terms of Use" [ref=e298] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e299]: Terms of Use
+            - link "Privacy Policy" [ref=e300] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e301]: Privacy Policy
+            - link "Terms and Conditions" [ref=e302] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e303]: Terms and Conditions
+            - link "Cookies Policy" [ref=e304] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e305]: Cookies Policy
+          - generic [ref=e307]:
+            - generic [ref=e308]: Support
+            - link "FAQs" [ref=e309] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e310]: FAQs
+            - generic [ref=e311]:
+              - generic [ref=e312]: Language
+              - generic [ref=e313] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e314]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e316]:
+            - generic [ref=e317]: Help
+            - link "Contact Us" [ref=e318] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e319]: Contact Us
+            - generic [ref=e321]:
+              - generic [ref=e322]: +1 844 590 0022
+              - generic [ref=e323]:
+                - generic [ref=e324]: "Contact Hours:"
+                - generic [ref=e325]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e330]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e331]
+```
+
+# Test source
+
+```ts
+      |                                  ^ Error: expect(page).toHaveScreenshot(expected) failed
+```

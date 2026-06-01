@@ -1,0 +1,284 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/TransactionalEmails.feature.spec.js >> Transactional emails >> Account created email after registration from login in <locale> >> Account created email after registration from login in it
+- Location: .features-gen/features/TransactionalEmails.feature.spec.js:32:9
+
+# Error details
+
+```
+Error: Mailpit list: HTTP 403
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - link "logo" [ref=e13] [cursor=pointer]:
+      - /url: https://www.mergedpdf.com/
+      - img "logo" [ref=e14]
+    - generic [ref=e19]:
+      - generic [ref=e20]: Loading, please wait...
+      - paragraph [ref=e21]: Please wait while our engine does the work for you.
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - link "logo" [ref=e26] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e27]
+          - generic [ref=e28]:
+            - generic [ref=e29]: Powerful for
+            - generic [ref=e30]:
+              - generic [ref=e31]:
+                - img "mac-icon" [ref=e32]
+                - generic [ref=e33]: MacOS
+              - generic [ref=e34]:
+                - img "windows-icon" [ref=e35]
+                - generic [ref=e36]: Windows
+        - generic [ref=e37]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: Tools
+            - link "PDF Forms" [ref=e41] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e42]: PDF Forms
+            - link "Downloads" [ref=e43] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e44]: Downloads
+          - generic [ref=e46]:
+            - generic [ref=e47]: Company
+            - link "About Us" [ref=e48] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e49]: About Us
+            - link "Terms of Use" [ref=e50] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e51]: Terms of Use
+            - link "Privacy Policy" [ref=e52] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e53]: Privacy Policy
+            - link "Terms and Conditions" [ref=e54] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e55]: Terms and Conditions
+            - link "Cookies Policy" [ref=e56] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e57]: Cookies Policy
+          - generic [ref=e59]:
+            - generic [ref=e60]: Support
+            - link "FAQs" [ref=e61] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e62]: FAQs
+            - generic [ref=e63]:
+              - generic [ref=e64]: Language
+              - generic [ref=e65] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e66]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e68]:
+            - generic [ref=e69]: Help
+            - link "Contact Us" [ref=e70] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e71]: Contact Us
+            - generic [ref=e73]:
+              - generic [ref=e74]: +1 844 590 0022
+              - generic [ref=e75]:
+                - generic [ref=e76]: "Contact Hours:"
+                - generic [ref=e77]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e82]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e83]
+```
+
+# Test source
+
+```ts
+  1   | import { normalizeEmailForApp } from './emailNormalize'
+  2   | 
+  3   | /**
+  4   |  * Cliente mínimo Mailpit (API v1) para magic links y tests de
+  5   |  * `TransactionalEmails.feature`. Alineado con qai-pa-pdf-editor `MailpitApi`.
+  6   |  *
+  7   |  * Variables:
+  8   |  * - `PLAYWRIGHT_MAILPIT_URL` — base, p.ej. `https://mailpit.1ecorp.net/api/v1`
+  9   |  * - `PLAYWRIGHT_MAILPIT_USER` / `PLAYWRIGHT_MAILPIT_PASSWORD` — Basic Auth opcional
+  10  |  */
+  11  | 
+  12  | export type MailpitMessageSummary = {
+  13  |   ID: string
+  14  |   Subject: string
+  15  |   To?: Array<{ Address?: string }>
+  16  |   Created: string
+  17  | }
+  18  | 
+  19  | export type MailpitMessagesResponse = {
+  20  |   total: number
+  21  |   count: number
+  22  |   messages: MailpitMessageSummary[]
+  23  | }
+  24  | 
+  25  | export type MailpitMessageDetail = {
+  26  |   ID: string
+  27  |   Subject: string
+  28  |   HTML?: string
+  29  |   Text?: string
+  30  | }
+  31  | 
+  32  | /**
+  33  |  * Defaults heredados de qai-pa-pdf-editor (`MailpitApi.base` y `testJsonData.json`).
+  34  |  * Se mantienen como fallback para no exigir credenciales explícitas en cada ejecución
+  35  |  * contra staging.
+  36  |  */
+  37  | const LEGACY_MAILPIT_BASE = 'https://mailpit.1ecorp.net/api/v1'
+  38  | 
+  39  | function authHeader(): Record<string, string> {
+  40  |   const u = process.env.PLAYWRIGHT_MAILPIT_USER?.trim()
+  41  |   const p = process.env.PLAYWRIGHT_MAILPIT_PASSWORD?.trim()
+  42  |   if (!u || !p) return {}
+  43  |   const basic = Buffer.from(`${u}:${p}`).toString('base64')
+  44  |   return { Authorization: `Basic ${basic}` }
+  45  | }
+  46  | 
+  47  | function baseUrl(): string {
+  48  |   const b = process.env.PLAYWRIGHT_MAILPIT_URL?.trim()
+  49  |   if (b) return b.replace(/\/+$/, '')
+  50  |   return LEGACY_MAILPIT_BASE
+  51  | }
+  52  | 
+  53  | export function isMailpitConfigured(): boolean {
+  54  |   const hasUrl = !!(process.env.PLAYWRIGHT_MAILPIT_URL?.trim() || LEGACY_MAILPIT_BASE)
+  55  |   const hasAuth = !!(process.env.PLAYWRIGHT_MAILPIT_USER?.trim() && process.env.PLAYWRIGHT_MAILPIT_PASSWORD?.trim())
+  56  |   return hasUrl && hasAuth
+  57  | }
+  58  | 
+  59  | export async function mailpitListMessages(search: string, limit = 50): Promise<MailpitMessagesResponse> {
+  60  |   const url = `${baseUrl()}/messages?limit=${limit}&search=${encodeURIComponent(search)}`
+  61  |   const res = await fetch(url, { headers: { Accept: 'application/json', ...authHeader() } })
+  62  |   if (!res.ok) throw new Error(`Mailpit list: HTTP ${res.status}`)
+  63  |   return (await res.json()) as MailpitMessagesResponse
+  64  | }
+> 65  | 
+      |                      ^ Error: Mailpit list: HTTP 403
+  66  | export async function mailpitGetMessage(id: string): Promise<MailpitMessageDetail> {
+  67  |   const url = `${baseUrl()}/message/${encodeURIComponent(id)}`
+  68  |   const res = await fetch(url, { headers: { Accept: 'application/json', ...authHeader() } })
+  69  |   if (!res.ok) throw new Error(`Mailpit get: HTTP ${res.status}`)
+  70  |   return (await res.json()) as MailpitMessageDetail
+  71  | }
+  72  | 
+  73  | export function extractAccountCreatedGetStartedHref(message: MailpitMessageDetail): string {
+  74  |   const html = message.HTML ?? ''
+  75  |   const getStarted = html.match(
+  76  |     /<a[^>]+href="(https:\/\/links\.info\.pdfmerges\.com[^"]+)"[^>]*>[\s\S]*?Get started![\s\S]*?<\/a>/i
+  77  |   )
+  78  |   if (getStarted?.[1]) return getStarted[1].replace(/&amp;/g, '&')
+  79  |   const firstMarketing = html.match(/href="(https:\/\/links\.info\.pdfmerges\.com[^"]+)"/i)
+  80  |   if (firstMarketing?.[1]) return firstMarketing[1].replace(/&amp;/g, '&')
+  81  |   const anyHttps = html.match(/href="(https:\/\/[^"]+)"/i)
+  82  |   if (anyHttps?.[1]) return anyHttps[1].replace(/&amp;/g, '&')
+  83  |   throw new Error(`No se encontró CTA "Get started" / links marketing en mensaje ${message.ID}`)
+  84  | }
+  85  | 
+  86  | export function extractMagicLinkFromMessage(message: MailpitMessageDetail): string {
+  87  |   const html = message.HTML ?? ''
+  88  |   const text = message.Text ?? ''
+  89  |   const content = `${html}\n${text}`
+  90  |   const cta = html.match(/<a[^>]+href="([^"]+)"[^>]*>\s*Sign\s*in\s*<\/a>/i)
+  91  |   if (cta?.[1]) return cta[1]
+  92  |   const urlRegex = /(https?:\/\/[^\s"'<>]+)/gi
+  93  |   const urls = content.match(urlRegex) ?? []
+  94  |   const candidate = urls.find((u) => !/\.(png|jpg|jpeg|gif|webp)(\?|$)/i.test(u))
+  95  |   if (candidate) return candidate
+  96  |   throw new Error(`No se encontró magic link en mensaje ${message.ID}`)
+  97  | }
+  98  | 
+  99  | export async function waitForMagicLink(options: {
+  100 |   search: string
+  101 |   subjectIncludes?: string
+  102 |   timeoutMs?: number
+  103 |   pollEveryMs?: number
+  104 |   afterMs?: number
+  105 | }): Promise<string> {
+  106 |   const timeoutMs = options.timeoutMs ?? 90_000
+  107 |   const pollEveryMs = options.pollEveryMs ?? 1500
+  108 |   const afterMs = options.afterMs ?? 0
+  109 |   const start = Date.now()
+  110 | 
+  111 |   while (Date.now() - start < timeoutMs) {
+  112 |     const res = await mailpitListMessages(options.search, 50)
+  113 |     const msgs = (res.messages ?? []).slice().sort((a, b) => new Date(b.Created).getTime() - new Date(a.Created).getTime())
+  114 | 
+  115 |     const searchNorm = normalizeEmailForApp(options.search.trim().toLowerCase())
+  116 |     const filtered = msgs.filter((m) => {
+  117 |       const createdMs = new Date(m.Created).getTime()
+  118 |       if (!Number.isFinite(createdMs) || createdMs < afterMs) return false
+  119 |       return (m.To ?? []).some((t) => {
+  120 |         const toAddr = (t?.Address ?? '').trim().toLowerCase()
+  121 |         return toAddr && normalizeEmailForApp(toAddr) === searchNorm
+  122 |       })
+  123 |     })
+  124 | 
+  125 |     const match = options.subjectIncludes
+  126 |       ? filtered.find((m) => (m.Subject ?? '').toLowerCase().includes(options.subjectIncludes!.toLowerCase()))
+  127 |       : filtered[0]
+  128 | 
+  129 |     if (match) {
+  130 |       const detail = await mailpitGetMessage(match.ID)
+  131 |       return extractMagicLinkFromMessage(detail)
+  132 |     }
+  133 |     await new Promise((r) => setTimeout(r, pollEveryMs))
+  134 |   }
+  135 | 
+  136 |   throw new Error(`Mailpit: sin mensaje para search="${options.search}" en ${timeoutMs}ms`)
+  137 | }
+  138 | 
+  139 | export async function waitForMessageDetail(options: {
+  140 |   search: string
+  141 |   subjectIncludes?: string
+  142 |   timeoutMs?: number
+  143 |   pollEveryMs?: number
+  144 |   afterMs?: number
+  145 | }): Promise<MailpitMessageDetail> {
+  146 |   const timeoutMs = options.timeoutMs ?? 90_000
+  147 |   const pollEveryMs = options.pollEveryMs ?? 1500
+  148 |   const afterMs = options.afterMs ?? 0
+  149 |   const start = Date.now()
+  150 | 
+  151 |   while (Date.now() - start < timeoutMs) {
+  152 |     const res = await mailpitListMessages(options.search, 50)
+  153 |     const msgs = (res.messages ?? []).slice().sort((a, b) => new Date(b.Created).getTime() - new Date(a.Created).getTime())
+  154 | 
+  155 |     const searchNorm = normalizeEmailForApp(options.search.trim().toLowerCase())
+  156 |     const filtered = msgs.filter((m) => {
+  157 |       const createdMs = new Date(m.Created).getTime()
+  158 |       if (!Number.isFinite(createdMs) || createdMs < afterMs) return false
+  159 |       return (m.To ?? []).some((t) => {
+  160 |         const toAddr = (t?.Address ?? '').trim().toLowerCase()
+  161 |         return toAddr && normalizeEmailForApp(toAddr) === searchNorm
+  162 |       })
+  163 |     })
+  164 | 
+  165 |     const match = options.subjectIncludes
+```

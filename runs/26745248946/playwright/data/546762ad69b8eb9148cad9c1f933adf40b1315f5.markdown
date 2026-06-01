@@ -1,0 +1,230 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison of other base pages >> Example #2
+- Location: .features-gen/features/Visual.feature.spec.js:162:9
+
+# Error details
+
+```
+Error: expect(page).toHaveScreenshot(expected) failed
+
+  54174 pixels (ratio 0.06 of all image pixels) are different.
+
+  Snapshot: visual-contact.png
+
+Call log:
+  - Expect "toHaveScreenshot(visual-contact.png)" with timeout 30000ms
+    - verifying given screenshot expectation
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - 54174 pixels (ratio 0.06 of all image pixels) are different.
+  - waiting 100ms before taking screenshot
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - captured a stable screenshot
+  - 54174 pixels (ratio 0.06 of all image pixels) are different.
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - generic [ref=e10]:
+      - link "logo" [ref=e11] [cursor=pointer]:
+        - /url: https://www.mergedpdf.com/
+        - img "logo" [ref=e12]
+      - generic [ref=e13]:
+        - link "Most Used Forms" [ref=e15] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/forms
+          - generic [ref=e16]: Most Used Forms
+        - link "Login" [ref=e18] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/login
+          - generic [ref=e19]: Login
+    - generic [ref=e21]:
+      - heading "Contact MergedPDF" [level=1] [ref=e22]
+      - generic [ref=e23]:
+        - text: "Need help with anything? Have questions about our PDF services?{' '} Our customer service team is here for you."
+        - text: Fill out the contact form on this page or give us a call or email.
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e27]:
+            - generic [ref=e28]:
+              - generic [ref=e29]:
+                - img "phone icon" [ref=e30]
+                - generic [ref=e31]: +1 844 590 0022
+              - generic [ref=e32]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+            - generic [ref=e34]:
+              - generic [ref=e35]:
+                - img "mail icon" [ref=e36]
+                - link "info@mergedpdf.com" [ref=e38] [cursor=pointer]:
+                  - /url: mailto:info@mergedpdf.com
+              - generic [ref=e39]: We'll respond as soon as possible, but it may take up to 1 business day.
+          - generic [ref=e40]: Quick Answers to Your Questions
+          - generic [ref=e41]:
+            - generic [ref=e42]: Why can't I log into my account?
+            - generic [ref=e43]:
+              - text: You may be entering the wrong login information. You can request to change your password from the login page.
+              - text: Enter the email address you used to set up your account and you'll get an email to change your password.
+              - text: If you are still unable to log in, please contact us.
+          - generic [ref=e44]:
+            - generic [ref=e45]: How do I download my finished document?
+            - generic [ref=e46]:
+              - text: You must have a membership to our site to download documents.
+              - text: Once you have finished editing, simply click “download” to save your document to your drive.
+          - generic [ref=e47]:
+            - generic [ref=e48]: Do I have to pay to use the PDF editor?
+            - generic [ref=e49]:
+              - text: Yes, there is a membership fee to use our services.
+              - text: You can enjoy a trial period of 7 days. This will give you access to our PDF editor and our extensive library of forms and document templates.
+              - text: You can cancel any time in the first 7 days if you do not wish to get the full membership. If you want to continue to take full advantage of our services, you don't have to do anything.
+          - generic [ref=e50]:
+            - generic [ref=e51]: "For more answers to frequently asked questions, check out our FAQ page:"
+            - link "See FAQs" [ref=e52] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e53]: See FAQs
+        - generic [ref=e55]:
+          - generic [ref=e56]: Send Us a Message
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - generic [ref=e61]: First Name*
+              - img "tooltip-icon" [ref=e62]
+            - textbox "e.g. Jane" [ref=e64]
+          - generic [ref=e65]:
+            - generic [ref=e66]:
+              - generic [ref=e68]: Last Name*
+              - img "tooltip-icon" [ref=e69]
+            - textbox "e.g. Doe" [ref=e71]
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - generic [ref=e75]: Email*
+              - img "tooltip-icon" [ref=e76]
+            - textbox "email@example.com" [ref=e78]
+          - generic [ref=e79]:
+            - generic [ref=e80]:
+              - generic [ref=e82]: Transaction ID
+              - generic [ref=e83]: (optional)
+              - img "tooltip-icon" [ref=e84]
+            - textbox "Transaction ID" [ref=e86]
+          - generic [ref=e87]:
+            - generic [ref=e88]:
+              - generic [ref=e90]: Subject*
+              - img "tooltip-icon" [ref=e91]
+            - button "Select a subject open-close" [ref=e93] [cursor=pointer]:
+              - paragraph [ref=e94]: Select a subject
+              - img "open-close" [ref=e96]
+          - generic [ref=e97]:
+            - generic [ref=e100]: Your Message*
+            - textbox "Write your message here" [ref=e101]
+          - generic [ref=e102]: "* Required Fields"
+          - generic [ref=e106]:
+            - text: I have read and understood the
+            - link "terms of use" [ref=e107] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+            - text: and
+            - link "privacy policy" [ref=e108] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+            - text: .
+          - generic [ref=e109]: Send Message
+    - generic [ref=e110]:
+      - generic [ref=e111]:
+        - generic [ref=e112]:
+          - link "logo" [ref=e113] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e114]
+          - generic [ref=e115]:
+            - generic [ref=e116]: Powerful for
+            - generic [ref=e117]:
+              - generic [ref=e118]:
+                - img "mac-icon" [ref=e119]
+                - generic [ref=e120]: MacOS
+              - generic [ref=e121]:
+                - img "windows-icon" [ref=e122]
+                - generic [ref=e123]: Windows
+        - generic [ref=e124]:
+          - generic [ref=e126]:
+            - generic [ref=e127]: Tools
+            - link "PDF Forms" [ref=e128] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e129]: PDF Forms
+            - link "Downloads" [ref=e130] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e131]: Downloads
+          - generic [ref=e133]:
+            - generic [ref=e134]: Company
+            - link "About Us" [ref=e135] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e136]: About Us
+            - link "Terms of Use" [ref=e137] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e138]: Terms of Use
+            - link "Privacy Policy" [ref=e139] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e140]: Privacy Policy
+            - link "Terms and Conditions" [ref=e141] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e142]: Terms and Conditions
+            - link "Cookies Policy" [ref=e143] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e144]: Cookies Policy
+          - generic [ref=e146]:
+            - generic [ref=e147]: Support
+            - link "FAQs" [ref=e148] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e149]: FAQs
+            - generic [ref=e150]:
+              - generic [ref=e151]: Language
+              - generic [ref=e152] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e153]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e155]:
+            - generic [ref=e156]: Help
+            - link "Contact Us" [ref=e157] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e158]: Contact Us
+            - generic [ref=e160]:
+              - generic [ref=e161]: +1 844 590 0022
+              - generic [ref=e162]:
+                - generic [ref=e163]: "Contact Hours:"
+                - generic [ref=e164]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e169]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e170]: Need Help? Get In Touch! | mergedPDF
+```
+
+# Test source
+
+```ts
+      |                                  ^ Error: expect(page).toHaveScreenshot(expected) failed
+```

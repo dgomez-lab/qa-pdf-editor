@@ -1,0 +1,337 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison of all products >> Example #15
+- Location: .features-gen/features/Visual.feature.spec.js:678:9
+
+# Error details
+
+```
+Error: expect(page).toHaveScreenshot(expected) failed
+
+  58546 pixels (ratio 0.07 of all image pixels) are different.
+
+  Snapshot: visual-product-sign.png
+
+Call log:
+  - Expect "toHaveScreenshot(visual-product-sign.png)" with timeout 30000ms
+    - verifying given screenshot expectation
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - 58546 pixels (ratio 0.07 of all image pixels) are different.
+  - waiting 100ms before taking screenshot
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - captured a stable screenshot
+  - 58546 pixels (ratio 0.07 of all image pixels) are different.
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - generic [ref=e10]:
+      - link "logo" [ref=e11] [cursor=pointer]:
+        - /url: https://www.mergedpdf.com/
+        - img "logo" [ref=e12]
+      - generic [ref=e13]:
+        - link "Most Used Forms" [ref=e15] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/forms
+          - generic [ref=e16]: Most Used Forms
+        - link "Login" [ref=e18] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/login
+          - generic [ref=e19]: Login
+    - generic [ref=e20]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - 'heading "Sign Your PDF: Electronic Signatures" [level=1] [ref=e24]'
+          - paragraph [ref=e26]: Sign your documents with our easy-to-use signature wizard. Upload your file and add your signature now!
+        - generic [ref=e29]:
+          - button "Choose File" [ref=e30]
+          - generic [ref=e31]:
+            - text: Upload Document
+            - img "union icon" [ref=e34]
+          - generic [ref=e35]: or Drag and Drop
+          - generic [ref=e36]: Supports PDF up to 100 MB and other formats and extensions up to 25 MB
+      - generic [ref=e37]:
+        - generic [ref=e39]:
+          - img "signPdf" [ref=e41]
+          - generic [ref=e42]:
+            - generic [ref=e43]: Signing Documents Online Made Easy!
+            - generic [ref=e44]: "Use our simple editing tool to add your electronic signature (e-signature) to your PDFs:"
+            - generic [ref=e46]:
+              - generic [ref=e49]: Click “Upload Document” or drag and drop your file
+              - generic [ref=e53]: Click “Sign” to open the Signature Wizard
+              - generic [ref=e57]: Choose how to add your signature — upload an image or simply draw your signature directly on the PDF
+              - generic [ref=e61]: Download your signed document
+            - generic [ref=e62]:
+              - generic [ref=e63]: Upload Document
+              - img "union icon" [ref=e66]
+        - generic [ref=e68]:
+          - generic [ref=e69]: Upload your file to add your e-signature!
+          - generic [ref=e70]: Use our tool to sign your document in seconds.
+        - generic [ref=e71]:
+          - heading "Why choose us?" [level=2] [ref=e73]
+          - generic [ref=e75]:
+            - generic [ref=e80]:
+              - generic [ref=e81]: Wide variety of essential tools
+              - generic [ref=e82]: Editor is a one-step portal to manage PDF files. It is tailored to meet all your PDF needs.
+            - generic [ref=e87]:
+              - generic [ref=e88]: Safety & Security
+              - generic [ref=e89]: Privacy protection is our top priority. Our editor is 100% safe to use, as no private information is stored. Your personal documents are highly secured.
+            - generic [ref=e94]:
+              - generic [ref=e95]: Time-saving
+              - generic [ref=e96]: Edit a PDF quickly and reliably, in a few very simple steps to get the results.
+            - generic [ref=e101]:
+              - generic [ref=e102]: Customer Support
+              - generic [ref=e103]: Our team of experts is at your disposal 24/7, ready to provide assistance in multiple languages.
+            - generic [ref=e108]:
+              - generic [ref=e109]: Instant & easy Editing
+              - generic [ref=e110]: Work with digital documents seamlessly. Quick start without any fuss.
+            - generic [ref=e115]:
+              - generic [ref=e116]: All-time availability
+              - generic [ref=e117]: Always accessible online and compatible with all devices, enabling you to manage PDFs on the go.
+        - generic [ref=e119]:
+          - heading "Your Questions On Signing PDFs Online Answered" [level=2] [ref=e120]
+          - generic [ref=e121]:
+            - heading "How do I add a signature to a PDF electronically?" [level=3] [ref=e123] [cursor=pointer]
+            - generic [ref=e125]:
+              - paragraph [ref=e126]: "Through our site, you can add a signature to your PDF electronically by following these steps:"
+              - list [ref=e127]:
+                - listitem [ref=e128]: "- Upload the PDF file you want to sign."
+                - listitem [ref=e129]: "- Click “Sign” on our PDF editing tool."
+                - listitem [ref=e130]: "- Choose the way you would like to add your signature."
+                - listitem [ref=e131]: "- Place your signature in the appropriate place on the PDF."
+                - listitem [ref=e132]: "- Make any other edits and changes you need to the document."
+                - listitem [ref=e133]: "- Download your finished and signed PDF file."
+          - generic [ref=e135]:
+            - heading "What is the easiest way to add a signature to a PDF?" [level=3] [ref=e137] [cursor=pointer]
+            - generic [ref=e139]:
+              - paragraph [ref=e140]: The quickest and easiest way to add a signature to a PDF is to use our online tool. It takes just a few minutes to upload your document, sign it electronically, and download the finished file.
+              - paragraph [ref=e141]: Our signature wizard allows you to sign your documents in several different ways, including uploading an image of your signature and using the mouse or trackpad to sign the PDF directly.
+          - generic [ref=e143]:
+            - heading "What is an e-signature?" [level=3] [ref=e145] [cursor=pointer]
+            - generic [ref=e147]:
+              - paragraph [ref=e148]: An electronic signature, or e-signature, is a digital version of your signature. When added to a document, it is legally valid.
+              - paragraph [ref=e149]: Your signature can be handwritten and then scanned to create the electronic copy.
+              - paragraph [ref=e150]: Our PDF editor provides a way to create or add e-signatures to your documents.
+          - generic [ref=e152]:
+            - heading "How do I create an electronic signature?" [level=3] [ref=e154] [cursor=pointer]
+            - generic [ref=e156]:
+              - paragraph [ref=e157]: "There are several ways to create an electronic signature:"
+              - list [ref=e158]:
+                - listitem [ref=e159]: 1. Write your signature, scan it, and upload the image.
+                - listitem [ref=e160]: 2. Use our online tool to sign a document using your mouse or trackpad.
+                - listitem [ref=e161]: 3. Draw your signature on a mobile device and transfer it using a QR code or email.
+          - generic [ref=e163]:
+            - heading "Is typing my name an official electronic signature?" [level=3] [ref=e165] [cursor=pointer]
+            - generic [ref=e167]:
+              - paragraph [ref=e168]: It depends on the form and the organization you are dealing with. Some authorities and companies may accept your typed name as proof of consent.
+              - paragraph [ref=e169]: However, many entities insist on your unique signature, as with an official paper document. In these cases, you’ll need to add an official e-signature to make it legally binding.
+              - paragraph [ref=e170]: Our services can help you to do this. Our signature wizard offers several ways to sign a form or document online with an e-signature.
+          - generic [ref=e172]:
+            - heading "Can I sign a PDF on my smartphone?" [level=3] [ref=e174] [cursor=pointer]
+            - generic [ref=e176]:
+              - paragraph [ref=e177]: Yes, you can use our PDF editing services on your smartphone, including the signature tool.
+              - paragraph [ref=e178]: You can draw your signature onto the document using the touchscreen or add an e-signature you have saved on your phone or cloud.
+          - generic [ref=e180]:
+            - heading "Can I change my signatures on the PDF editor?" [level=3] [ref=e182] [cursor=pointer]
+            - generic [ref=e184]:
+              - paragraph [ref=e185]: Yes, you can edit and change the signature on your document using our editing tools.
+              - paragraph [ref=e186]: You can add multiple signatures if necessary and delete any that you have added by mistake.
+              - paragraph [ref=e187]: Our PDF editor is designed to make it easy to make changes to your documents, including signing them.
+        - generic [ref=e190]:
+          - heading "Unlimited access to all our tools" [level=2] [ref=e191]
+          - generic [ref=e192]:
+            - generic [ref=e193]:
+              - paragraph [ref=e196]: Security PDF
+              - link "Sign PDF" [ref=e197] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/sign-pdf
+                - generic [ref=e198]: Sign PDF
+              - generic [ref=e199]: Password Protect
+              - generic [ref=e200]: Share PDF
+              - generic [ref=e201]: Share Files
+            - generic [ref=e202]:
+              - paragraph [ref=e205]: Split and Merge
+              - link "Split PDF" [ref=e206] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/split-pdf
+                - generic [ref=e207]: Split PDF
+              - link "Merge PDF" [ref=e208] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/merge-pdf
+                - generic [ref=e209]: Merge PDF
+              - generic [ref=e210]: Combine PDF
+              - generic [ref=e211]: Reorder PDF
+              - generic [ref=e212]: Extract Pages
+            - generic [ref=e213]:
+              - paragraph [ref=e216]: Edit PDF
+              - link "Edit PDF" [ref=e217] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-pdf
+                - generic [ref=e218]: Edit PDF
+              - link "Edit & Fill PDF" [ref=e219] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-fill-pdf
+                - generic [ref=e220]: Edit & Fill PDF
+              - link "Edit Scanned PDF" [ref=e221] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-scanned-pdf
+                - generic [ref=e222]: Edit Scanned PDF
+              - link "Add Image to PDF" [ref=e223] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/insert-image
+                - generic [ref=e224]: Add Image to PDF
+              - link "Watermark" [ref=e225] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/watermark
+                - generic [ref=e226]: Watermark
+              - link "Rotate PDF" [ref=e227] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/rotate-pdf
+                - generic [ref=e228]: Rotate PDF
+              - link "Delete Pages" [ref=e229] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/delete-pdf-pages
+                - generic [ref=e230]: Delete Pages
+              - generic [ref=e231]: Pages Numbering
+              - link "PDF Reader" [ref=e232] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-reader
+                - generic [ref=e233]: PDF Reader
+            - generic [ref=e234]:
+              - paragraph [ref=e237]: Convert From PDF
+              - link "PDF to Word" [ref=e238] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-word
+                - generic [ref=e239]: PDF to Word
+              - link "PDF to JPG" [ref=e240] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-jpg
+                - generic [ref=e241]: PDF to JPG
+              - link "PDF to PNG" [ref=e242] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-png
+                - generic [ref=e243]: PDF to PNG
+              - link "PDF to Power Point" [ref=e244] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-powerpoint
+                - generic [ref=e245]: PDF to Power Point
+              - link "PDF to Excel" [ref=e246] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-excel
+                - generic [ref=e247]: PDF to Excel
+              - generic [ref=e248]: PDF to PDF/A
+            - generic [ref=e249]:
+              - link "Convert to PDF" [ref=e252] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-converter
+                - paragraph [ref=e253]: Convert to PDF
+              - link "Word to PDF" [ref=e254] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/word-to-pdf
+                - generic [ref=e255]: Word to PDF
+              - link "JPG to PDF" [ref=e256] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/jpg-to-pdf
+                - generic [ref=e257]: JPG to PDF
+              - link "PNG to PDF" [ref=e258] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/png-to-pdf
+                - generic [ref=e259]: PNG to PDF
+              - link "Power Point to PDF" [ref=e260] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/powerpoint-to-pdf
+                - generic [ref=e261]: Power Point to PDF
+              - link "Excel to PDF" [ref=e262] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/excel-to-pdf
+                - generic [ref=e263]: Excel to PDF
+              - generic [ref=e264]: OCR to PDF
+            - generic [ref=e265]:
+              - paragraph [ref=e268]: Compress
+              - link "Compress PDF" [ref=e269] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/compress-pdf
+                - generic [ref=e270]: Compress PDF
+              - generic [ref=e271]: Compress Image
+    - generic [ref=e272]:
+      - generic [ref=e273]:
+        - generic [ref=e274]:
+          - link "logo" [ref=e275] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e276]
+          - generic [ref=e277]:
+            - generic [ref=e278]: Powerful for
+            - generic [ref=e279]:
+              - generic [ref=e280]:
+                - img "mac-icon" [ref=e281]
+                - generic [ref=e282]: MacOS
+              - generic [ref=e283]:
+                - img "windows-icon" [ref=e284]
+                - generic [ref=e285]: Windows
+        - generic [ref=e286]:
+          - generic [ref=e288]:
+            - generic [ref=e289]: Tools
+            - link "PDF Forms" [ref=e290] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e291]: PDF Forms
+            - link "Downloads" [ref=e292] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e293]: Downloads
+          - generic [ref=e295]:
+            - generic [ref=e296]: Company
+            - link "About Us" [ref=e297] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e298]: About Us
+            - link "Terms of Use" [ref=e299] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e300]: Terms of Use
+            - link "Privacy Policy" [ref=e301] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e302]: Privacy Policy
+            - link "Terms and Conditions" [ref=e303] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e304]: Terms and Conditions
+            - link "Cookies Policy" [ref=e305] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e306]: Cookies Policy
+          - generic [ref=e308]:
+            - generic [ref=e309]: Support
+            - link "FAQs" [ref=e310] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e311]: FAQs
+            - generic [ref=e312]:
+              - generic [ref=e313]: Language
+              - generic [ref=e314] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e315]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e317]:
+            - generic [ref=e318]: Help
+            - link "Contact Us" [ref=e319] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e320]: Contact Us
+            - generic [ref=e322]:
+              - generic [ref=e323]: +1 844 590 0022
+              - generic [ref=e324]:
+                - generic [ref=e325]: "Contact Hours:"
+                - generic [ref=e326]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e331]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e332]
+```
+
+# Test source
+
+```ts
+      |                                  ^ Error: expect(page).toHaveScreenshot(expected) failed
+```

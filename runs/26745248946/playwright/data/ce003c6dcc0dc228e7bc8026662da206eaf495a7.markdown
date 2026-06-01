@@ -1,0 +1,320 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison of all products >> Example #8
+- Location: .features-gen/features/Visual.feature.spec.js:629:9
+
+# Error details
+
+```
+Error: expect(page).toHaveScreenshot(expected) failed
+
+  46237 pixels (ratio 0.06 of all image pixels) are different.
+
+  Snapshot: visual-product-delete-pages.png
+
+Call log:
+  - Expect "toHaveScreenshot(visual-product-delete-pages.png)" with timeout 30000ms
+    - verifying given screenshot expectation
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - 46237 pixels (ratio 0.06 of all image pixels) are different.
+  - waiting 100ms before taking screenshot
+  - taking page screenshot
+    - disabled all CSS animations
+  - waiting for fonts to load...
+  - fonts loaded
+  - captured a stable screenshot
+  - 46237 pixels (ratio 0.06 of all image pixels) are different.
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - generic [ref=e10]:
+      - link "logo" [ref=e11] [cursor=pointer]:
+        - /url: https://www.mergedpdf.com/
+        - img "logo" [ref=e12]
+      - generic [ref=e13]:
+        - link "Most Used Forms" [ref=e15] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/forms
+          - generic [ref=e16]: Most Used Forms
+        - link "Login" [ref=e18] [cursor=pointer]:
+          - /url: https://www.mergedpdf.com/login
+          - generic [ref=e19]: Login
+    - generic [ref=e20]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - heading "Delete Pages From Your PDF" [level=1] [ref=e24]
+          - paragraph [ref=e26]: Need to get rid of pages from a PDF document? Our online PDF editor is the perfect tool to meet all your needs. Delete pages quickly and easily now!
+        - generic [ref=e29]:
+          - button "Choose File" [ref=e30]
+          - generic [ref=e31]:
+            - text: Upload Document
+            - img "union icon" [ref=e34]
+          - generic [ref=e35]: or Drag and Drop
+          - generic [ref=e36]: Supports PDF up to 100 MB and other formats and extensions up to 25 MB
+      - generic [ref=e37]:
+        - generic [ref=e39]:
+          - img "deletePdfPages" [ref=e41]
+          - generic [ref=e42]:
+            - generic [ref=e43]: How to Delete Pages From a PDF Using Our Editor
+            - paragraph [ref=e45]: "Follow these easy steps to delete any and all pages you need from your PDF document:"
+            - generic [ref=e47]:
+              - generic [ref=e50]: Upload your PDF for editing by dragging and dropping or clicking “Upload Document”
+              - generic [ref=e54]: Use the “Select Page” button on the toolbar to choose the page(s) to delete
+              - generic [ref=e58]: Click “Delete Pages”
+              - generic [ref=e62]: Save or share your finished PDF
+            - generic [ref=e63]:
+              - generic [ref=e64]: Upload Document
+              - img "union icon" [ref=e67]
+        - generic [ref=e69]:
+          - generic [ref=e70]: Delete whole pages from your PDF with ease!
+          - generic [ref=e71]: Our document editor allows you to delete pages in seconds — all done 100% online.
+        - generic [ref=e72]:
+          - heading "Why choose us?" [level=2] [ref=e74]
+          - generic [ref=e76]:
+            - generic [ref=e81]:
+              - generic [ref=e82]: Wide variety of essential tools
+              - generic [ref=e83]: Editor is a one-step portal to manage PDF files. It is tailored to meet all your PDF needs.
+            - generic [ref=e88]:
+              - generic [ref=e89]: Safety & Security
+              - generic [ref=e90]: Privacy protection is our top priority. Our editor is 100% safe to use, as no private information is stored. Your personal documents are highly secured.
+            - generic [ref=e95]:
+              - generic [ref=e96]: Time-saving
+              - generic [ref=e97]: Edit a PDF quickly and reliably, in a few very simple steps to get the results.
+            - generic [ref=e102]:
+              - generic [ref=e103]: Customer Support
+              - generic [ref=e104]: Our team of experts is at your disposal 24/7, ready to provide assistance in multiple languages.
+            - generic [ref=e109]:
+              - generic [ref=e110]: Instant & easy Editing
+              - generic [ref=e111]: Work with digital documents seamlessly. Quick start without any fuss.
+            - generic [ref=e116]:
+              - generic [ref=e117]: All-time availability
+              - generic [ref=e118]: Always accessible online and compatible with all devices, enabling you to manage PDFs on the go.
+        - generic [ref=e120]:
+          - heading "Everything You Need to Know About Deleting Pages from PDFs" [level=2] [ref=e121]
+          - generic [ref=e122]:
+            - heading "Can I delete pages from a PDF online?" [level=3] [ref=e124] [cursor=pointer]
+            - generic [ref=e126]:
+              - paragraph [ref=e127]: Yes, you can delete individual pages from your PDF file right here on this site!
+              - paragraph [ref=e128]: Our PDF editing tool allows you to delete any pages you like from any PDF document.
+              - paragraph [ref=e129]: Simply drag and drop your file or click “Upload Document” to get started.
+          - generic [ref=e131]:
+            - heading "How can I delete specific pages from a PDF?" [level=3] [ref=e133] [cursor=pointer]
+            - generic [ref=e135]:
+              - paragraph [ref=e136]: Using our PDF editor, you can select any page to remove from your document at the click of a button. You can also select multiple specific pages to delete. It takes a matter of seconds!
+              - paragraph [ref=e137]: "All you need to do is:"
+              - list [ref=e138]:
+                - listitem [ref=e139]: "- Open the document you want to delete pages from on our site"
+                - listitem [ref=e140]: "- Click the “Select page” icon (5th from the left in the toolbar), which looks like 4 squares"
+                - listitem [ref=e141]: "- Click to select the page(s) you want to delete"
+                - listitem [ref=e142]: "- Click the “Delete Pages” button"
+                - listitem [ref=e143]: "- When you’re satisfied, download or share your document"
+          - generic [ref=e145]:
+            - heading "How many pages can I delete?" [level=3] [ref=e147] [cursor=pointer]
+            - paragraph [ref=e150]: You can delete as many pages as you like using our PDF editor. Simply select all the pages you want to remove and then click “Delete Pages”.
+          - generic [ref=e152]:
+            - heading "Can I add new pages as well as deleting them?" [level=3] [ref=e154] [cursor=pointer]
+            - generic [ref=e156]:
+              - paragraph [ref=e157]: Certainly! Our PDF editor has many functions. You can duplicate existing pages, add new blank pages, and add all sorts of elements to them.
+              - paragraph [ref=e158]: All these options are available from the toolbar in our online editing tool.
+          - generic [ref=e160]:
+            - heading "Can I get my pages back after deleting them?" [level=3] [ref=e162] [cursor=pointer]
+            - generic [ref=e164]:
+              - paragraph [ref=e165]: Yes, if you delete the wrong page or need a deleted page back for any reason, you can simply click “Undo” in the toolbar of the “Select Pages” window.
+              - paragraph [ref=e166]: If you have already finished editing and saved the document, you will not be able to retrieve the deleted pages. In this case, you will have to re-upload the original version of the document to access deleted pages.
+        - generic [ref=e169]:
+          - heading "Unlimited access to all our tools" [level=2] [ref=e170]
+          - generic [ref=e171]:
+            - generic [ref=e172]:
+              - paragraph [ref=e175]: Security PDF
+              - link "Sign PDF" [ref=e176] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/sign-pdf
+                - generic [ref=e177]: Sign PDF
+              - generic [ref=e178]: Password Protect
+              - generic [ref=e179]: Share PDF
+              - generic [ref=e180]: Share Files
+            - generic [ref=e181]:
+              - paragraph [ref=e184]: Split and Merge
+              - link "Split PDF" [ref=e185] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/split-pdf
+                - generic [ref=e186]: Split PDF
+              - link "Merge PDF" [ref=e187] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/merge-pdf
+                - generic [ref=e188]: Merge PDF
+              - generic [ref=e189]: Combine PDF
+              - generic [ref=e190]: Reorder PDF
+              - generic [ref=e191]: Extract Pages
+            - generic [ref=e192]:
+              - paragraph [ref=e195]: Edit PDF
+              - link "Edit PDF" [ref=e196] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-pdf
+                - generic [ref=e197]: Edit PDF
+              - link "Edit & Fill PDF" [ref=e198] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-fill-pdf
+                - generic [ref=e199]: Edit & Fill PDF
+              - link "Edit Scanned PDF" [ref=e200] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/edit-scanned-pdf
+                - generic [ref=e201]: Edit Scanned PDF
+              - link "Add Image to PDF" [ref=e202] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/insert-image
+                - generic [ref=e203]: Add Image to PDF
+              - link "Watermark" [ref=e204] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/watermark
+                - generic [ref=e205]: Watermark
+              - link "Rotate PDF" [ref=e206] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/rotate-pdf
+                - generic [ref=e207]: Rotate PDF
+              - link "Delete Pages" [ref=e208] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/delete-pdf-pages
+                - generic [ref=e209]: Delete Pages
+              - generic [ref=e210]: Pages Numbering
+              - link "PDF Reader" [ref=e211] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-reader
+                - generic [ref=e212]: PDF Reader
+            - generic [ref=e213]:
+              - paragraph [ref=e216]: Convert From PDF
+              - link "PDF to Word" [ref=e217] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-word
+                - generic [ref=e218]: PDF to Word
+              - link "PDF to JPG" [ref=e219] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-jpg
+                - generic [ref=e220]: PDF to JPG
+              - link "PDF to PNG" [ref=e221] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-png
+                - generic [ref=e222]: PDF to PNG
+              - link "PDF to Power Point" [ref=e223] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-powerpoint
+                - generic [ref=e224]: PDF to Power Point
+              - link "PDF to Excel" [ref=e225] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-to-excel
+                - generic [ref=e226]: PDF to Excel
+              - generic [ref=e227]: PDF to PDF/A
+            - generic [ref=e228]:
+              - link "Convert to PDF" [ref=e231] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/pdf-converter
+                - paragraph [ref=e232]: Convert to PDF
+              - link "Word to PDF" [ref=e233] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/word-to-pdf
+                - generic [ref=e234]: Word to PDF
+              - link "JPG to PDF" [ref=e235] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/jpg-to-pdf
+                - generic [ref=e236]: JPG to PDF
+              - link "PNG to PDF" [ref=e237] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/png-to-pdf
+                - generic [ref=e238]: PNG to PDF
+              - link "Power Point to PDF" [ref=e239] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/powerpoint-to-pdf
+                - generic [ref=e240]: Power Point to PDF
+              - link "Excel to PDF" [ref=e241] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/excel-to-pdf
+                - generic [ref=e242]: Excel to PDF
+              - generic [ref=e243]: OCR to PDF
+            - generic [ref=e244]:
+              - paragraph [ref=e247]: Compress
+              - link "Compress PDF" [ref=e248] [cursor=pointer]:
+                - /url: https://www.mergedpdf.com/lp/compress-pdf
+                - generic [ref=e249]: Compress PDF
+              - generic [ref=e250]: Compress Image
+    - generic [ref=e251]:
+      - generic [ref=e252]:
+        - generic [ref=e253]:
+          - link "logo" [ref=e254] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e255]
+          - generic [ref=e256]:
+            - generic [ref=e257]: Powerful for
+            - generic [ref=e258]:
+              - generic [ref=e259]:
+                - img "mac-icon" [ref=e260]
+                - generic [ref=e261]: MacOS
+              - generic [ref=e262]:
+                - img "windows-icon" [ref=e263]
+                - generic [ref=e264]: Windows
+        - generic [ref=e265]:
+          - generic [ref=e267]:
+            - generic [ref=e268]: Tools
+            - link "PDF Forms" [ref=e269] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e270]: PDF Forms
+            - link "Downloads" [ref=e271] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e272]: Downloads
+          - generic [ref=e274]:
+            - generic [ref=e275]: Company
+            - link "About Us" [ref=e276] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e277]: About Us
+            - link "Terms of Use" [ref=e278] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e279]: Terms of Use
+            - link "Privacy Policy" [ref=e280] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e281]: Privacy Policy
+            - link "Terms and Conditions" [ref=e282] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e283]: Terms and Conditions
+            - link "Cookies Policy" [ref=e284] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e285]: Cookies Policy
+          - generic [ref=e287]:
+            - generic [ref=e288]: Support
+            - link "FAQs" [ref=e289] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e290]: FAQs
+            - generic [ref=e291]:
+              - generic [ref=e292]: Language
+              - generic [ref=e293] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e294]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e296]:
+            - generic [ref=e297]: Help
+            - link "Contact Us" [ref=e298] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e299]: Contact Us
+            - generic [ref=e301]:
+              - generic [ref=e302]: +1 844 590 0022
+              - generic [ref=e303]:
+                - generic [ref=e304]: "Contact Hours:"
+                - generic [ref=e305]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e310]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e311]
+```
+
+# Test source
+
+```ts
+      |                                  ^ Error: expect(page).toHaveScreenshot(expected) failed
+```

@@ -1,0 +1,340 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: features/Visual.feature.spec.js >> VISUAL - Visual regression test for multiple pages within the PDF Editor site >> Visual comparison of editor payment modal
+- Location: .features-gen/features/Visual.feature.spec.js:144:7
+
+# Error details
+
+```
+TimeoutError: locator.waitFor: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('[data-id="transaction-price"]').first() to be visible
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Got questions? Contact us at
+      - generic [ref=e6]:
+        - img "phone icon" [ref=e7]
+        - generic [ref=e8]: +1 844 590 0022
+      - generic [ref=e9]: "Contact Hours: Mon-Sun 8am - 10pm ET"
+    - link "logo" [ref=e13] [cursor=pointer]:
+      - /url: https://www.mergedpdf.com/
+      - img "logo" [ref=e14]
+    - generic [ref=e19]:
+      - heading "Login to your account" [level=1] [ref=e21]
+      - generic [ref=e22]:
+        - generic [ref=e24]:
+          - img "Google" [ref=e25]
+          - paragraph [ref=e26]: Sign up with Google
+        - generic [ref=e29]: Or sign up with email
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e37]: Email
+          - textbox "email@example.com" [ref=e39]
+        - generic [ref=e40]: Login
+        - paragraph [ref=e41]:
+          - text: By continuing, you accept the
+          - link "Terms and Conditions" [ref=e42] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/terms-and-conditions
+          - text: and
+          - link "Privacy Policy" [ref=e43] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/privacy-policy
+          - text: .
+    - generic [ref=e44]:
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - link "logo" [ref=e47] [cursor=pointer]:
+            - /url: https://www.mergedpdf.com/
+            - img "logo" [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: Powerful for
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - img "mac-icon" [ref=e53]
+                - generic [ref=e54]: MacOS
+              - generic [ref=e55]:
+                - img "windows-icon" [ref=e56]
+                - generic [ref=e57]: Windows
+        - generic [ref=e58]:
+          - generic [ref=e60]:
+            - generic [ref=e61]: Tools
+            - link "PDF Forms" [ref=e62] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/forms
+              - generic [ref=e63]: PDF Forms
+            - link "Downloads" [ref=e64] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/downloads
+              - generic [ref=e65]: Downloads
+          - generic [ref=e67]:
+            - generic [ref=e68]: Company
+            - link "About Us" [ref=e69] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/about-us
+              - generic [ref=e70]: About Us
+            - link "Terms of Use" [ref=e71] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-of-use
+              - generic [ref=e72]: Terms of Use
+            - link "Privacy Policy" [ref=e73] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/privacy-policy
+              - generic [ref=e74]: Privacy Policy
+            - link "Terms and Conditions" [ref=e75] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/terms-and-conditions
+              - generic [ref=e76]: Terms and Conditions
+            - link "Cookies Policy" [ref=e77] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/cookies
+              - generic [ref=e78]: Cookies Policy
+          - generic [ref=e80]:
+            - generic [ref=e81]: Support
+            - link "FAQs" [ref=e82] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/faqs
+              - generic [ref=e83]: FAQs
+            - generic [ref=e84]:
+              - generic [ref=e85]: Language
+              - generic [ref=e86] [cursor=pointer]:
+                - generic:
+                  - img
+                - combobox [ref=e87]:
+                  - option "English" [selected]
+                  - option "Español"
+                  - option "Français"
+                  - option "Italiano"
+                  - option "Português"
+                  - option "Deutsch"
+                  - option "日本語"
+                  - option "Polski"
+                  - option "Türkçe"
+                  - option "العربية"
+                  - option "Nederlands"
+                  - option "한국어"
+                - generic:
+                  - img
+          - generic [ref=e89]:
+            - generic [ref=e90]: Help
+            - link "Contact Us" [ref=e91] [cursor=pointer]:
+              - /url: https://www.mergedpdf.com/contact
+              - generic [ref=e92]: Contact Us
+            - generic [ref=e94]:
+              - generic [ref=e95]: +1 844 590 0022
+              - generic [ref=e96]:
+                - generic [ref=e97]: "Contact Hours:"
+                - generic [ref=e98]: Mon-Sun 8am - 10pm ET
+      - generic [ref=e103]: © 2026 mergedpdf.com. All Rights Reserved.
+  - alert [ref=e104]
+```
+
+# Test source
+
+```ts
+  151 | 
+  152 | When('I search the current customer', async ({ bddWorld }) => {
+  153 |   if (!bddWorld.crmPage) throw new Error('CRM page is not open')
+  154 |   await filterCrmCustomersByEmail(bddWorld.crmPage, bddWorld.email)
+  155 | })
+  156 | 
+  157 | Then('I am redirected to {word} page', async ({ page, bddWorld }, target: string) => {
+  158 |   const p = marketingPage(bddWorld, page)
+  159 |   await expect(p).toHaveURL(urlRegexForPage(target), { timeout: 120_000 })
+  160 | })
+  161 | 
+  162 | Then('I am redirected to {string} page', async ({ page, bddWorld }, target: string) => {
+  163 |   const p = marketingPage(bddWorld, page)
+  164 |   await expect(p).toHaveURL(urlRegexForPage(target), { timeout: 120_000 })
+  165 | })
+  166 | 
+  167 | When('I click next button', async ({ page, bddWorld }) => {
+  168 |   await clickNextButton(bddPage(bddWorld, page), { flow: bddWorld.testData.flow })
+  169 | })
+  170 | 
+  171 | Then('I create a new user from the editor', async ({ page, bddWorld }) => {
+  172 |   const p = bddPage(bddWorld, page)
+  173 |   await createNewUserFromEditor(p, bddWorld.email)
+  174 | })
+  175 | 
+  176 | Then('I register a new user', async ({ page, bddWorld }) => {
+  177 |   await registerNewUserFromLogin(bddPage(bddWorld, page), bddWorld.email)
+  178 | })
+  179 | 
+  180 | When('I register a new user from login', async ({ page, bddWorld }) => {
+  181 |   await registerNewUserFromLogin(bddPage(bddWorld, page), bddWorld.email)
+  182 | })
+  183 | 
+  184 | When('I register a new user from login tracking account creation email', async ({ page, bddWorld }) => {
+  185 |   bddWorld.accountCreatedEmailRequestedAtMs = Date.now()
+  186 |   await registerNewUserFromLogin(bddPage(bddWorld, page), bddWorld.email)
+  187 | })
+  188 | 
+  189 | Then('I login with an existing user', async ({ page, bddWorld }) => {
+  190 |   await loginExistingUserFromLogin(bddPage(bddWorld, page), bddWorld.email)
+  191 | })
+  192 | 
+  193 | Then('I login with the last user created', async ({ page, bddWorld }) => {
+  194 |   await loginExistingUserFromEditor(bddPage(bddWorld, page), bddWorld.email)
+  195 | })
+  196 | 
+  197 | Then('I try login with a blocked user', async ({ page, bddWorld }) => {
+  198 |   await tryLoginBlockedUser(bddPage(bddWorld, page), bddWorld.email)
+  199 | })
+  200 | 
+  201 | When('I upload a {word} document', async ({ page, bddWorld }, format: string) => {
+  202 |   await uploadDocumentForFormat(bddPage(bddWorld, page), bddWorld, format)
+  203 | })
+  204 | 
+  205 | When('I make the initial payment', async ({ page, bddWorld }) => {
+  206 |   const p = bddPage(bddWorld, page)
+  207 |   const cardName = bddWorld.testData.card || 'Visa'
+  208 |   const card = stripeCardForName(cardName)
+  209 |   logElementAction('Filling', 'stripe card number input', `${cardName} → ${card.number}`)
+  210 |   await fillStripePaymentLikeLegacy(p, card, { testIp: bddWorld.testData.ip })
+  211 |   await p.locator('[data-id="confirm-payment-button"]').first().click({ timeout: 15_000 }).catch(() => {})
+  212 |   await p.waitForTimeout(2000)
+  213 | })
+  214 | 
+  215 | Then('I save my document', async ({ page, bddWorld }) => {
+  216 |   await openDashboardViaPaymentSuccessModal(bddPage(bddWorld, page))
+  217 |   bddWorld.currentPage = 'Dashboard'
+  218 | })
+  219 | 
+  220 | When('I wait for element {string}', async ({ page, bddWorld }, elementLabel: string) => {
+  221 |   logElementAction('Waiting for', elementLabel)
+  222 |   const p = bddPage(bddWorld, page)
+  223 |   if (elementLabel === 'transaction price text' || elementLabel === 'transaction monthly price text') {
+  224 |     await gotoMembership(p)
+  225 |   }
+  226 |   await bddLocator(bddWorld, page, elementLabel).first().waitFor({ state: 'visible', timeout: 120_000 })
+  227 | })
+  228 | 
+  229 | When(/^I wait for element (.+)$/, async ({ page, bddWorld }, elementLabel: string) => {
+  230 |   const label = elementLabel.trim()
+  231 |   logElementAction('Waiting for', label)
+  232 |   const p = bddPage(bddWorld, page)
+  233 |   if (label === 'transaction price text' || label === 'transaction monthly price text') {
+  234 |     await gotoMembership(p)
+  235 |   }
+  236 |   await bddLocator(bddWorld, page, label).first().waitFor({ state: 'visible', timeout: 120_000 })
+  237 | })
+  238 | 
+  239 | When('I wait until hide element {string}', async ({ page, bddWorld }, elementLabel: string) => {
+  240 |   await bddLocator(bddWorld, page, elementLabel).first().waitFor({ state: 'hidden', timeout: 120_000 })
+  241 | })
+  242 | 
+  243 | When(/^I wait until hide element (.+)$/, async ({ page, bddWorld }, elementLabel: string) => {
+  244 |   await bddLocator(bddWorld, page, elementLabel).first().waitFor({ state: 'hidden', timeout: 120_000 })
+  245 | })
+  246 | 
+  247 | Then('The page does have element {string}', async ({ page, bddWorld }, elementLabel: string) => {
+  248 |   await expect(bddLocator(bddWorld, page, elementLabel).first()).toBeVisible({ timeout: 120_000 })
+  249 | })
+  250 | 
+> 251 | Then(/^The page does have element (.+)$/, async ({ page, bddWorld }, elementLabel: string) => {
+      |                                                                     ^ TimeoutError: locator.waitFor: Timeout 120000ms exceeded.
+  252 |   await expect(bddLocator(bddWorld, page, elementLabel).first()).toBeVisible({ timeout: 120_000 })
+  253 | })
+  254 | 
+  255 | Then('The page does not have element {string}', async ({ page, bddWorld }, elementLabel: string) => {
+  256 |   await expect(bddLocator(bddWorld, page, elementLabel).first()).toHaveCount(0, { timeout: 60_000 })
+  257 | })
+  258 | 
+  259 | Then(/^The page does not have element (.+)$/, async ({ page, bddWorld }, elementLabel: string) => {
+  260 |   await expect(bddLocator(bddWorld, page, elementLabel).first()).toHaveCount(0, { timeout: 60_000 })
+  261 | })
+  262 | 
+  263 | When('I click element {string}', async ({ page, bddWorld }, elementLabel: string) => {
+  264 |   const p = bddPage(bddWorld, page)
+  265 |   logElementAction('Clicking', elementLabel)
+  266 |   const loc = bddLocator(bddWorld, page, elementLabel).first()
+  267 |   await loc.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {})
+  268 |   await loc.click({ timeout: 20_000 })
+  269 |   if (elementLabel === 'yes unsubscribe button') {
+  270 |     bddWorld.subscriptionPurchaseDateMs = Date.now()
+  271 |   }
+  272 |   if (elementLabel === 'account menu link') bddWorld.currentPage = 'Account'
+  273 |   if (elementLabel === 'membership menu link') bddWorld.currentPage = 'Account'
+  274 |   if (elementLabel === 'dashboard menu link') bddWorld.currentPage = 'Dashboard'
+  275 |   if (elementLabel === 'logout menu link') bddWorld.currentPage = 'Login'
+  276 |   await p.waitForTimeout(300)
+  277 | })
+  278 | 
+  279 | When(/^I click element (.+)$/, async ({ page, bddWorld }, elementLabel: string) => {
+  280 |   const p = bddPage(bddWorld, page)
+  281 |   logElementAction('Clicking', elementLabel.trim())
+  282 |   const loc = bddLocator(bddWorld, page, elementLabel).first()
+  283 |   await loc.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => {})
+  284 |   await loc.click({ timeout: 20_000 })
+  285 |   if (elementLabel === 'yes unsubscribe button') {
+  286 |     bddWorld.subscriptionPurchaseDateMs = Date.now()
+  287 |   }
+  288 |   if (elementLabel === 'account menu link') bddWorld.currentPage = 'Account'
+  289 |   if (elementLabel === 'membership menu link') bddWorld.currentPage = 'Account'
+  290 |   if (elementLabel === 'dashboard menu link') bddWorld.currentPage = 'Dashboard'
+  291 |   if (elementLabel === 'logout menu link') bddWorld.currentPage = 'Login'
+  292 |   await p.waitForTimeout(300)
+  293 | })
+  294 | 
+  295 | When('I wait and click element {string}', async ({ page, bddWorld }, elementLabel: string) => {
+  296 |   const loc = bddLocator(bddWorld, page, elementLabel).first()
+  297 |   await loc.waitFor({ state: 'visible', timeout: 120_000 })
+  298 |   await loc.click({ timeout: 20_000 })
+  299 | })
+  300 | 
+  301 | When(/^I wait and click element (.+)$/, async ({ page, bddWorld }, elementLabel: string) => {
+  302 |   const loc = bddLocator(bddWorld, page, elementLabel).first()
+  303 |   await loc.waitFor({ state: 'visible', timeout: 120_000 })
+  304 |   await loc.click({ timeout: 20_000 })
+  305 | })
+  306 | 
+  307 | When('I scroll to element {string}', async ({ page, bddWorld }, elementLabel: string) => {
+  308 |   await bddLocator(bddWorld, page, elementLabel).first().scrollIntoViewIfNeeded()
+  309 | })
+  310 | 
+  311 | When(/^I scroll to element (.+)$/, async ({ page, bddWorld }, elementLabel: string) => {
+  312 |   await bddLocator(bddWorld, page, elementLabel).first().scrollIntoViewIfNeeded()
+  313 | })
+  314 | 
+  315 | Then('The text of element {string} should be {string}', async ({ page, bddWorld }, elementLabel: string, expected: string) => {
+  316 |   if (elementLabel === 'customer subscription status' && bddWorld.crmPage) {
+  317 |     const rx = new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+  318 |     const value = await waitForSubscriptionStatus(bddWorld.crmPage, rx, {
+  319 |       timeoutMs: 120_000,
+  320 |       email: bddWorld.email
+  321 |     })
+  322 |     expect(value.toLowerCase()).toContain(expected.toLowerCase())
+  323 |     return
+  324 |   }
+  325 |   await expect(bddLocator(bddWorld, page, elementLabel).first()).toHaveText(expected, { timeout: 120_000 })
+  326 | })
+  327 | 
+  328 | Then(/^The text of element (.+) should be (.+)$/, async ({ page, bddWorld }, elementLabel: string, expected: string) => {
+  329 |   if (elementLabel === 'customer subscription status' && bddWorld.crmPage) {
+  330 |     const rx = new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+  331 |     const value = await waitForSubscriptionStatus(bddWorld.crmPage, rx, {
+  332 |       timeoutMs: 120_000,
+  333 |       email: bddWorld.email
+  334 |     })
+  335 |     expect(value.toLowerCase()).toContain(expected.toLowerCase())
+  336 |     return
+  337 |   }
+  338 |   await expect(bddLocator(bddWorld, page, elementLabel).first()).toHaveText(expected, { timeout: 120_000 })
+  339 | })
+  340 | 
+  341 | Then('The text of element {string} should contain {string}', async ({ page, bddWorld }, elementLabel: string, expected: string) => {
+  342 |   await assertElementTextContainsFromStep(bddLocator(bddWorld, page, elementLabel), expected)
+  343 | })
+  344 | 
+  345 | Then(/^The text of element (.+) should contain (.+)$/, async ({ page, bddWorld }, elementLabel: string, expected: string) => {
+  346 |   await assertElementTextContainsFromStep(bddLocator(bddWorld, page, elementLabel), expected)
+  347 | })
+  348 | 
+  349 | Then('The value of element {string} should be {string}', async ({ page, bddWorld }, elementLabel: string, expected: string) => {
+  350 |   await expect(bddLocator(bddWorld, page, elementLabel).first()).toHaveValue(expected, { timeout: 120_000 })
+  351 | })
+```
