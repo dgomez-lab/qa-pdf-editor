@@ -45,7 +45,7 @@ Feature: Test PDF Editor for different first payment scenarios
       | card |
       | JCB  |
 
-  Scenario Outline: Refund of an initial payment in <currency> with random success card
+  Scenario Outline: Refund of an initial payment in <currency> with random success card for IP <ip>
     Given I set this test to start with the following data:
       | flow    | ip   |
       | Default | <ip> |

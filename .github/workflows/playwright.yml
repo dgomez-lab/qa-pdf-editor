@@ -2,9 +2,9 @@ name: Playwright
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
   workflow_dispatch:
     inputs:
       profile:
@@ -17,9 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REGRESSION_SHARD_TOTAL: '10'
-  REGRESSION_VISUAL_SHARD_TOTAL: '2'
-  PLAYWRIGHT_CI_RETRIES: '1'
+  REGRESSION_SHARD_TOTAL: '14'
+  REGRESSION_VISUAL_SHARD_TOTAL: '4'
 
 jobs:
   ci-fast:
@@ -63,7 +62,6 @@ jobs:
           QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
 
       - name: Run fast suite
-        # Leave repository variable PLAYWRIGHT_BASE_URL unset unless you intentionally override staging (red.mvps.website + QA token).
         run: |
           export QAI_TOKEN_PARAM="${QAI_TOKEN_PARAM:-x-token-qa=niGqCYH7McqERAB}"
           npm run test:ci-fast-run
@@ -150,7 +148,6 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
-    needs: ci-fast
     steps:
       - uses: actions/checkout@v4
 
@@ -209,8 +206,8 @@ jobs:
           retention-days: 1
 
   ci-regression-functional:
-    name: Regression functional (shard ${{ matrix.shard }}/10)
-    timeout-minutes: 120
+    name: Regression functional (shard ${{ matrix.shard }}/${{ env.REGRESSION_SHARD_TOTAL }})
+    timeout-minutes: 40
     runs-on: ${{ vars.PLAYWRIGHT_RUNNER == 'self-hosted' && 'self-hosted' || 'ubuntu-latest' }}
     if: >-
       always() &&
@@ -223,13 +220,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     env:
-      REGRESSION_SHARD_TOTAL: '10'
+      REGRESSION_SHARD_TOTAL: '14'
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
       PLAYWRIGHT_CI_WORKERS: '1'
+      PLAYWRIGHT_CI_RETRIES: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
       PLAYWRIGHT_DEFAULT_TEST_IP: 'ES'
+      BDD_TERMINAL_STEPS: '1'
       SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
     steps:
       - uses: actions/checkout@v4
@@ -270,6 +269,12 @@ jobs:
           PLAYWRIGHT_MAILPIT_PASSWORD: ${{ secrets.PLAYWRIGHT_MAILPIT_PASSWORD }}
           PLAYWRIGHT_QA_API_KEY: ${{ secrets.PLAYWRIGHT_QA_API_KEY }}
 
+      - name: Shard failure summary
+        if: failure()
+        run: npm run report:shard-summary
+        env:
+          SHARD_LABEL: 'Regression functional shard ${{ matrix.shard }}/${{ env.REGRESSION_SHARD_TOTAL }}'
+
       - name: Upload cucumber messages
         if: always()
         uses: actions/upload-artifact@v4
@@ -288,18 +293,21 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Upload failure screenshots
-        if: always()
+      - name: Upload failure artifacts
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: failure-screenshots-shard-${{ matrix.shard }}
-          path: cucumber-report/failure-screenshots/
+          name: failure-artifacts-shard-${{ matrix.shard }}
+          path: |
+            cucumber-report/failure-screenshots/
+            test-results/
+            playwright-report/
           if-no-files-found: ignore
           retention-days: 14
 
   ci-regression-visual:
-    name: Regression visual (shard ${{ matrix.shard }}/2)
-    timeout-minutes: 120
+    name: Regression visual (shard ${{ matrix.shard }}/${{ env.REGRESSION_VISUAL_SHARD_TOTAL }})
+    timeout-minutes: 40
     runs-on: ${{ vars.PLAYWRIGHT_RUNNER == 'self-hosted' && 'self-hosted' || 'ubuntu-latest' }}
     if: >-
       always() &&
@@ -312,13 +320,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3, 4]
     env:
-      REGRESSION_VISUAL_SHARD_TOTAL: '2'
+      REGRESSION_VISUAL_SHARD_TOTAL: '4'
       APP: mergedpdf
       PLAYWRIGHT_APP: mergedpdf
       PLAYWRIGHT_CI_WORKERS: '1'
+      PLAYWRIGHT_CI_RETRIES: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
       PLAYWRIGHT_DEFAULT_TEST_IP: 'ES'
+      BDD_TERMINAL_STEPS: '1'
       SEO_LOGIN_PATHNAME: ${{ vars.SEO_LOGIN_PATHNAME || '/login' }}
     steps:
       - uses: actions/checkout@v4
@@ -349,6 +359,12 @@ jobs:
           PDFHINT_APP_BASE_URL: ${{ vars.PLAYWRIGHT_PDFHINT_APP_BASE_URL }}
           QAI_TOKEN_PARAM: ${{ secrets.QAI_TOKEN_PARAM }}
 
+      - name: Shard failure summary
+        if: failure()
+        run: npm run report:shard-summary
+        env:
+          SHARD_LABEL: 'Regression visual shard ${{ matrix.shard }}/${{ env.REGRESSION_VISUAL_SHARD_TOTAL }}'
+
       - name: Upload cucumber messages
         if: always()
         uses: actions/upload-artifact@v4
@@ -367,19 +383,22 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Upload failure screenshots
-        if: always()
+      - name: Upload failure artifacts
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: failure-screenshots-visual-${{ matrix.shard }}
-          path: cucumber-report/failure-screenshots/
+          name: failure-artifacts-visual-${{ matrix.shard }}
+          path: |
+            cucumber-report/failure-screenshots/
+            test-results/
+            playwright-report/
           if-no-files-found: ignore
           retention-days: 14
 
   report-publish:
     name: Publish regression report
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 10
     needs:
       - regression-setup
       - regression-setup-dispatch
@@ -428,7 +447,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          pattern: failure-screenshots-*
+          pattern: failure-artifacts-*
 
       - name: Merge cucumber messages and build dashboard
         id: merge
@@ -437,7 +456,7 @@ jobs:
           ARTIFACTS_DIR: artifacts
           REPORT_OUTPUT_DIR: report
           SKIP_BLOB_MERGE: '1'
-          REGRESSION_EXPECTED_SOURCES: '12'
+          REGRESSION_EXPECTED_SOURCES: '18'
           REGRESSION_EXPECTED_TESTS: '214'
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -449,7 +468,7 @@ jobs:
           PLAYWRIGHT_MVPS_SLOT: ${{ vars.PLAYWRIGHT_MVPS_SLOT }}
 
       - name: Merge Playwright blobs (optional)
-        if: steps.merge.outputs.report_ready == 'true'
+        if: steps.merge.outputs.report_ready == 'true' && github.event_name == 'workflow_dispatch'
         continue-on-error: true
         run: node scripts/merge-regression-report.mjs --blobs-only
         env:
@@ -467,6 +486,15 @@ jobs:
           destination_dir: runs/${{ github.run_id }}
           keep_files: true
 
+      - name: Upload regression report artifact
+        if: steps.merge.outputs.report_ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-report
+          path: report/
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Job summary
         if: always()
         run: |
@@ -479,6 +507,47 @@ jobs:
             echo "" >> "$GITHUB_STEP_SUMMARY"
             echo "### GitHub Pages not deployed" >> "$GITHUB_STEP_SUMMARY"
             echo "Enable **Settings → Pages → Deploy from branch → gh-pages / (root)** then re-run **Publish regression report** or the full regression workflow." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  regression-gate:
+    name: Regression gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs:
+      - ci-regression-functional
+      - ci-regression-visual
+      - report-publish
+    if: >-
+      always() &&
+      github.event_name == 'pull_request'
+    steps:
+      - name: Download regression report
+        if: needs.report-publish.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: regression-report
+          path: report
+
+      - name: Append report to job summary
+        if: needs.report-publish.result == 'success'
+        run: |
+          if [ -f report/summary.md ]; then
+            cat report/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Fail if any regression shard failed
+        run: |
+          func="${{ needs.ci-regression-functional.result }}"
+          vis="${{ needs.ci-regression-visual.result }}"
+          echo "Functional shards: $func"
+          echo "Visual shards: $vis"
+          if [ "$func" = "failure" ] || [ "$vis" = "failure" ]; then
+            echo "::error::One or more regression shards failed."
+            exit 1
+          fi
+          if [ "$func" = "cancelled" ] || [ "$vis" = "cancelled" ]; then
+            echo "::error::Regression was cancelled."
+            exit 1
           fi
 
   ci-visual:

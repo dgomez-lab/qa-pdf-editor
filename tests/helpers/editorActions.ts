@@ -20,11 +20,15 @@ export type ClickNextButtonOptions = {
 }
 
 async function dismissModalBackdropIfPresent(page: Page): Promise<void> {
+  const backdrop = page.locator(editor.modalBackdrop).first()
+  if (await backdrop.isVisible().catch(() => false)) {
+    await backdrop.click({ force: true }).catch(() => {})
+  }
   await page.evaluate(() => {
-    const backdrop = document.querySelector('div#outside')
-    if (backdrop instanceof HTMLElement) {
-      backdrop.click()
-      backdrop.remove()
+    const el = document.querySelector('div#outside')
+    if (el instanceof HTMLElement) {
+      el.click()
+      el.remove()
     }
   })
 }

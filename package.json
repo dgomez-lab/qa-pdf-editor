@@ -13,6 +13,7 @@
     "test:ci-fast": "npm run bddgen && playwright test --grep @PDFEDITOR_SEO",
     "test:ci-fast-run": "playwright test --grep @PDFEDITOR_SEO",
     "report:ci-fast-summary": "node scripts/ci-fast-summary.mjs",
+    "report:shard-summary": "node scripts/ci-shard-summary.mjs",
     "test:ci-full": "npm run bddgen && playwright test --grep-invert @MANUAL_SCREEN_CAPTURE",
     "test:ci-regression-functional": "playwright test --grep-invert \"@MANUAL_SCREEN_CAPTURE|@PDFEDITOR_VISUAL\"",
     "test:ci-regression-functional-shard": "playwright test --grep-invert \"@MANUAL_SCREEN_CAPTURE|@PDFEDITOR_VISUAL\"",

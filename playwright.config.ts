@@ -94,7 +94,8 @@ const terminalStepsOff =
   process.env.BDD_TERMINAL_STEPS === '0' ||
   process.env.BDD_TERMINAL_STEPS?.toLowerCase() === 'false'
 const terminalStepsOn =
-  !terminalStepsOff && (process.env.BDD_TERMINAL_STEPS === '1' || !process.env.CI)
+  !terminalStepsOff &&
+  (process.env.BDD_TERMINAL_STEPS === '1' || (!process.env.CI && process.env.BDD_TERMINAL_STEPS !== '0'))
 
 if (terminalStepsOn) {
   reporters.splice(

@@ -8,8 +8,8 @@ Guía para ejecutar en remoto (sin usar tu máquina) la misma cobertura que un `
 |-----|--------|--------|-------------|
 | Antes de `ac33d95` (p. ej. `4439503`) | Viejo workflow | `workflow_dispatch` / push | **ci-fast** ~24 min y fallo (dashboard + `/en/login`). **ci-regression** no corre (0s) porque fast falló o el perfil no existía. **Ignorar.** |
 | `ac33d95`+ push a `main` | Actions | `push` | Solo **ci-fast** (~1 min). |
-| `profile: regression` (manual) | `workflow_dispatch` | **regression-setup-dispatch** en paralelo con **ci-fast** → **10 shards funcionales** + **2 shards visuales** → informe. |
-| PR a `main` | `pull_request` | **ci-fast** → **regression-setup** → **10 + 2 shards** en paralelo. |
+| `profile: regression` (manual) | `workflow_dispatch` | **regression-setup-dispatch** → **14 shards funcionales** + **4 shards visuales** (timeout 40 min/shard) → informe. |
+| PR a `main` | `pull_request` | **ci-fast** (paralelo) + **regression-setup** → **14 + 4 shards** → **Publish regression report** → **Regression gate**. |
 
 Si lanzaste **regression** dos veces antes del push, ambas usaron el workflow antiguo: solo cuenta la ejecución sobre **`ac33d95` o posterior**.
 
@@ -83,25 +83,30 @@ Tras `npm run bddgen`, la regresión CI cubre **214 tests** automáticos:
 | Visual | `--grep @PDFEDITOR_VISUAL` | 68 |
 | **Total** | | **214** |
 
-Los shards funcionales **no** ejecutan los visuales (evita duplicar ~68 tests en cada shard). El informe fusiona **12 artefactos** NDJSON (10 funcionales + 2 visuales) y screenshots sidecar por shard.
+Los shards funcionales **no** ejecutan los visuales (evita duplicar ~68 tests en cada shard). El informe fusiona **18 artefactos** NDJSON (14 funcionales + 4 visuales) y capturas en `failure-artifacts-*`.
 
-## Paralelismo (10 + 2 shards, estilo QAI Dogs)
+### Qué significa «VISUAL CAPTURE» en CI
+
+| Categoría | Tag / feature | ¿En regresión PR? |
+|-----------|---------------|-------------------|
+| **VISUAL CAPTURE** (manual, renovar PNG de referencia) | `@MANUAL_SCREEN_CAPTURE` — [`VisualCapture.feature`](../features/VisualCapture.feature) | **No** (`--grep-invert @MANUAL_SCREEN_CAPTURE`) |
+| Regresión visual automatizada (snapshots Playwright) | `@PDFEDITOR_VISUAL*` — [`Visual.feature`](../features/Visual.feature) | **Sí** (shards visuales dedicados) |
+
+## Paralelismo (14 + 4 shards, tope 40 min)
 
 La regresión no usa un solo runner de 3 h:
 
-1. **regression-setup** (PR: tras **ci-fast**) o **regression-setup-dispatch** (manual: en paralelo con **ci-fast**) — `bddgen` una vez, artefacto `features-gen` (`include-hidden-files: true` en el upload).
-2. **ci-regression-functional** — matriz **10 jobs** (`--shard=1/10` … `10/10`), ~15 tests/shard, **1 worker** (`PLAYWRIGHT_CI_WORKERS=1`), **1 reintento** en CI (`PLAYWRIGHT_CI_RETRIES=1`). Los runners bloquean analytics conocidos (menos ruido de red).
-3. **ci-regression-visual** — matriz **2 jobs** (`--shard=1/2` y `2/2`), ~34 tests/shard.
+1. **regression-setup** (PR, en paralelo con **ci-fast**) o **regression-setup-dispatch** (manual) — `bddgen` una vez, artefacto `features-gen`.
+2. **ci-regression-functional** — matriz **14 jobs** (`--shard=1/14` … `14/14`), ~10 tests/shard, **1 worker**, **`timeout-minutes: 40`**, **`PLAYWRIGHT_CI_RETRIES=0`** en PR (reintento 1 solo en `workflow_dispatch`).
+3. **ci-regression-visual** — matriz **4 jobs** (`--shard=1/4` … `4/4`), ~17 tests/shard, mismo tope de 40 min.
+4. **Publish regression report** — fusiona NDJSON + dashboard (GitHub Pages).
+5. **Regression gate** — falla el check del PR si algún shard falló; repite `report/summary.md` en el Summary.
 
-Tiempo de pared ≈ `max(shard funcional más lento, shard visual más lento)`. Objetivo **~35–45 min** en GitHub-hosted cuando la mayoría de tests **pasan**; **30–40 min** como QAI Dogs (5 máquinas AWS) suele requerir runners self-hosted más cerca de staging.
+Tiempo de pared ≈ `max(shard funcional más lento, shard visual más lento)` con **límite duro de 40 min por shard**. Si un shard llega al timeout, el job se cancela y el informe puede marcar **Partial run**.
 
-Si muchos escenarios **fallan**, `PLAYWRIGHT_CI_RETRIES=1` duplica trabajo y los timeouts largos (pago/CRM, 120–180 s por paso) pueden llevar el shard más pesado a **~90–100 min** (p. ej. run [26217895507](https://github.com/dgomez-lab/qa-pdf-editor/actions/runs/26217895507): shard 2 ≈ 91 min, visual 1 ≈ 100 min, total ~102 min). El cuello de botella no es la secuencia del workflow sino el **shard más lento** + reintentos.
+**Progreso en vivo:** en cada shard, `BDD_TERMINAL_STEPS=1` imprime cada paso Gherkin (`→ Given …`, `✔` / `✖`) en el log de Actions, además del reporter `list` de Playwright.
 
-| Shard (ejemplo run 26217895507) | Duración aprox. | Contenido típico |
-|---------------------------------|-----------------|------------------|
-| Functional 2/10 | ~91 min | `FirstPayment` refunds, wrong cards, UTMs |
-| Functional 4/10 | ~18 min | SEO, inicio de Mailpit/pdfhint (fallos rápidos) |
-| Visual 1/2 | ~100 min | ~34 screenshots + reintentos + blobs grandes |
+**Artefactos en fallo:** `failure-artifacts-shard-N` / `failure-artifacts-visual-N` incluyen `cucumber-report/failure-screenshots/`, `test-results/` (traces) y `playwright-report/`. El paso **Shard failure summary** (`npm run report:shard-summary`) lista pasos Gherkin fallidos en el log y en el job Summary.
 
 En CI, Playwright usa `trace: on-first-retry` y `video: off` para reducir artefactos `blob-report-*` (antes ~500 MB–1 GB por shard con `retain-on-failure` + vídeo).
 
@@ -187,11 +192,12 @@ Cada shard sube siempre (aunque pase):
 | Artefacto | Contenido |
 |-----------|-----------|
 | `cucumber-messages-shard-N` | `messages.ndjson` (fusionable) |
-| `failure-screenshots-shard-N` | PNG + `manifest.ndjson` por escenario fallido |
+| `failure-artifacts-shard-N` | PNG + `manifest.ndjson`, `test-results/` traces, `playwright-report/` |
 | `blob-report-shard-N` | Blobs Playwright para traces |
-| `cucumber-messages-visual-1` … `visual-2` | Visual sharded |
-| `failure-screenshots-visual-*` | Screenshots visual |
-| `blob-report-visual-1` … `visual-2` | Blobs visual |
+| `cucumber-messages-visual-N` | Visual sharded |
+| `failure-artifacts-visual-N` | Capturas y traces visual |
+| `blob-report-visual-N` | Blobs visual |
+| `regression-report` | Dashboard HTML + `summary.md` (job **Regression gate**) |
 
 En CI, `messages.ndjson` usa `skipAttachments: true` (pocos MB). Las capturas van en `cucumber-report/failure-screenshots/`. Local: `CUCUMBER_EMBED_ATTACHMENTS=1` embebe adjuntos en NDJSON para depuración.
 
@@ -215,7 +221,7 @@ Si el job **Publish regression report** falla o no hay enlace al dashboard:
 | Paso **Merge cucumber messages** en rojo | `messages.ndjson` de varios GB (capturas embebidas en runs antiguos) o OOM al fusionar | Usar commit con `skipAttachments: true`; el merge actual ignora adjuntos y parsea por streaming |
 | **Deploy** en rojo, merge en verde | GitHub Pages no activado | **Settings → Pages → Deploy from branch → `gh-pages` / (root)** |
 | Dashboard **106 total, 0 passed** | Run parcial + merge antiguo sin inferir estado desde pasos | Re-ejecutar con commit actual; debe mostrar **~214** y passed/failed > 0 |
-| Dashboard con **Partial run** | Menos de **12/12** artefactos con datos (timeout/cancelación) | Revisar shards; no lanzar dos regresiones a la vez en la misma rama |
+| Dashboard con **Partial run** | Menos de **18/18** artefactos con datos (timeout 40 min o cancelación) | Revisar shards; no lanzar dos regresiones a la vez en la misma rama |
 | Pasos con IDs `…-step-0` en el modal | Merge antiguo sin `testCase.testSteps.pickleStepId` | Usar commit actual de `merge-regression-report.mjs` y re-publicar informe |
 | Sin screenshots en fallos del dashboard | Artefactos `failure-screenshots-shard-*` no indexados (solo buscaba carpeta `failure-screenshots/`) | Mismo merge actual; artefactos ya suben PNG + `manifest.ndjson` |
 | Workflow **Cancelled** con otro run en curso | `concurrency: cancel-in-progress: true` | Esperar al run anterior o usar otra rama |
@@ -239,13 +245,13 @@ npm run report:merge-local
 | `fast` | ci-fast | SEO MVPS only (PR/push gate; sin pdfhint) |
 | `full` | ci-fast → ci-full | Funcional completo en un runner (sin visual) |
 | `visual` | ci-visual | Solo `@PDFEDITOR_VISUAL*` (manual) |
-| `regression` | setup (PR: tras fast; manual: dispatch) → 10 + 2 shards | Regresión completa paralela |
+| `regression` | setup → 14 + 4 shards (40 min/shard) → report → gate | Regresión completa paralela |
 
 ## Disparo automático en pull requests
 
-Cada **pull request** hacia `main` o `master` ejecuta **ci-fast** y luego la regresión paralela (10 shards + 2 visual).
+Cada **pull request** hacia **`main`** ejecuta en paralelo **ci-fast** (smoke SEO) y **regression-setup**, luego la regresión completa (**14 + 4 shards**, tope 40 min/shard), informe y **Regression gate**.
 
-Los **push** a `main`/`master` ejecutan solo **ci-fast** (smoke SEO). La regresión completa no corre en push; valida en el PR antes del merge o con **Run workflow** → profile **`regression`**.
+Los **push** a **`main`** ejecutan solo **ci-fast** (~1–2 min). La regresión completa no corre en push; valida en el PR antes del merge o con **Run workflow** → profile **`regression`**.
 
 Los PR desde **forks** no reciben secrets del repo base.
 
@@ -261,9 +267,9 @@ Depurar un shard:
 
 ```bash
 npm run bddgen
-npm run test:ci-regression-functional-shard -- --shard=1/8 --list
-npm run test:ci-regression-functional-shard -- --shard=1/8
-npm run test:ci-regression-visual-shard -- --shard=1/2 --list
+npm run test:ci-regression-functional-shard -- --shard=1/14 --list
+npm run test:ci-regression-functional-shard -- --shard=1/14
+npm run test:ci-regression-visual-shard -- --shard=1/4 --list
 ```
 
 Verificar merge del informe (fixture local):
