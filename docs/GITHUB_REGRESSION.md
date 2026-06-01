@@ -151,12 +151,12 @@ Con `PLAYWRIGHT_RUNNER` vacío, la regresión sigue en `ubuntu-latest` (MVPS/CRM
 2. Rama: `main` (o la rama a validar).
 3. **profile:** `regression`.
 4. En manual: **regression-setup-dispatch** y shards arrancan sin esperar a **ci-fast**. En PR: **ci-fast** → **regression-setup** → shards.
-5. Esperar **10× functional** + **2× visual** → **Publish regression report**.
+5. Esperar **14× functional** + **4× visual** → **Publish regression report**.
 6. Abrir el informe desde el **job summary** del job **Publish regression report** (enlace al dashboard) o la URL de GitHub Pages (abajo).
 
 ## Informe QAI-style (GitHub Pages)
 
-Tras cada regresión (PR o `profile: regression`), el job **Publish regression report** fusiona los **12** fragmentos NDJSON y los PNG en `failure-screenshots-*`, y publica un dashboard HTML (cuadrícula, passed/failed/skipped, pasos Gherkin con mensaje de error, capturas en fallos). El merge deduce **PASSED/FAILED** desde los pasos Gherkin cuando playwright-bdd no envía `testCaseResult` en `testCaseFinished`.
+Tras cada regresión (PR o `profile: regression`), el job **Publish regression report** fusiona los **18** fragmentos NDJSON (14 funcionales + 4 visuales) y los PNG dentro de `failure-artifacts-*`, y publica un dashboard HTML (cuadrícula, passed/failed/skipped, pasos Gherkin con mensaje de error, capturas en fallos). El merge deduce **PASSED/FAILED** desde los pasos Gherkin cuando playwright-bdd no envía `testCaseResult` en `testCaseFinished`.
 
 ### Activar GitHub Pages (una vez)
 
@@ -223,7 +223,7 @@ Si el job **Publish regression report** falla o no hay enlace al dashboard:
 | Dashboard **106 total, 0 passed** | Run parcial + merge antiguo sin inferir estado desde pasos | Re-ejecutar con commit actual; debe mostrar **~214** y passed/failed > 0 |
 | Dashboard con **Partial run** | Menos de **18/18** artefactos con datos (timeout 40 min o cancelación) | Revisar shards; no lanzar dos regresiones a la vez en la misma rama |
 | Pasos con IDs `…-step-0` en el modal | Merge antiguo sin `testCase.testSteps.pickleStepId` | Usar commit actual de `merge-regression-report.mjs` y re-publicar informe |
-| Sin screenshots en fallos del dashboard | Artefactos `failure-screenshots-shard-*` no indexados (solo buscaba carpeta `failure-screenshots/`) | Mismo merge actual; artefactos ya suben PNG + `manifest.ndjson` |
+| Sin screenshots en fallos del dashboard | Artefactos `failure-artifacts-*` no indexados (solo buscaba carpeta `failure-screenshots/`) | Mismo merge actual; artefactos ya suben PNG + `manifest.ndjson` |
 | Workflow **Cancelled** con otro run en curso | `concurrency: cancel-in-progress: true` | Esperar al run anterior o usar otra rama |
 | Artefacto `cucumber-messages-*` de **146 B** | Job cancelado/timeout antes de tests | No aporta al informe |
 
