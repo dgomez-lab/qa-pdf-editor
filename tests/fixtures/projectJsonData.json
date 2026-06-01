@@ -1,0 +1,37 @@
+{
+  "cards": {
+    "Common": {
+      "holderName": "AutoQA",
+      "date": "12/30",
+      "cvv": 555
+    },
+    "Visa": {
+      "number": "4111111111111111"
+    },
+    "MasterCard": {
+      "number": "5555555555554444"
+    },
+    "AMEX": {
+      "number": "378282246310005",
+      "cvv": 5555
+    },
+    "Discover": {
+      "number": "6011000990139424"
+    },
+    "Dinners": {
+      "number": "3056930009020004"
+    },
+    "JCB": {
+      "number": "3566002020360505"
+    },
+    "Generic": {
+      "number": "4000000000000002"
+    },
+    "NoFunds": {
+      "number": "4000000000009995"
+    },
+    "CardLost": {
+      "number": "4000000000009987"
+    }
+  }
+}

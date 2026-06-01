@@ -1,0 +1,15 @@
+{
+  "suites": [
+    {
+      "name": "allTests"
+    },
+    {
+      "name": "paymentTests",
+      "filters": { "include": ["PAYMENT"] }
+    },
+    {
+      "name": "pdfhintSmoke",
+      "filters": { "include": ["PDFHINT_SMOKE"] }
+    }
+  ]
+}

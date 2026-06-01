@@ -55,6 +55,20 @@ const PRESETS: Record<string, StripeCard> = {
   }
 }
 
+export const SUCCESS_PAYMENT_CARD_NAMES = [
+  'Visa',
+  'MasterCard',
+  'AMEX',
+  'Discover',
+  'Dinners',
+  'JCB'
+] as const
+
+export function sampleSuccessPaymentCardName(): (typeof SUCCESS_PAYMENT_CARD_NAMES)[number] {
+  const i = Math.floor(Math.random() * SUCCESS_PAYMENT_CARD_NAMES.length)
+  return SUCCESS_PAYMENT_CARD_NAMES[i]!
+}
+
 export function stripeCardForName(name: string): StripeCard {
   const k = name.trim()
   return PRESETS[k] ?? DEFAULT

@@ -1,0 +1,28 @@
+{
+  "suite": {
+    "project": "PDFEditor",
+    "name": "pdfhintSmoke"
+  },
+  "tests": [
+    {
+      "tag": "@PDFEDITOR_PDFHINT_SMOKE_VISA",
+      "feature": "PDF Hint — staging smoke tests",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PDFHINT_SMOKE_REFUND",
+      "feature": "PDF Hint — staging smoke tests",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PDFHINT_SMOKE_DASHBOARD",
+      "feature": "PDF Hint — staging smoke tests",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PDFHINT_SMOKE_SEO",
+      "feature": "PDF Hint — staging smoke tests",
+      "priority": false
+    }
+  ]
+}

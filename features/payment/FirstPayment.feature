@@ -45,13 +45,27 @@ Feature: Test PDF Editor for different first payment scenarios
       | card |
       | JCB  |
 
-  Scenario Outline: Refund of an initial payment with different cards
+  Scenario Outline: Refund of an initial payment in <currency> with random success card
     Given I set this test to start with the following data:
-      | flow    | card   |
-      | Default | <card> |
-    And I am in Editor page
+      | flow    | ip   |
+      | Default | <ip> |
+    And I set a random success payment card
+    And I am in Home page
+    And I force URL with parameters
+          """
+        {
+          "ip":"<ip>"
+        }
+      """
+    When I wait 1 seconds
+    Then I upload a PDF document
+    And I am redirected to editor page
     And I click next button
     And I create a new user from the editor
+    And I wait for element <element>
+    And I wait 1 seconds
+    And The text of element <element> should contain <price>
+    And The text of element <monthly element> should contain <monthly price editor>
     And I make the initial payment
     And I wait for element pdf radio button
     And The page does have element pdf radio button
@@ -59,38 +73,58 @@ Feature: Test PDF Editor for different first payment scenarios
     And I refund the last payment
     When I click browser refresh button
     Then I check the last refund payment data:
-      | transactionType | transactionStatus | paymentSolution | amount | currency | subscriptionName |
-      | Refund          | Success           | Stripe          | 1.95   | EUR      | Full Access      |
+      | transactionType | transactionStatus | paymentSolution | amount   | currency   | subscriptionName |
+      | Refund          | Success           | Stripe          | <amount> | <currency> | Full Access      |
 
-    @PDFEDITOR_PAYMENT_FIRST_REFUND_VISA
-    Examples: Test refund for a payment with Visa card
-      | card |
-      | Visa |
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_USD
+    Examples: Test refund for initial payment in USD (US)
+      | ip | currency | element                | monthly element                | monthly price editor | price  | amount |
+      | US | USD      | transaction price text | transaction monthly price text | $49.95               | $1.95  | 1.95   |
 
-    @PDFEDITOR_PAYMENT_FIRST_REFUND_MASTERCARD
-    Examples: Test refund for a payment with Mastercard card
-      | card       |
-      | MasterCard |
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_EUR
+    Examples: Test refund for initial payment in EUR (ES)
+      | ip | currency | element                | monthly element                | monthly price editor | price  | amount |
+      | ES | EUR      | transaction price text | transaction monthly price text | €49.95               | €1.95  | 1.95   |
 
-    @PDFEDITOR_PAYMENT_FIRST_REFUND_AMEX
-    Examples: Test refund for a payment with Amex card
-      | card |
-      | AMEX |
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_CAD
+    Examples: Test refund for initial payment in CAD (CA)
+      | ip | currency | element                | monthly element                | monthly price editor | price  | amount |
+      | CA | CAD      | transaction price text | transaction monthly price text | $49.95               | $2.95  | 2.95   |
 
-    @PDFEDITOR_PAYMENT_FIRST_REFUND_DISCOVER
-    Examples: Test refund for a payment with Discover card
-      | card     |
-      | Discover |
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_AUD
+    Examples: Test refund for initial payment in AUD (AU)
+      | ip | currency | element                | monthly element                | monthly price editor | price  | amount |
+      | AU | AUD      | transaction price text | transaction monthly price text | $49.95               | $2.95  | 2.95   |
 
-    @PDFEDITOR_PAYMENT_FIRST_REFUND_DINNERS
-    Examples: Test refund for a payment with Dinners card
-      | card    |
-      | Dinners |
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_GBP
+    Examples: Test refund for initial payment in GBP (GB)
+      | ip | currency | element                | monthly element                | monthly price editor | price  | amount |
+      | GB | GBP      | transaction price text | transaction monthly price text | £49.95               | £1.95  | 1.95   |
 
-    @PDFEDITOR_PAYMENT_FIRST_REFUND_JCB
-    Examples: Test refund for a payment with JCB card
-      | card |
-      | JCB  |
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_JPY
+    Examples: Test refund for initial payment in JPY (JP)
+      | ip | currency | element                | monthly element                | monthly price editor | price  | amount |
+      | JP | JPY      | transaction price text | transaction monthly price text | ¥7500.00             | ¥300   | 300    |
+
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_BRL
+    Examples: Test refund for initial payment in BRL (BR)
+      | ip | currency | element                | monthly element                | monthly price editor | price   | amount |
+      | BR | BRL      | transaction price text | transaction monthly price text | R$229,00             | R$9,90  | 9.9    |
+
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_TRY
+    Examples: Test refund for initial payment in TRY (TR)
+      | ip | currency | element                | monthly element                | monthly price editor | price    | amount |
+      | TR | TRY      | transaction price text | transaction monthly price text | ₺999,00              | ₺59,00   | 59     |
+
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_PLN
+    Examples: Test refund for initial payment in PLN (PL)
+      | ip | currency | element                | monthly element                | monthly price editor | price    | amount |
+      | PL | PLN      | transaction price text | transaction monthly price text | 149,00 zł            | 7,90 zł  | 7.9    |
+
+    @PDFEDITOR_PAYMENT_FIRST_REFUND_DEFAULT
+    Examples: Test refund for initial payment with default IP (EUR)
+      | ip      | currency | element                | monthly element                | monthly price editor | price  | amount |
+      | Default | EUR      | transaction price text | transaction monthly price text | €49.95               | €1.95  | 1.95   |
 
  # @PDFEDITOR_PAYMENT_FIRST_REFUND_FAILED
  # Scenario: Refund failed of an initial payment

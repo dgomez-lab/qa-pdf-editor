@@ -241,6 +241,10 @@ Feature: Test PDF Editor for different user scenarios
     And I wait for element upload button
     And I upload a <format> document
     And I am redirected to Editor page
+    And I wait for element select format modal continue button
+    And I click element select format modal continue button
+    And I wait until hide element select format modal
+    And I wait until hide element loading overlay
     And I click next button
     And I create a new user from the editor
     And I make the initial payment

@@ -19,6 +19,12 @@
       "xpath": "//button[@data-id='share' and not(ancestor::div[contains(@class,'EmailInputModal')])]"
     }
   },
+  "select format modal": {
+    "finder": { "css": "div[class*='SelectFormatModal']" }
+  },
+  "modal backdrop": {
+    "finder": { "css": "div#outside[class*='BackScreen']" }
+  },
   "select format modal continue button": {
     "finder": {
       "xpath": "//div[contains(@class,'SelectFormatModal')]//button[@data-id='continue' or @data-id='Continuar' or @data-id='continuar' or @data-id='Continuer' or @data-id='continuer' or @data-id='Continua' or @data-id='continua' or @data-id='Weiter' or @data-id='weiter' or @data-id='Fortfahren' or @data-id='fortfahren' or @data-id='続ける' or @data-id='次へ' or @data-id='Kontynuuj' or @data-id='kontynuuj' or @data-id='Dalej' or @data-id='dalej' or @data-id='Devam' or @data-id='devam' or @data-id='Doorgaan' or @data-id='doorgaan' or @data-id='Verder' or @data-id='verder' or @data-id='متابعة' or @data-id='계속' or @data-id='다음']"

@@ -1,0 +1,348 @@
+{
+  "suite": {
+    "project": "PDFEditor",
+    "name": "paymentTests"
+  },
+  "tests": [
+    {
+      "tag": "@PDFEDITOR_DASHBOARD_PAYMENT",
+      "feature": "Test PDF Editor for different dashboard scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_RECURRENCE_LEGACY_14056",
+      "feature": "Test PDF Editor recurrences for legacy accounts",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_RECURRENCE_LEGACY_14056_SOFT_DECLINE",
+      "feature": "Test PDF Editor recurrences for legacy accounts",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_USD",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_EUR",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_CAD",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_AUD",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_GBP",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_JPY",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_BRL",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_TRY",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_PLN",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_EN",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_ES",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_FR",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_IT",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_PT",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_DE",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_JA",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_PL",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_TR",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_AR",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_NL",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_LOCALE_KO",
+      "feature": "Transactional emails",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_VISUAL_EDITOR_MODAL_PAYMENT",
+      "feature": "VISUAL - Visual regression test for multiple pages within the PDF Editor site",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_VISA",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_MASTERCARD",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_AMEX",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_DISCOVER",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_DINNERS",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_JCB",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_USD",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_EUR",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_CAD",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_AUD",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_GBP",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_JPY",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_BRL",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_TRY",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_PLN",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_REFUND_DEFAULT",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_WRONG_CARD_NUMBER_NOT_RECOGNIZED",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_WRONG_CARD_NUMBER_HIGH_RISK",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_FIRST_WRONG_CARD_NUMBER_MULTIPLE_DISPUTES",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_SOURCE_GOOGLE_MEDIUM_CPC",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_SOURCE_BING_MEDIUM_CPC",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_SOURCE_GOOGLE_MEDIUM_CPC_CONTENT_DISPLAY",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_SOURCE_BING_MEDIUM_CPC_CONTENT_DISPLAY",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_SOURCE_GOOGLE_MEDIUM_EMAIL_CAMPAIGN_1",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_SOURCE_GOOGLE_MEDIUM_EMAIL_CAMPAIGN_2",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_SOURCE_BING_MEDIUM_EMAIL_CAMPAIGN_1",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_SOURCE_BING_MEDIUM_EMAIL_CAMPAIGN_2",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_SOURCE_MEDIUM_EMAIL_CAMPAIGN_3",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_CANCEL_SUBSCRIPTION_BY_USER",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_CANCEL_SUBSCRIPTION_BY_AGENT",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_IP_US",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_IP_AU",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_IP_CA",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_IP_ES",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_IP_GB",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_REGISTER_ALL",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_REGISTER_ADGROUP",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_REGISTER_NETWORK",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_REGISTER_DEVICE",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_REGISTER_DEVICEMODEL",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_REGISTER_MATCHTYPE",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_REGISTER_LOCPHYSICALMS",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    },
+    {
+      "tag": "@PDFEDITOR_PAYMENT_UTM_REGISTER_CAMPAIGNTYPE",
+      "feature": "Test PDF Editor for different first payment scenarios",
+      "priority": false
+    }
+  ]
+}

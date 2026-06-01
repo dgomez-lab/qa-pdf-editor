@@ -31,7 +31,7 @@ La configuración Playwright apunta al output `.features-gen` y reutiliza snapsh
 
 - Porting funcional en Playwright-BDD para SEO, PDFhint, Users, Dashboard, FirstPayment, TransactionalEmails, Recurrences y Visual.
 - `VisualCapture.feature` se mantiene como flujo manual de referencia de snapshots.
-- **Última sincronización Gherkin/selectores:** rama legacy `PDFMAU-1246-qa-automation---update-edito` (2026-05-20) — `features/` copiados, `tests/bdd/legacy-elements/` vía `npm run sync:legacy-elements`, hooks `@PDFHINT` en `hooks.steps.ts`.
+- **Última sincronización Gherkin/selectores:** `qai-pa-pdf-editor` (2026-05-29) — `features/Users.feature`, `features/payment/FirstPayment.feature`, `tests/bdd/legacy-elements/` vía `npm run sync:legacy-elements`, paso `I set a random success payment card`, `dismissModalBackdrop` en `editorActions`, config de referencia (`config/suites/`, `cucumber.json`, etc.). Los bundles Playwright en `tests/pages/**/elements.json` no se sobrescriben (formato distinto al legacy).
 
 ## Paridad operativa con legacy
 

@@ -19,6 +19,16 @@ export type ClickNextButtonOptions = {
   flow?: string
 }
 
+async function dismissModalBackdropIfPresent(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const backdrop = document.querySelector('div#outside')
+    if (backdrop instanceof HTMLElement) {
+      backdrop.click()
+      backdrop.remove()
+    }
+  })
+}
+
 export async function clickNextButton(page: Page, opts?: ClickNextButtonOptions): Promise<void> {
   const flow = (opts?.flow ?? 'Default').trim()
   await page.waitForTimeout(10_000)
@@ -45,6 +55,7 @@ export async function clickNextButton(page: Page, opts?: ClickNextButtonOptions)
     await waitForEditorAfterUpload(page)
   }
 
+  await dismissModalBackdropIfPresent(page)
   logElementAction('Waiting for', 'download button', editor.downloadButton)
   const downloadFirst = page.locator(editor.downloadButton).first()
   await expect(downloadFirst).toBeVisible({ timeout: 180_000 })

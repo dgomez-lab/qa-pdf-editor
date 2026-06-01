@@ -1,11 +1,7 @@
 #!/usr/bin/env node
-/**
- * Copia `src/pages/**/elements.json` del legacy a `tests/bdd/legacy-elements/**`.
- *
- * Uso:
- *   npm run sync:legacy-elements
- *   LEGACY_REPO=/ruta/a/qai-pa-pdf-editor node scripts/sync-legacy-elements.mjs
- */
+// Copia elements.json del legacy (src/pages) a tests/bdd/legacy-elements/.
+// Uso: npm run sync:legacy-elements
+//      LEGACY_REPO=/ruta/a/qai-pa-pdf-editor node scripts/sync-legacy-elements.mjs
 
 import * as fs from 'fs'
 import * as path from 'path'
