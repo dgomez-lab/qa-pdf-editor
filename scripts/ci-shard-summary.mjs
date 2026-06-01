@@ -41,6 +41,7 @@ function isHookStepId(stepId) {
 async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
+  const testStepPickleStep = new Map()
   const testCases = new Map()
   const attempts = new Map()
 
@@ -65,6 +66,9 @@ async function parseCucumberFailures(filePath) {
     }
     if (env.testCase) {
       testCases.set(env.testCase.id, env.testCase.pickleId)
+      for (const step of env.testCase.testSteps || []) {
+        if (step.pickleStepId) testStepPickleStep.set(step.id, step.pickleStepId)
+      }
     }
     if (env.testCaseStarted) {
       attempts.set(env.testCaseStarted.id, {
@@ -76,9 +80,13 @@ async function parseCucumberFailures(filePath) {
     if (env.testStepStarted) {
       const att = attempts.get(env.testStepStarted.testCaseStartedId)
       if (att) {
+        const pickleStepId = testStepPickleStep.get(env.testStepStarted.testStepId)
         att.steps.push({
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text:
+            (pickleStepId && pickleStepText.get(pickleStepId)) ||
+            pickleStepText.get(env.testStepStarted.testStepId) ||
+            env.testStepStarted.testStepId,
           status: 'UNKNOWN',
           errorMessage: ''
         })
