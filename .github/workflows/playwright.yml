@@ -206,7 +206,7 @@ jobs:
           retention-days: 1
 
   ci-regression-functional:
-    name: Regression functional (shard ${{ matrix.shard }}/${{ env.REGRESSION_SHARD_TOTAL }})
+    name: Regression functional (shard ${{ matrix.shard }}/14)
     timeout-minutes: 40
     runs-on: ${{ vars.PLAYWRIGHT_RUNNER == 'self-hosted' && 'self-hosted' || 'ubuntu-latest' }}
     if: >-
@@ -306,7 +306,7 @@ jobs:
           retention-days: 14
 
   ci-regression-visual:
-    name: Regression visual (shard ${{ matrix.shard }}/${{ env.REGRESSION_VISUAL_SHARD_TOTAL }})
+    name: Regression visual (shard ${{ matrix.shard }}/4)
     timeout-minutes: 40
     runs-on: ${{ vars.PLAYWRIGHT_RUNNER == 'self-hosted' && 'self-hosted' || 'ubuntu-latest' }}
     if: >-
