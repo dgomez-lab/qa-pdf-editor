@@ -4,14 +4,15 @@ import * as path from 'node:path'
 import * as readline from 'node:readline'
 import { fileURLToPath } from 'node:url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const root = path.resolve(__dirname, '..')
 const resultsPath = path.join(root, 'playwright-report', 'results.json')
 const cucumberPath = path.join(root, 'cucumber-report', 'messages.ndjson')
 const summaryPath = process.env.GITHUB_STEP_SUMMARY
 const shardLabel = process.env.SHARD_LABEL || 'Regression shard'
 
-function walkSuites(suites, filePrefix, out) {
+export function walkSuites(suites, filePrefix, out) {
   if (!suites) return
   for (const suite of suites) {
     const prefix = filePrefix ? `${filePrefix} › ${suite.title}` : suite.title
@@ -34,11 +35,11 @@ function walkSuites(suites, filePrefix, out) {
   }
 }
 
-function isHookStepId(stepId) {
+export function isHookStepId(stepId) {
   return /-(before|after)-test-(case|run)-/.test(stepId)
 }
 
-async function parseCucumberFailures(filePath) {
+export async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
   const testCases = new Map()
@@ -125,7 +126,7 @@ async function parseCucumberFailures(filePath) {
   return failures
 }
 
-function buildMarkdown(playwrightFailures, cucumberFailures) {
+export function buildMarkdown(playwrightFailures, cucumberFailures) {
   const lines = [`## ${shardLabel} — failed tests`, '']
   if (cucumberFailures.length === 0 && playwrightFailures.length === 0) {
     lines.push('No failed tests found in reports (check job log).')
@@ -169,7 +170,7 @@ function buildMarkdown(playwrightFailures, cucumberFailures) {
   return lines.join('\n')
 }
 
-async function main() {
+export async function main() {
   const playwrightFailures = []
   if (fs.existsSync(resultsPath)) {
     const report = JSON.parse(fs.readFileSync(resultsPath, 'utf8'))
@@ -186,7 +187,9 @@ async function main() {
   if (summaryPath) fs.appendFileSync(summaryPath, md)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
