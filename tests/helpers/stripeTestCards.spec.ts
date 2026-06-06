@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test'
-import { stripeCardForName } from '../bdd/stripeTestCards'
+import {
+  SUCCESS_PAYMENT_CARD_NAMES,
+  sampleSuccessPaymentCardName,
+  stripeCardForName
+} from '../bdd/stripeTestCards'
 
 test.describe('stripeTestCards legacy parity', () => {
   test('Generic uses Stripe generic decline', () => {
@@ -16,5 +20,37 @@ test.describe('stripeTestCards legacy parity', () => {
 
   test('Visa uses success test card', () => {
     expect(stripeCardForName('Visa').number).toBe('4242424242424242')
+  })
+
+  test('success card sampler covers first and last supported cards deterministically', () => {
+    const originalRandom = Math.random
+    try {
+      Math.random = () => 0
+      expect(sampleSuccessPaymentCardName()).toBe('Visa')
+
+      Math.random = () => 0.999999
+      expect(sampleSuccessPaymentCardName()).toBe('JCB')
+    } finally {
+      Math.random = originalRandom
+    }
+  })
+
+  test('success card sampler pool excludes decline and unsupported 3DS cards', () => {
+    expect([...SUCCESS_PAYMENT_CARD_NAMES]).toEqual([
+      'Visa',
+      'MasterCard',
+      'AMEX',
+      'Discover',
+      'Dinners',
+      'JCB'
+    ])
+    expect(SUCCESS_PAYMENT_CARD_NAMES).not.toContain('Generic')
+    expect(SUCCESS_PAYMENT_CARD_NAMES).not.toContain('NoFunds')
+    expect(SUCCESS_PAYMENT_CARD_NAMES).not.toContain('CardLost')
+    expect(SUCCESS_PAYMENT_CARD_NAMES).not.toContain('UnionPay')
+
+    for (const name of SUCCESS_PAYMENT_CARD_NAMES) {
+      expect(stripeCardForName(name).number).not.toMatch(/^400000000000/)
+    }
   })
 })
