@@ -42,6 +42,7 @@ async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
   const testCases = new Map()
+  const testStepText = new Map()
   const attempts = new Map()
 
   const rl = readline.createInterface({
@@ -65,6 +66,11 @@ async function parseCucumberFailures(filePath) {
     }
     if (env.testCase) {
       testCases.set(env.testCase.id, env.testCase.pickleId)
+      for (const step of env.testCase.testSteps || []) {
+        if (step.pickleStepId) {
+          testStepText.set(step.id, pickleStepText.get(step.pickleStepId) || step.pickleStepId)
+        }
+      }
     }
     if (env.testCaseStarted) {
       attempts.set(env.testCaseStarted.id, {
@@ -78,7 +84,10 @@ async function parseCucumberFailures(filePath) {
       if (att) {
         att.steps.push({
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text:
+            testStepText.get(env.testStepStarted.testStepId) ||
+            pickleStepText.get(env.testStepStarted.testStepId) ||
+            env.testStepStarted.testStepId,
           status: 'UNKNOWN',
           errorMessage: ''
         })
@@ -169,6 +178,8 @@ function buildMarkdown(playwrightFailures, cucumberFailures) {
   return lines.join('\n')
 }
 
+export { walkSuites, isHookStepId, parseCucumberFailures, buildMarkdown }
+
 async function main() {
   const playwrightFailures = []
   if (fs.existsSync(resultsPath)) {
@@ -186,7 +197,13 @@ async function main() {
   if (summaryPath) fs.appendFileSync(summaryPath, md)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
