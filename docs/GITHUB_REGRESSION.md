@@ -151,12 +151,12 @@ Con `PLAYWRIGHT_RUNNER` vacío, la regresión sigue en `ubuntu-latest` (MVPS/CRM
 2. Rama: `main` (o la rama a validar).
 3. **profile:** `regression`.
 4. En manual: **regression-setup-dispatch** y shards arrancan sin esperar a **ci-fast**. En PR: **ci-fast** → **regression-setup** → shards.
-5. Esperar **10× functional** + **2× visual** → **Publish regression report**.
+5. Esperar **14× functional** + **4× visual** → **Publish regression report**.
 6. Abrir el informe desde el **job summary** del job **Publish regression report** (enlace al dashboard) o la URL de GitHub Pages (abajo).
 
 ## Informe QAI-style (GitHub Pages)
 
-Tras cada regresión (PR o `profile: regression`), el job **Publish regression report** fusiona los **12** fragmentos NDJSON y los PNG en `failure-screenshots-*`, y publica un dashboard HTML (cuadrícula, passed/failed/skipped, pasos Gherkin con mensaje de error, capturas en fallos). El merge deduce **PASSED/FAILED** desde los pasos Gherkin cuando playwright-bdd no envía `testCaseResult` en `testCaseFinished`.
+Tras cada regresión (PR o `profile: regression`), el job **Publish regression report** fusiona los **18** fragmentos NDJSON (14 funcionales + 4 visuales) y los PNG en `failure-artifacts-*`, y publica un dashboard HTML (cuadrícula, passed/failed/skipped, pasos Gherkin con mensaje de error, capturas en fallos). El merge deduce **PASSED/FAILED** desde los pasos Gherkin cuando playwright-bdd no envía `testCaseResult` en `testCaseFinished`.
 
 ### Activar GitHub Pages (una vez)
 
@@ -290,7 +290,7 @@ gh run list --workflow=playwright.yml --limit 3
 ## Qué no incluye la regresión CI
 
 - [`features/VisualCapture.feature`](../features/VisualCapture.feature) (`@MANUAL_SCREEN_CAPTURE`) — solo local para renovar PNG de referencia.
-- Escenarios multi-formato sin `tests/fixtures/sample.<ext>` — hacen `test.skip` (ver [`tests/helpers/multiFormatUpload.ts`](../tests/helpers/multiFormatUpload.ts)).
+- Escenarios multi-formato sin `tests/fixtures/sample.<ext>` ni `PLAYWRIGHT_FIXTURE_<FORMAT>` — fallan al subir el archivo; prepara fixtures válidos antes de incluirlos en una regresión (ver [`tests/helpers/multiFormatUpload.ts`](../tests/helpers/multiFormatUpload.ts)).
 
 ## Primera ejecución — checklist
 

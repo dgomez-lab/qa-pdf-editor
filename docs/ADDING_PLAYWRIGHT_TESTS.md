@@ -71,6 +71,32 @@ Los tags `@PDFEDITOR_*` en los `.feature` son los que filtra `playwright test --
 
 Pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y credenciales CRM/Mailpit donde el escenario lo requiera).
 
+## Subidas multi-formato y landings de producto
+
+Los escenarios como [`features/Users.feature`](../features/Users.feature) usan dos pasos reutilizables:
+
+```gherkin
+When I am in product landing page wordToPDF
+And I upload a DOCX document
+```
+
+El mapeo vive en [`tests/helpers/multiFormatUpload.ts`](../tests/helpers/multiFormatUpload.ts) y lo consumen [`tests/bdd/pageFactory.ts`](../tests/bdd/pageFactory.ts) y [`tests/bdd/steps/core.steps.ts`](../tests/bdd/steps/core.steps.ts):
+
+| Dato del `.feature` | Qué controla | Ejemplos |
+|---------------------|--------------|----------|
+| `landingAlt` | Ruta `/lp/...` de marketing antes de subir | `wordToPDF`, `excelToPDF`, `pwpToPDF`, `jpgToPDF`, `pngToPDF`, `mergePDF` |
+| `format` | Fixture que se carga en el input de Home/pdfhint | `PDF`, `DOCX`, `XLSX`, `PPTX`, `JPG`, `JPEG`, `PNG` |
+
+Reglas para fixtures:
+
+- `PDF` usa [`tests/fixtures/sample.pdf`](../tests/fixtures/sample.pdf).
+- Otros formatos buscan `tests/fixtures/sample.<ext>` primero.
+- Si el binario no debe commitearse, define una ruta absoluta con `PLAYWRIGHT_FIXTURE_<FORMAT>`, por ejemplo `PLAYWRIGHT_FIXTURE_DOCX=/tmp/sample.docx`.
+- Si no hay fixture para el formato, `I upload a <format> document` falla con `No fixture for format ...`; usa `fixturePathOrSkip` solo en helpers nuevos donde el escenario deba omitirse de forma explícita.
+- `JPEG` reutiliza el flujo de landing `jpgToPDF` y se normaliza a fixture JPG en `uploadDocumentForFormat`.
+
+Al añadir un producto nuevo, actualiza el mapa `LANDING_PATHS` antes de crear más pasos Gherkin; si el slug no existe, el helper cae a `/lp/<slug-en-minusculas>`, que solo sirve cuando la URL real sigue esa convención.
+
 ## Dónde ver los tests generados
 
 Tras `npm run bddgen`, los archivos ejecutables aparecen bajo [`.features-gen/`](../.features-gen/) (gitignored). La fuente de verdad sigue siendo `features/**/*.feature`.
