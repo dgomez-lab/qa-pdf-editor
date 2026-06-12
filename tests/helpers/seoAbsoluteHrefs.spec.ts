@@ -9,7 +9,7 @@ import {
 
 async function loadHtml(page: Page, html: string): Promise<void> {
   await page.route('https://seo-helper.test/**', async (route) => {
-    await route.fulfill({ status: 200, contentType: 'text/html', body: html })
+    await route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: html })
   })
   await page.goto('https://seo-helper.test/')
 }
