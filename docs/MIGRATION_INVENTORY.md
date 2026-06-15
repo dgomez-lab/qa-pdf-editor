@@ -30,7 +30,7 @@ En **qa-pdf-editor**, [`playwright/resolveBaseUrl.ts`](../playwright/resolveBase
 - Pipeline custom `pdfhint-smoke`: Node 22, `yarn install`, `QAI_PA_CONFIGURATION_PATH=config/configuration.pdfhint.json`, `yarn test:pdfhint-smoke`
 - Tags Cucumber del smoke pdfhint: `@PDFEDITOR_PDFHINT_SMOKE_VISA`, `_REFUND`, `_DASHBOARD`, `_SEO`
 
-## Scripts npm relevantes
+## Scripts legacy relevantes
 
 - `yarn test:pdfhint-smoke` — smoke pdfhint (Cucumber + tags anteriores)
 - `yarn test` — `@test` con perfil terminal
@@ -46,7 +46,7 @@ En **qa-pdf-editor**, [`playwright/resolveBaseUrl.ts`](../playwright/resolveBase
 | Cucumber / Selenium | Playwright en qa-pdf-editor |
 |---------------------|---------------------------|
 | `DogKernel` + grid | Navegador local del runner (`chromium`); sin Selenium Grid |
-| `configuration.pdfhint.json` | Variables de entorno (`BASE_URL`, opcionales para pago) |
+| `configuration.pdfhint.json` | `config/configuration.pdfhint.json` opcional + hooks `@PDFHINT` que fijan `BASE_URL`, `APP`, `APPEND_QA_TOKEN` y prefijo Mailpit |
 | `executeScript` SEO | `page.evaluate()` con los mismos scripts que `src/steps/seoSteps.ts` |
 | Subidas `QA.pdf` desde paquete | `tests/fixtures/sample.pdf` en el repo |
 | Pagos Stripe en iframes | Escenarios en `features/payment/FirstPayment.feature` + pasos BDD (opcional, `PLAYWRIGHT_PAYMENT_SMOKE=1`) |
@@ -55,7 +55,7 @@ En **qa-pdf-editor**, [`playwright/resolveBaseUrl.ts`](../playwright/resolveBase
 
 ## Cobertura portada en Playwright-BDD (paridad 100%)
 
-`npm run porting:tags` reporta **`missingFromPlaywright: []`** sobre los **215** tags `@PDFEDITOR_*` del legacy (o de `features/` vendored). Cobertura por feature (Gherkin en `features/`, pasos en `tests/bdd/steps/`):
+`npm run porting:tags` reporta **`missingFromPlaywright: []`** sobre los **219** tags `@PDFEDITOR_*` del legacy (o de `features/` vendored). Cobertura por feature (Gherkin en `features/`, pasos en `tests/bdd/steps/`):
 
 - `SEO.feature` — header / landing / footer / forms.
 - `PDFhint.feature` — `_SMOKE_VISA`, `_SMOKE_REFUND`, `_SMOKE_DASHBOARD`, `_SMOKE_SEO`.
@@ -69,7 +69,7 @@ En **qa-pdf-editor**, [`playwright/resolveBaseUrl.ts`](../playwright/resolveBase
 
 ## Cierre de paridad y backlog técnico
 
-- **Paridad de tags:** 215/215 (ver `npm run porting:tags`).
+- **Paridad de tags:** 219/219 (ver `npm run porting:tags`).
 - **Ejecución real:** escenarios BDD contra staging cuando se exportan credenciales (Stripe / CRM / Mailpit / Recurrences API). Sin credenciales, `test.skip` con motivo descriptivo.
 - **Baselines visuales:** `tests/visual/baseline/`; regresión con `PLAYWRIGHT_VISUAL_SNAPSHOTS=1 npm run test:ci-visual`.
 - **Fixtures binarios DOCX/XLSX/PPTX/JPG/JPEG/PNG:** configurar `PLAYWRIGHT_FIXTURE_<FORMAT>` o copiar a `tests/fixtures/sample.<ext>` ([`tests/helpers/multiFormatUpload.ts`](../tests/helpers/multiFormatUpload.ts)).
