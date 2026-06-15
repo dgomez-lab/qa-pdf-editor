@@ -1,92 +1,101 @@
-# Configuración
+# Configuración local
 
-`configurationExample.json` shows a local example (`baseUrl`). For Stage, omit `baseUrl` and use `"environment": "red"`.
+El runner carga configuración desde [`playwright/loadConfiguration.ts`](../playwright/loadConfiguration.ts) antes de resolver la URL base. Por defecto lee `config/configuration.json`; para usar otro archivo exporta `QAI_PA_CONFIGURATION_PATH`.
 
-## App URL (mvps.website)
+```bash
+npm run test:tag -- @PDFEDITOR_SEO
+QAI_PA_CONFIGURATION_PATH=config/configurationExample.json npm run test:tag -- @PDFEDITOR_SEO
+```
 
-When `baseUrl` is not set, `ProjectData.getUrl()` maps `environment` to mvps hosts (e.g. `red` → `https://red.mvps.website`, `stage` → `https://red.mvps.website`).
+## Archivos activos
 
-## projectVars
+| Archivo | Uso |
+|---------|-----|
+| `configuration.json` | Perfil local por defecto: `mergedpdf`, `red`, navegador headless. |
+| `configurationExample.json` | Ejemplo editable para sandbox/local (`baseUrl`) y navegador visible. |
+| `configuration.pdfhint.json` | Perfil opcional para comandos PDFhint; los hooks `@PDFHINT` fijan staging aunque no uses este archivo. |
+| `configurationAmazon.json` | Referencia de configuración heredada para entornos AWS/Dogs. |
+| `suites/*.json`, `projectSuitesConfiguration.json`, `cucumber.json` | Inventario legacy conservado para paridad; Playwright-BDD ejecuta desde `features/**/*.feature`, no desde estos JSON. |
 
-- **environment**: Used to build the app URL when `baseUrl` is omitted (e.g. `"red"`, `"stage"`, `"prod"`).
-- **baseUrl** (optional): Overrides the environment-derived URL (e.g. local sandbox).
-- **appendQaToken** (optional, boolean, default true): When `false`, `x-token-qa` is not appended to editor URLs.
-- **emailSubjectBrandPrefix** (optional, string, default `mergedpdf`): Mailpit subject brand prefix.
+## Campos soportados
 
-## PDF Hint (`@PDFHINT`)
+| Campo JSON | Efecto |
+|------------|--------|
+| `driver.headless` | Define `HEADLESS=1` o `0`. `npx playwright test --headed` siempre tiene prioridad visual. |
+| `logLevel` | Define `BDD_LOG_LEVEL` (`DEBUG`, `INFO`, `SILENT`). |
+| `timeouts.stepWaiter` | Define `SLOWMO` en milisegundos (`stepWaiter` está en segundos). |
+| `projectVars.environment` | Define `ENVIRONMENT`; `red`, `red1`... resuelven hosts `mvps.website` cuando no hay `baseUrl`. |
+| `projectVars.baseUrl` | Define `BASE_URL`; si existe pero está vacío, limpia `BASE_URL` para volver a resolver por entorno. |
+| `projectVars.app` | Define `APP` (`mergedpdf` o `pdfhint`). Si solo hay `environment`, el runner asume `mergedpdf`. |
+| `projectVars.appendQaToken` | `false` define `APPEND_QA_TOKEN=false`; `true` vuelve al comportamiento por defecto. |
+| `projectVars.emailSubjectBrandPrefix` | Define `EMAIL_SUBJECT_BRAND_PREFIX` para búsquedas Mailpit. |
 
-Scenarios tagged `@PDFHINT` (see [`features/PDFhint.feature`](../features/PDFhint.feature)) always use `https://staging.pdfhint.com`, with no QA token and Mailpit prefix `pdfhint`, regardless of `configuration.json` `environment` or `baseUrl`.
+`.env` queda para secretos y flags puntuales (`PLAYWRIGHT_CRM_USER`, Mailpit, `PLAYWRIGHT_PAYMENT_SMOKE`, etc.). No lo uses para `BASE_URL`, `APP`, `HEADLESS` o `ENVIRONMENT`; esos valores se toman del JSON para mantener paridad con `qai-pa-pdf-editor`.
 
-Optional `config/configuration.pdfhint.json` only differs by driver settings (e.g. headless); load it with `QAI_PA_CONFIGURATION_PATH=config/configuration.pdfhint.json` if needed.
+## MergedPDF / MVPS
 
-## PDF Hint smoke suite
-
-- Scenarios: [`features/PDFhint.feature`](../features/PDFhint.feature).
-- Generated suite: `config/suites/pdfhintSmoke.json` (after `yarn update:suites`).
-- Local run: `yarn test:pdfhint-smoke` or `yarn test:pdfhint-tag @PDFEDITOR_PDFHINT_SMOKE_VISA` (default `configuration.json` is fine).
-- Bitbucket: custom pipeline `pdfhint-smoke` in `bitbucket-pipelines.yml`.
-
-## Diagnóstico: pipeline en pdf-editor-monorepo vs este repo
-
-Los **deploys** y la mayoría de jobs de CI suelen definirse en [**pdf-editor-monorepo**](https://bitbucket.org/grupoblidoo/pdf-editor-monorepo), no en el `bitbucket-pipelines.yml` de este proyecto. Aquí solo está el pipeline *custom* **pdfhint-smoke** (smoke Cucumber contra staging pdfhint).
-
-Este paquete declara dependencias privadas por **git+ssh** (`qai-pa-pdf-editor-resources`, `qai-pa-core` en `package.json`). Cualquier paso que ejecute `yarn install` en Pipelines necesita **clave SSH** (y `known_hosts` para Bitbucket) configurada en el monorepo o en el step; si no, verás errores tipo `Permission denied (publickey)`.
-
-### Si un build/deploy falla en Bitbucket
-
-1. Abre el **paso** que falló y anota su **nombre** (Build, Deploy, Test, etc.).
-2. Copia del log **desde la primera línea ERROR / en rojo** unas 30–50 líneas (el ancla `#line=5-1` en la URL suele ser una línea del **log**, no del YAML).
-
-### Paso del pipeline → causas frecuentes
-
-| Tipo de paso / mensaje en el log | Causa típica |
-|-----------------------------------|--------------|
-| Checkout / submodules | Permisos SSH, submodules mal configurados |
-| `yarn install` / `npm ci` | SSH a repos `grupoblidoo/*`, token/registry, lockfile |
-| `corepack` / comando `yarn` no encontrado | Imagen Node distinta; falta `corepack enable` o Yarn 4 según `packageManager` |
-| Tests / Cucumber / smoke | `@PDFHINT` / mergedpdf hosts, network to env, timeouts, tags |
-| Docker push / deploy (K8s, helm, etc.) | Credenciales del registry, permisos, variables de entorno del step |
-| `vercel whoami` / `Not authorized` / scope `…-projects` | El `VERCEL_TOKEN` en Bitbucket no tiene acceso al **team** de Vercel del proyecto; regenerar token con acceso a ese team y alinear `VERCEL_ORG_ID` |
-
-## Diagnóstico: pipeline en pdf-editor-monorepo vs este repo
-
-Los **deploys** y la mayoría de jobs de CI suelen definirse en [**pdf-editor-monorepo**](https://bitbucket.org/grupoblidoo/pdf-editor-monorepo), no en el `bitbucket-pipelines.yml` de este proyecto. Aquí solo está el pipeline *custom* **pdfhint-smoke** (smoke Cucumber contra staging pdfhint).
-
-Este paquete declara dependencias privadas por **git+ssh** (`qai-pa-pdf-editor-resources`, `qai-pa-core` en `package.json`). Cualquier paso que ejecute `yarn install` en Pipelines necesita **clave SSH** (y `known_hosts` para Bitbucket) configurada en el monorepo o en el step; si no, verás errores tipo `Permission denied (publickey)`.
-
-### Si un build/deploy falla en Bitbucket
-
-1. Abre el **paso** que falló y anota su **nombre** (Build, Deploy, Test, etc.).
-2. Copia del log **desde la primera línea ERROR / en rojo** unas 30–50 líneas (el ancla `#line=5-1` en la URL suele ser una línea del **log**, no del YAML).
-
-### Paso del pipeline → causas frecuentes
-
-| Tipo de paso / mensaje en el log | Causa típica |
-|-----------------------------------|--------------|
-| Checkout / submodules | Permisos SSH, submodules mal configurados |
-| `yarn install` / `npm ci` | SSH a repos `grupoblidoo/*`, token/registry, lockfile |
-| `corepack` / comando `yarn` no encontrado | Imagen Node distinta; falta `corepack enable` o Yarn 4 según `packageManager` |
-| Tests / Cucumber / smoke | `QAI_PA_CONFIGURATION_PATH`, red hacia el entorno, timeouts, tags |
-| Docker push / deploy (K8s, helm, etc.) | Credenciales del registry, permisos, variables de entorno del step |
-| `vercel whoami` / `Not authorized` / scope `…-projects` | El `VERCEL_TOKEN` en Bitbucket no tiene acceso al **team** de Vercel del proyecto; regenerar token con acceso a ese team y alinear `VERCEL_ORG_ID` |
-
-### Ejecutar tests contra local
-
-En `configuration.json`:
+Para Stage, deja `baseUrl` vacío u omítelo y usa `environment: "red"`:
 
 ```json
-"projectVars": {
-  "environment": "local",
-  "baseUrl": "http://app.sandbox:3000"
+{
+  "driver": { "headless": true },
+  "projectVars": {
+    "environment": "red",
+    "baseUrl": "",
+    "app": "mergedpdf"
+  }
 }
 ```
 
-### Ejecutar tests contra Stage
+La URL final se resuelve en [`playwright/resolveBaseUrl.ts`](../playwright/resolveBaseUrl.ts). En hosts `*.mvps.website`, el token QA se añade por navegación desde [`tests/helpers/mvpsUrl.ts`](../tests/helpers/mvpsUrl.ts); no lo pegues como parte permanente del `baseUrl` salvo que estés probando la normalización.
 
-Quita `baseUrl` o no lo definas y usa:
+## PDFhint (`@PDFHINT`)
+
+Los escenarios con tag `@PDFHINT` activan [`tests/helpers/pdfhintScenario.ts`](../tests/helpers/pdfhintScenario.ts) desde hooks BDD:
+
+- `BASE_URL=https://staging.pdfhint.com`
+- `APP=pdfhint`
+- `APPEND_QA_TOKEN=false`
+- `EMAIL_SUBJECT_BRAND_PREFIX=pdfhint`
+- `SEO_LOGIN_PATHNAME=/login` si no estaba definido
+
+Comandos útiles:
+
+```bash
+npm run test:pdfhint-smoke
+npm run test:pdfhint-tag -- @PDFEDITOR_PDFHINT_SMOKE_VISA
+QAI_PA_CONFIGURATION_PATH=config/configuration.pdfhint.json npm run test:tag -- @PDFEDITOR_PDFHINT_SMOKE_SEO
+```
+
+PDFhint y Mailpit suelen requerir VPN corporativa. En GitHub Actions, consulta [`docs/GITHUB_REGRESSION.md`](../docs/GITHUB_REGRESSION.md#mailpit-y-vpn-emails-transaccionales) para runner self-hosted o diagnóstico de `HTTP 401/403`.
+
+## Sandbox o local
+
+Para apuntar a una instancia local, define `baseUrl` y conserva `app`:
 
 ```json
-"projectVars": {
-  "environment": "red"
+{
+  "driver": { "headless": false },
+  "projectVars": {
+    "environment": "local",
+    "baseUrl": "http://app.sandbox:3000",
+    "app": "mergedpdf"
+  }
 }
 ```
+
+Ejecuta un tag pequeño primero:
+
+```bash
+npm run test:tag -- @PDFEDITOR_SEO
+```
+
+## Diagnóstico rápido
+
+| Síntoma | Revisión |
+|---------|----------|
+| Se abre Chrome aunque `headless` es `true` | Quita `--headed`; ese flag tiene prioridad sobre el JSON. |
+| MVPS muestra página pública o 404 | Revisa `QAI_TOKEN_PARAM` y que `APPEND_QA_TOKEN` no esté en `false` para `mergedpdf`. |
+| PDFhint usa URL MVPS | Añade tag `@PDFHINT` al escenario o ejecuta con `npm run test:pdfhint-*`. |
+| Precios USD / campo ZIP en CI | En regresión, `PLAYWRIGHT_DEFAULT_TEST_IP=ES`; en local añade `ip` en los datos del escenario si necesitas otro país. |
+| Cambiaste `.feature` y no aparece el test | Ejecuta `npm run bddgen`; `.features-gen/` es generado y está gitignored. |

@@ -54,6 +54,36 @@ Given('I am on the home page', async ({ page }) => {
 
 Los escenarios se escriben en Gherkin; no hace falta crear `tests/**/*.spec.ts` (retirados en la migración BDD).
 
+## Modelo de ejecución BDD
+
+Cada escenario recibe un `bddWorld` creado en [`tests/bdd/fixtures.ts`](../tests/bdd/fixtures.ts). Ese estado se comparte entre pasos del mismo escenario y se reinicia en el siguiente.
+
+| Estado | Quién lo escribe | Para qué se usa |
+|--------|------------------|-----------------|
+| `testData` | Tablas `I set this test to start with the following data:` en [`data.steps.ts`](../tests/bdd/steps/data.steps.ts) | Parámetros de flujo: `flow`, `ip`, `locale`, `card`, `skipUploadInEditorLoadPage`, etc. |
+| `email` | Hook `Before` o columna `email` de `testData` | Registro, pago, Mailpit y búsqueda CRM. |
+| `currentPage` | Loaders de [`pageFactory.ts`](../tests/bdd/pageFactory.ts) y pasos de navegación | Resolver elementos legacy con [`elementRegistry.ts`](../tests/bdd/elementRegistry.ts). |
+| `crmPage` | Loaders/pasos CRM | Enviar acciones al popup CRM en vez de la página principal. |
+| `popup` | Pasos de cambio de ventana | Enviar acciones a una ventana secundaria hasta volver a la principal. |
+
+Claves frecuentes de `testData`:
+
+- `flow`: controla rutas largas en `pageFactory.ts`. `Default` hace Home → upload → registro → pago; `Direct` entra por login/dashboard; `Dashboard` crea usuario desde login/editor; `Forms` abre landings de formularios.
+- `ip`: se transforma en query (`?ip=ES`, `?ip=US`, etc.) con [`tests/helpers/testIpQuery.ts`](../tests/helpers/testIpQuery.ts). En CI, si el escenario no fija `ip`, la regresión usa `PLAYWRIGHT_DEFAULT_TEST_IP=ES`.
+- `locale`: abre Home/Editor en el locale indicado cuando no es `en`.
+- `skipUploadInEditorLoadPage`: permite escenarios que necesitan llegar a Editor sin subir `sample.pdf` durante el loader.
+- `card`: selecciona tarjeta Stripe desde [`stripeTestCards.ts`](../tests/bdd/stripeTestCards.ts); `I set a random success payment card` la rellena automáticamente.
+
+Cuando añadas pasos genéricos de elementos, usa `bddPage(bddWorld, page)` / `bddLocator(...)` desde [`stepHelpers.ts`](../tests/bdd/stepHelpers.ts) para respetar CRM y popups. Usa `page` directamente solo si el paso siempre opera sobre la pestaña principal.
+
+Los helpers con lógica pura o reglas compartidas deben llevar unit test cuando sea barato aislarlos. Ejecuta:
+
+```bash
+npm run test:unit
+```
+
+Ejemplos existentes: [`tests/helpers/testIpQuery.spec.ts`](../tests/helpers/testIpQuery.spec.ts) y [`tests/helpers/crmPaymentGrid.spec.ts`](../tests/helpers/crmPaymentGrid.spec.ts).
+
 ## Qué reutilizar (paridad con page objects legacy)
 
 - Registro de elementos: [`tests/bdd/elementRegistry.ts`](../tests/bdd/elementRegistry.ts) + JSON en [`tests/bdd/legacy-elements/`](../tests/bdd/legacy-elements/).
