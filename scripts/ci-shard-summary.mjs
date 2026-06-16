@@ -38,10 +38,24 @@ function isHookStepId(stepId) {
   return /-(before|after)-test-(case|run)-/.test(stepId)
 }
 
+function indexTestCaseSteps(testCase, pickleStepText, testStepText, stepsById) {
+  for (const testStep of testCase.testSteps || []) {
+    if (!testStep.pickleStepId) continue
+    const text = pickleStepText.get(testStep.pickleStepId)
+    if (!text) continue
+    testStepText.set(testStep.id, text)
+    for (const step of stepsById.get(testStep.id) || []) {
+      step.text = text
+    }
+  }
+}
+
 async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
   const testCases = new Map()
+  const testStepText = new Map()
+  const stepsById = new Map()
   const attempts = new Map()
 
   const rl = readline.createInterface({
@@ -62,9 +76,13 @@ async function parseCucumberFailures(filePath) {
       for (const step of env.pickle.steps || []) {
         pickleStepText.set(step.id, step.text)
       }
+      for (const testCase of testCases.values()) {
+        indexTestCaseSteps(testCase, pickleStepText, testStepText, stepsById)
+      }
     }
     if (env.testCase) {
-      testCases.set(env.testCase.id, env.testCase.pickleId)
+      testCases.set(env.testCase.id, env.testCase)
+      indexTestCaseSteps(env.testCase, pickleStepText, testStepText, stepsById)
     }
     if (env.testCaseStarted) {
       attempts.set(env.testCaseStarted.id, {
@@ -76,12 +94,19 @@ async function parseCucumberFailures(filePath) {
     if (env.testStepStarted) {
       const att = attempts.get(env.testStepStarted.testCaseStartedId)
       if (att) {
-        att.steps.push({
+        const stepText =
+          testStepText.get(env.testStepStarted.testStepId) ||
+          pickleStepText.get(env.testStepStarted.testStepId) ||
+          env.testStepStarted.testStepId
+        const step = {
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text: stepText,
           status: 'UNKNOWN',
           errorMessage: ''
-        })
+        }
+        att.steps.push(step)
+        if (!stepsById.has(step.id)) stepsById.set(step.id, [])
+        stepsById.get(step.id).push(step)
       }
     }
     if (env.testStepFinished) {
@@ -108,7 +133,7 @@ async function parseCucumberFailures(filePath) {
   const failures = []
   for (const [, att] of attempts) {
     if (att.status !== 'FAILED') continue
-    const pickleId = testCases.get(att.testCaseId)
+    const pickleId = testCases.get(att.testCaseId)?.pickleId
     const pickle = pickleId ? pickles.get(pickleId) : null
     const tags = pickle?.tags || []
     const tag = tags.find((t) => /^@(PDFEDITOR|PDFHINT)/i.test(t.name))?.name || tags[0]?.name || ''
@@ -186,7 +211,20 @@ async function main() {
   if (summaryPath) fs.appendFileSync(summaryPath, md)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+export {
+  walkSuites,
+  isHookStepId,
+  parseCucumberFailures,
+  buildMarkdown
+}
+
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
