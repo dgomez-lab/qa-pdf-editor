@@ -42,6 +42,7 @@ async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
   const testCases = new Map()
+  const testStepText = new Map()
   const attempts = new Map()
 
   const rl = readline.createInterface({
@@ -65,6 +66,11 @@ async function parseCucumberFailures(filePath) {
     }
     if (env.testCase) {
       testCases.set(env.testCase.id, env.testCase.pickleId)
+      for (const step of env.testCase.testSteps || []) {
+        if (!step.pickleStepId) continue
+        const text = pickleStepText.get(step.pickleStepId)
+        if (text) testStepText.set(step.id, text)
+      }
     }
     if (env.testCaseStarted) {
       attempts.set(env.testCaseStarted.id, {
@@ -78,7 +84,10 @@ async function parseCucumberFailures(filePath) {
       if (att) {
         att.steps.push({
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text:
+            testStepText.get(env.testStepStarted.testStepId) ||
+            pickleStepText.get(env.testStepStarted.testStepId) ||
+            env.testStepStarted.testStepId,
           status: 'UNKNOWN',
           errorMessage: ''
         })
