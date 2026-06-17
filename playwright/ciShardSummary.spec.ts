@@ -19,6 +19,8 @@ function runSummary(env: Record<string, string> = {}) {
   const childEnv = { ...process.env }
   delete childEnv.GITHUB_STEP_SUMMARY
   delete childEnv.SHARD_LABEL
+  delete childEnv.FORCE_COLOR
+  delete childEnv.NO_COLOR
 
   return spawnSync(process.execPath, [scriptPath], {
     cwd: root,
