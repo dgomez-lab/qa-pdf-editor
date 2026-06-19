@@ -195,7 +195,7 @@ async function fillByWalkingStripeFrames(page: Page, number: string, exp: string
   return false
 }
 
-function stripeBillingForTestIp(testIp?: string): { country: string; postal: string } | undefined {
+export function stripeBillingForTestIp(testIp?: string): { country: string; postal: string } | undefined {
   const ip = testIp?.trim()
   if (!ip) return undefined
   return STRIPE_BILLING_BY_IP[ip]
@@ -225,7 +225,7 @@ async function fillStripeCountryAndPostal(
   await zip.fill(postal)
 }
 
-async function maybeFillStripeBillingForTestIp(page: Page, testIp?: string): Promise<void> {
+export async function maybeFillStripeBillingForTestIp(page: Page, testIp?: string): Promise<void> {
   const billing = stripeBillingForTestIp(testIp)
   if (!billing) return
   const zip = page.locator(stripeZipInput).first()
