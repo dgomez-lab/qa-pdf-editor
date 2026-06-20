@@ -50,14 +50,14 @@ test.describe('collectPdfhintHeaderSeoErrors', () => {
       page,
       `
         <nav><a data-id="logIn" href="not a url">Account</a></nav>
-        <main><a href="/most-used-forms">Forms library</a></main>
+        <main><a href="/forms-old">Forms library</a></main>
       `
     )
 
     await expect(collectPdfhintHeaderSeoErrors(page)).resolves.toEqual([
       'Login: expected absolute http(s) href, got: not a url',
       'Login: invalid URL not a url',
-      'Forms link: expected pathname /forms, got /most-used-forms'
+      'Forms link: expected pathname /forms, got /forms-old'
     ])
   })
 })
