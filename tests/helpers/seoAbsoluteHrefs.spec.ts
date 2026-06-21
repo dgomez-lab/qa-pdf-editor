@@ -30,7 +30,7 @@ async function openHtml(page: Page, body: string, origin = 'https://example.test
   const url = `${origin}/unit-${htmlPageCounter++}`
   await page.route(url, async (route) => {
     await route.fulfill({
-      contentType: 'text/html',
+      contentType: 'text/html; charset=utf-8',
       body
     })
   })
