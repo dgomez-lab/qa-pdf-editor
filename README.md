@@ -26,12 +26,14 @@ Paridad con **`qai-pa-pdf-editor/config/configuration.json`**. Edita el JSON y e
 | `projectVars.app` | `mergedpdf` o `pdfhint` → `APP` |
 | `projectVars.baseUrl` | URL fija → `BASE_URL` (pdfhint staging, local, etc.) |
 | `projectVars.appendQaToken` | `false` en pdfhint (sin token QA en marketing) |
+| `projectVars.emailSubjectBrandPrefix` | Prefijo Mailpit opcional → `EMAIL_SUBJECT_BRAND_PREFIX` |
 
 **Perfiles** (como en legacy):
 
 - Por defecto: [`config/configuration.json`](config/configuration.json) — `app: mergedpdf`, `environment: red`.
 - Pdfhint: `QAI_PA_CONFIGURATION_PATH=config/configuration.pdfhint.json` o `npm run test:pdfhint-smoke` / `npm run test:pdfhint-tag -- @TAG`. Los escenarios en `PDFhint.feature` llevan `@PDFHINT` (URL `staging.pdfhint.com`, sin token QA, prefijo Mailpit `pdfhint`) vía hooks en `tests/bdd/steps/hooks.steps.ts`.
 - Plantilla: [`config/configurationExample.json`](config/configurationExample.json) (p. ej. `red2` + `headless: false`).
+- Referencia completa: [`config/README.md`](config/README.md) (loader, perfiles y suites legacy vendored).
 
 **Una sola fuente:** headless, `environment`, `app`, `baseUrl`, `logLevel` y `SLOWMO` (vía `timeouts.stepWaiter`) **solo** en `configuration.json`. El `.env` es para secretos (CRM, Mailpit) y flags como `PLAYWRIGHT_PAYMENT_SMOKE`.
 
@@ -99,7 +101,7 @@ PLAYWRIGHT_PAYMENT_SMOKE=1 npm run test:tag -- @PDFEDITOR_PDFHINT_SMOKE_VISA
 | `SEO_LOGIN_PATHNAME` | Pathname esperado del Login en marketing pdfhint (por defecto `/login`; `@PDFHINT` lo fija si falta). |
 | `PLAYWRIGHT_TRACE` | `1` fuerza `trace: 'on'` en toda la suite (útil para depurar Stripe). |
 | `BDD_LOG_LEVEL` | Por defecto **local:** `DEBUG` (logs de página/elemento estilo legacy). **CI:** `INFO`. Override: `SILENT` / `INFO` / `DEBUG`. |
-| `BDD_TERMINAL_STEPS` | Por defecto **local:** `✔`/`✖` por paso Gherkin en terminal. **CI:** desactivado. Desactivar local: `BDD_TERMINAL_STEPS=0`. |
+| `BDD_TERMINAL_STEPS` | Por defecto **local:** `✔`/`✖` por paso Gherkin en terminal. **CI:** desactivado salvo shards de regresión, que fuerzan `BDD_TERMINAL_STEPS=1`. Desactivar local: `BDD_TERMINAL_STEPS=0`. |
 
 En GitHub: variable `PLAYWRIGHT_BASE_URL` y, si aplica, `PLAYWRIGHT_APP` / `MVPS_SLOT` (ver workflow). El job **Tag parity** (`npm run porting:tags`) en Actions usa `SKIP_LEGACY_TAG_CHECK=1` porque no se clona `qai-pa-pdf-editor`; en local, con `../qai-pa-pdf-editor`, ejecuta `npm run porting:tags` sin esa variable para la comprobación completa.
 
@@ -109,10 +111,10 @@ Equivalente remoto a un `allTests` en QAI Dogs: un solo disparo con suite funcio
 
 1. Configura **variables** y **secrets** en el repo (tablas en [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md); plantilla [`.env.example`](.env.example)).
 2. **Actions** → **Playwright** → **Run workflow** → profile **`regression`**.
-3. Tras **ci-fast**: **regression-setup** → **10 jobs funcionales en paralelo** (shards, estilo QAI Dogs) + **2 visual** en paralelo.
-4. Informe: dashboard en **GitHub Pages** (`runs/<run_id>/`); artefactos por shard: `cucumber-messages-*`, `failure-screenshots-*`, `blob-report-*`.
+3. Tras **ci-fast**: **regression-setup** → **14 jobs funcionales en paralelo** (shards, estilo QAI Dogs) + **4 visual** en paralelo.
+4. Informe: dashboard en **GitHub Pages** (`runs/<run_id>/`); artefactos por shard: `cucumber-messages-*`, `failure-artifacts-*`, `blob-report-*`; **Regression gate** falla el PR si algún shard falla.
 
-Cada **PR** a `main`/`master` ejecuta **fast** (~1–2 min) y luego regresión paralela (**10** shards funcionales + **2** visual, ~35–45 min). **Push** a `main`/`master` solo ejecuta **fast**. Manual: **Run workflow** con perfil **`regression`** (por defecto). Ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md).
+Cada **PR** a `main` ejecuta **fast** (~1–2 min) y luego regresión paralela (**14** shards funcionales + **4** visual, tope 40 min/shard). **Push** a `main` solo ejecuta **fast**. Manual: **Run workflow** con perfil **`regression`** (por defecto). Ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md).
 
 Si staging exige allowlist de IP, los runners `ubuntu-latest` de GitHub pueden necesitar excepción en infra o un runner self-hosted (ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md)).
 
@@ -133,9 +135,11 @@ gh workflow run playwright.yml -f profile=regression --ref main
 | `npm run test:ci-fast` | Gate rápido CI: solo SEO MVPS (`@PDFEDITOR_SEO`; pdfhint en regresión completa o local con VPN). |
 | `npm run test:ci-full` | Suite funcional CI (excluye `@MANUAL_SCREEN_CAPTURE`). |
 | `npm run test:ci-regression` | Funcional + visual local (sin sharding). |
-| `npm run test:ci-regression-functional-shard -- --shard=1/10` | Un shard funcional (CI usa 10 en paralelo). |
+| `npm run test:ci-regression-functional-shard -- --shard=1/14` | Un shard funcional (CI usa 14 en paralelo). |
 | `npm run test:ci-regression-visual` | Solo visual (requiere `bddgen` previo). |
 | `npm run test:ci-visual` | Solo visual por tag `@PDFEDITOR_VISUAL*`. |
+| `npm run report:ci-fast-summary` | Resume fallos del gate rápido desde Cucumber NDJSON y resultados Playwright. |
+| `npm run report:shard-summary` | Resume fallos de un shard de regresión en logs y Summary de Actions. |
 | `npm run typecheck` | Verificación TypeScript (`tsc --noEmit`). |
 | `npm run porting:stats` | Estadísticas de escenarios/tags vendored en `features/`. |
 | `npm run porting:tags` | Comparador de tags legacy vs vendored/generated. |
