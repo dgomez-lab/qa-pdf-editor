@@ -23,7 +23,6 @@ function parseQaTokenParam(): { key: string; value: string } {
 export function ensureMvpsMarketingUrl(target: string): string {
   if (!isMvpsMergedStage()) return target
   if (appendQaDisabled()) return target
-  if (target.includes('x-token-qa=')) return target
 
   const { key, value } = parseQaTokenParam()
 
@@ -31,7 +30,7 @@ export function ensureMvpsMarketingUrl(target: string): string {
     if (target.startsWith('http://') || target.startsWith('https://')) {
       const u = new URL(target)
       if (!u.hostname.includes('mvps.website')) return target
-      if (!u.searchParams.has('x-token-qa')) {
+      if (!u.searchParams.has(key)) {
         u.searchParams.set(key, value)
       }
       return u.href
@@ -40,8 +39,24 @@ export function ensureMvpsMarketingUrl(target: string): string {
     return target
   }
 
-  const sep = target.includes('?') ? '&' : '?'
-  return `${target}${sep}${key}=${encodeURIComponent(value)}`
+  if (relativeUrlHasSearchParam(target, key)) return target
+  return appendRelativeSearchParam(target, key, value)
+}
+
+function relativeUrlHasSearchParam(target: string, key: string): boolean {
+  try {
+    return new URL(target, 'https://mvps.local').searchParams.has(key)
+  } catch {
+    return false
+  }
+}
+
+function appendRelativeSearchParam(target: string, key: string, value: string): string {
+  const hashIndex = target.indexOf('#')
+  const pathAndSearch = hashIndex >= 0 ? target.slice(0, hashIndex) : target
+  const hash = hashIndex >= 0 ? target.slice(hashIndex) : ''
+  const sep = pathAndSearch.includes('?') ? '&' : '?'
+  return `${pathAndSearch}${sep}${encodeURIComponent(key)}=${encodeURIComponent(value)}${hash}`
 }
 
 function resolveMarketingTarget(target: string): string {
