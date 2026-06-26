@@ -38,6 +38,13 @@ function isHookStepId(stepId) {
   return /-(before|after)-test-(case|run)-/.test(stepId)
 }
 
+function resolveStepText(testCaseId, testStepId, testCases, pickleStepText) {
+  const testCase = testCases.get(testCaseId)
+  const testStep = testCase?.testSteps?.find((s) => s.id === testStepId)
+  const pickleStepId = testStep?.pickleStepId
+  return (pickleStepId && pickleStepText.get(pickleStepId)) || pickleStepText.get(testStepId) || testStepId
+}
+
 async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
@@ -64,7 +71,7 @@ async function parseCucumberFailures(filePath) {
       }
     }
     if (env.testCase) {
-      testCases.set(env.testCase.id, env.testCase.pickleId)
+      testCases.set(env.testCase.id, env.testCase)
     }
     if (env.testCaseStarted) {
       attempts.set(env.testCaseStarted.id, {
@@ -78,7 +85,12 @@ async function parseCucumberFailures(filePath) {
       if (att) {
         att.steps.push({
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text: resolveStepText(
+            att.testCaseId,
+            env.testStepStarted.testStepId,
+            testCases,
+            pickleStepText
+          ),
           status: 'UNKNOWN',
           errorMessage: ''
         })
@@ -108,7 +120,7 @@ async function parseCucumberFailures(filePath) {
   const failures = []
   for (const [, att] of attempts) {
     if (att.status !== 'FAILED') continue
-    const pickleId = testCases.get(att.testCaseId)
+    const pickleId = testCases.get(att.testCaseId)?.pickleId
     const pickle = pickleId ? pickles.get(pickleId) : null
     const tags = pickle?.tags || []
     const tag = tags.find((t) => /^@(PDFEDITOR|PDFHINT)/i.test(t.name))?.name || tags[0]?.name || ''
@@ -169,6 +181,8 @@ function buildMarkdown(playwrightFailures, cucumberFailures) {
   return lines.join('\n')
 }
 
+export { walkSuites, parseCucumberFailures, buildMarkdown, isHookStepId }
+
 async function main() {
   const playwrightFailures = []
   if (fs.existsSync(resultsPath)) {
@@ -186,7 +200,13 @@ async function main() {
   if (summaryPath) fs.appendFileSync(summaryPath, md)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
