@@ -58,6 +58,7 @@ test.describe('collectPdfhintHeaderSeoErrors', () => {
 
     await expect(collectPdfhintHeaderSeoErrors(page)).resolves.toEqual([
       'Login: expected absolute http(s) href, got: /login',
+      'Login: invalid URL /login',
       'Forms link: expected pathname /forms, got /forms-old'
     ])
   })
