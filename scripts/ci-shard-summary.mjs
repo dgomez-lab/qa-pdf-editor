@@ -4,12 +4,12 @@ import * as path from 'node:path'
 import * as readline from 'node:readline'
 import { fileURLToPath } from 'node:url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const scriptPath = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(scriptPath)
 const root = path.resolve(__dirname, '..')
 const resultsPath = path.join(root, 'playwright-report', 'results.json')
 const cucumberPath = path.join(root, 'cucumber-report', 'messages.ndjson')
 const summaryPath = process.env.GITHUB_STEP_SUMMARY
-const shardLabel = process.env.SHARD_LABEL || 'Regression shard'
 
 function walkSuites(suites, filePrefix, out) {
   if (!suites) return
@@ -38,6 +38,11 @@ function isHookStepId(stepId) {
   return /-(before|after)-test-(case|run)-/.test(stepId)
 }
 
+function resolveStepText(testStepId, testCase, pickleStepText) {
+  const pickleStepId = testCase?.testSteps?.find((s) => s.id === testStepId)?.pickleStepId
+  return pickleStepText.get(pickleStepId) || pickleStepText.get(testStepId) || testStepId
+}
+
 async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
@@ -64,7 +69,7 @@ async function parseCucumberFailures(filePath) {
       }
     }
     if (env.testCase) {
-      testCases.set(env.testCase.id, env.testCase.pickleId)
+      testCases.set(env.testCase.id, env.testCase)
     }
     if (env.testCaseStarted) {
       attempts.set(env.testCaseStarted.id, {
@@ -76,9 +81,10 @@ async function parseCucumberFailures(filePath) {
     if (env.testStepStarted) {
       const att = attempts.get(env.testStepStarted.testCaseStartedId)
       if (att) {
+        const testCase = testCases.get(att.testCaseId)
         att.steps.push({
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text: resolveStepText(env.testStepStarted.testStepId, testCase, pickleStepText),
           status: 'UNKNOWN',
           errorMessage: ''
         })
@@ -108,7 +114,7 @@ async function parseCucumberFailures(filePath) {
   const failures = []
   for (const [, att] of attempts) {
     if (att.status !== 'FAILED') continue
-    const pickleId = testCases.get(att.testCaseId)
+    const pickleId = testCases.get(att.testCaseId)?.pickleId
     const pickle = pickleId ? pickles.get(pickleId) : null
     const tags = pickle?.tags || []
     const tag = tags.find((t) => /^@(PDFEDITOR|PDFHINT)/i.test(t.name))?.name || tags[0]?.name || ''
@@ -125,8 +131,8 @@ async function parseCucumberFailures(filePath) {
   return failures
 }
 
-function buildMarkdown(playwrightFailures, cucumberFailures) {
-  const lines = [`## ${shardLabel} — failed tests`, '']
+function buildMarkdown(playwrightFailures, cucumberFailures, label = process.env.SHARD_LABEL || 'Regression shard') {
+  const lines = [`## ${label} — failed tests`, '']
   if (cucumberFailures.length === 0 && playwrightFailures.length === 0) {
     lines.push('No failed tests found in reports (check job log).')
     lines.push('')
@@ -169,6 +175,14 @@ function buildMarkdown(playwrightFailures, cucumberFailures) {
   return lines.join('\n')
 }
 
+export {
+  walkSuites,
+  isHookStepId,
+  resolveStepText,
+  parseCucumberFailures,
+  buildMarkdown
+}
+
 async function main() {
   const playwrightFailures = []
   if (fs.existsSync(resultsPath)) {
@@ -186,7 +200,11 @@ async function main() {
   if (summaryPath) fs.appendFileSync(summaryPath, md)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+const isMain = process.argv[1] && path.resolve(scriptPath) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
