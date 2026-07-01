@@ -38,6 +38,26 @@ function isHookStepId(stepId) {
   return /-(before|after)-test-(case|run)-/.test(stepId)
 }
 
+function buildTestStepTextMap(testCases, pickleStepText) {
+  const testStepText = new Map()
+  for (const tc of testCases.values()) {
+    for (const ts of tc.testSteps || []) {
+      if (!ts.pickleStepId) continue
+      const text = pickleStepText.get(ts.pickleStepId)
+      if (text) testStepText.set(ts.id, text)
+    }
+  }
+  return testStepText
+}
+
+function resolveStepText(testStepId, testStepText, pickleStepText) {
+  return (
+    testStepText.get(testStepId) ||
+    pickleStepText.get(testStepId) ||
+    testStepId
+  )
+}
+
 async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
@@ -64,7 +84,22 @@ async function parseCucumberFailures(filePath) {
       }
     }
     if (env.testCase) {
-      testCases.set(env.testCase.id, env.testCase.pickleId)
+      testCases.set(env.testCase.id, env.testCase)
+    }
+  }
+
+  const testStepText = buildTestStepTextMap(testCases, pickleStepText)
+
+  for await (const line of readline.createInterface({
+    input: fs.createReadStream(filePath),
+    crlfDelay: Infinity
+  })) {
+    if (!line.trim()) continue
+    let env
+    try {
+      env = JSON.parse(line)
+    } catch {
+      continue
     }
     if (env.testCaseStarted) {
       attempts.set(env.testCaseStarted.id, {
@@ -78,7 +113,7 @@ async function parseCucumberFailures(filePath) {
       if (att) {
         att.steps.push({
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text: resolveStepText(env.testStepStarted.testStepId, testStepText, pickleStepText),
           status: 'UNKNOWN',
           errorMessage: ''
         })
@@ -108,8 +143,8 @@ async function parseCucumberFailures(filePath) {
   const failures = []
   for (const [, att] of attempts) {
     if (att.status !== 'FAILED') continue
-    const pickleId = testCases.get(att.testCaseId)
-    const pickle = pickleId ? pickles.get(pickleId) : null
+    const testCase = testCases.get(att.testCaseId)
+    const pickle = testCase ? pickles.get(testCase.pickleId) : null
     const tags = pickle?.tags || []
     const tag = tags.find((t) => /^@(PDFEDITOR|PDFHINT)/i.test(t.name))?.name || tags[0]?.name || ''
     const gherkinSteps = att.steps.filter((s) => !isHookStepId(s.id))
@@ -186,7 +221,20 @@ async function main() {
   if (summaryPath) fs.appendFileSync(summaryPath, md)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+export {
+  walkSuites,
+  isHookStepId,
+  parseCucumberFailures,
+  buildMarkdown
+}
+
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
