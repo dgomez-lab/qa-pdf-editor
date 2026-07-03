@@ -176,7 +176,20 @@ async function main() {
   else console.log(md)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+export {
+  walkSuites,
+  isHookStepId,
+  parseCucumberFailures,
+  buildMarkdown
+}
+
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
