@@ -38,10 +38,21 @@ function isHookStepId(stepId) {
   return /-(before|after)-test-(case|run)-/.test(stepId)
 }
 
+function syncTestStepText(testCases, pickleStepText, testStepText) {
+  for (const tc of testCases.values()) {
+    for (const ts of tc.testSteps || []) {
+      if (!ts.pickleStepId) continue
+      const text = pickleStepText.get(ts.pickleStepId)
+      if (text) testStepText.set(ts.id, text)
+    }
+  }
+}
+
 async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
   const testCases = new Map()
+  const testStepText = new Map()
   const attempts = new Map()
 
   const rl = readline.createInterface({
@@ -62,9 +73,11 @@ async function parseCucumberFailures(filePath) {
       for (const step of env.pickle.steps || []) {
         pickleStepText.set(step.id, step.text)
       }
+      syncTestStepText(testCases, pickleStepText, testStepText)
     }
     if (env.testCase) {
-      testCases.set(env.testCase.id, env.testCase.pickleId)
+      testCases.set(env.testCase.id, env.testCase)
+      syncTestStepText(testCases, pickleStepText, testStepText)
     }
     if (env.testCaseStarted) {
       attempts.set(env.testCaseStarted.id, {
@@ -78,7 +91,10 @@ async function parseCucumberFailures(filePath) {
       if (att) {
         att.steps.push({
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text:
+            testStepText.get(env.testStepStarted.testStepId) ||
+            pickleStepText.get(env.testStepStarted.testStepId) ||
+            env.testStepStarted.testStepId,
           status: 'UNKNOWN',
           errorMessage: ''
         })
@@ -108,7 +124,7 @@ async function parseCucumberFailures(filePath) {
   const failures = []
   for (const [, att] of attempts) {
     if (att.status !== 'FAILED') continue
-    const pickleId = testCases.get(att.testCaseId)
+    const pickleId = testCases.get(att.testCaseId)?.pickleId
     const pickle = pickleId ? pickles.get(pickleId) : null
     const tags = pickle?.tags || []
     const tag = tags.find((t) => /^@(PDFEDITOR|PDFHINT)/i.test(t.name))?.name || tags[0]?.name || ''
@@ -186,7 +202,20 @@ async function main() {
   if (summaryPath) fs.appendFileSync(summaryPath, md)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+export {
+  walkSuites,
+  isHookStepId,
+  parseCucumberFailures,
+  buildMarkdown
+}
+
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
