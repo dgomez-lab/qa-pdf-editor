@@ -55,7 +55,7 @@ En **qa-pdf-editor**, [`playwright/resolveBaseUrl.ts`](../playwright/resolveBase
 
 ## Cobertura portada en Playwright-BDD (paridad 100%)
 
-`npm run porting:tags` reporta **`missingFromPlaywright: []`** sobre los **215** tags `@PDFEDITOR_*` del legacy (o de `features/` vendored). Cobertura por feature (Gherkin en `features/`, pasos en `tests/bdd/steps/`):
+`npm run porting:tags` reporta **`missingFromPlaywright: []`** sobre los **219** tags `@PDFEDITOR_*` del legacy (o de `features/` vendored). Cobertura por feature (Gherkin en `features/`, pasos en `tests/bdd/steps/`):
 
 - `SEO.feature` — header / landing / footer / forms.
 - `PDFhint.feature` — `_SMOKE_VISA`, `_SMOKE_REFUND`, `_SMOKE_DASHBOARD`, `_SMOKE_SEO`.
@@ -69,7 +69,7 @@ En **qa-pdf-editor**, [`playwright/resolveBaseUrl.ts`](../playwright/resolveBase
 
 ## Cierre de paridad y backlog técnico
 
-- **Paridad de tags:** 215/215 (ver `npm run porting:tags`).
+- **Paridad de tags:** 219/219 (ver `npm run porting:tags`).
 - **Ejecución real:** escenarios BDD contra staging cuando se exportan credenciales (Stripe / CRM / Mailpit / Recurrences API). Sin credenciales, `test.skip` con motivo descriptivo.
 - **Baselines visuales:** `tests/visual/baseline/`; regresión con `PLAYWRIGHT_VISUAL_SNAPSHOTS=1 npm run test:ci-visual`.
 - **Fixtures binarios DOCX/XLSX/PPTX/JPG/JPEG/PNG:** configurar `PLAYWRIGHT_FIXTURE_<FORMAT>` o copiar a `tests/fixtures/sample.<ext>` ([`tests/helpers/multiFormatUpload.ts`](../tests/helpers/multiFormatUpload.ts)).
