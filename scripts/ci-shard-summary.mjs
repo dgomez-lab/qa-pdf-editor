@@ -38,6 +38,12 @@ function isHookStepId(stepId) {
   return /-(before|after)-test-(case|run)-/.test(stepId)
 }
 
+function resolveStepText(testCase, testStepId, pickleStepText) {
+  const testStep = testCase?.testSteps?.find((s) => s.id === testStepId)
+  const pickleStepId = testStep?.pickleStepId || testStepId
+  return pickleStepText.get(pickleStepId) || testStepId
+}
+
 async function parseCucumberFailures(filePath) {
   const pickles = new Map()
   const pickleStepText = new Map()
@@ -64,7 +70,7 @@ async function parseCucumberFailures(filePath) {
       }
     }
     if (env.testCase) {
-      testCases.set(env.testCase.id, env.testCase.pickleId)
+      testCases.set(env.testCase.id, env.testCase)
     }
     if (env.testCaseStarted) {
       attempts.set(env.testCaseStarted.id, {
@@ -76,9 +82,10 @@ async function parseCucumberFailures(filePath) {
     if (env.testStepStarted) {
       const att = attempts.get(env.testStepStarted.testCaseStartedId)
       if (att) {
+        const testCase = testCases.get(att.testCaseId)
         att.steps.push({
           id: env.testStepStarted.testStepId,
-          text: pickleStepText.get(env.testStepStarted.testStepId) || env.testStepStarted.testStepId,
+          text: resolveStepText(testCase, env.testStepStarted.testStepId, pickleStepText),
           status: 'UNKNOWN',
           errorMessage: ''
         })
@@ -108,7 +115,7 @@ async function parseCucumberFailures(filePath) {
   const failures = []
   for (const [, att] of attempts) {
     if (att.status !== 'FAILED') continue
-    const pickleId = testCases.get(att.testCaseId)
+    const pickleId = testCases.get(att.testCaseId)?.pickleId
     const pickle = pickleId ? pickles.get(pickleId) : null
     const tags = pickle?.tags || []
     const tag = tags.find((t) => /^@(PDFEDITOR|PDFHINT)/i.test(t.name))?.name || tags[0]?.name || ''
@@ -123,6 +130,14 @@ async function parseCucumberFailures(filePath) {
     })
   }
   return failures
+}
+
+export {
+  buildMarkdown,
+  isHookStepId,
+  parseCucumberFailures,
+  resolveStepText,
+  walkSuites
 }
 
 function buildMarkdown(playwrightFailures, cucumberFailures) {
@@ -186,7 +201,13 @@ async function main() {
   if (summaryPath) fs.appendFileSync(summaryPath, md)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
