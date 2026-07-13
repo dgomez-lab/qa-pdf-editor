@@ -58,6 +58,7 @@ Solo `@PDFEDITOR_SEO` en **red.mvps.website** (~4 tests). Sin pdfhint (staging.p
 - **Push a `main`:** solo corre **ci-fast** (~1–2 min). La regresión completa (214 tests) no se lanza en push; usa **Run workflow** con profile **`regression`** o un PR.
 - Antes de los tests, **Verify MVPS QA token access** hace `curl` a `https://red.mvps.website/?x-token-qa=…` (MVPS exige token en la URL para ver staging).
 - Si un test falla, el **Summary** lista pasos Gherkin fallidos (desde `cucumber-report/messages.ndjson`) y errores de `playwright-report/results.json`. Artefacto `playwright-report-fast` incluye traces y `failure-screenshots/`.
+- `ci-fast` fija `PLAYWRIGHT_CI_RETRIES=2`; la regresión en PR fija `0` reintentos para que los shards muestren fallos reales sin ocultarlos.
 - Secret **`QAI_TOKEN_PARAM`**: obligatorio en GitHub para CI estable. Si falta, el workflow usa el default de staging (`x-token-qa=niGqCYH7McqERAB`). Configúralo con `npm run setup:github-actions` (ver abajo).
 
 ### Secrets
@@ -151,12 +152,12 @@ Con `PLAYWRIGHT_RUNNER` vacío, la regresión sigue en `ubuntu-latest` (MVPS/CRM
 2. Rama: `main` (o la rama a validar).
 3. **profile:** `regression`.
 4. En manual: **regression-setup-dispatch** y shards arrancan sin esperar a **ci-fast**. En PR: **ci-fast** → **regression-setup** → shards.
-5. Esperar **10× functional** + **2× visual** → **Publish regression report**.
+5. Esperar **14× functional** + **4× visual** → **Publish regression report**.
 6. Abrir el informe desde el **job summary** del job **Publish regression report** (enlace al dashboard) o la URL de GitHub Pages (abajo).
 
 ## Informe QAI-style (GitHub Pages)
 
-Tras cada regresión (PR o `profile: regression`), el job **Publish regression report** fusiona los **12** fragmentos NDJSON y los PNG en `failure-screenshots-*`, y publica un dashboard HTML (cuadrícula, passed/failed/skipped, pasos Gherkin con mensaje de error, capturas en fallos). El merge deduce **PASSED/FAILED** desde los pasos Gherkin cuando playwright-bdd no envía `testCaseResult` en `testCaseFinished`.
+Tras cada regresión (PR o `profile: regression`), el job **Publish regression report** fusiona los **18** fragmentos NDJSON y los PNG en `failure-artifacts-*`, y publica un dashboard HTML (cuadrícula, passed/failed/skipped, pasos Gherkin con mensaje de error, capturas en fallos). El merge deduce **PASSED/FAILED** desde los pasos Gherkin cuando playwright-bdd no envía `testCaseResult` en `testCaseFinished`.
 
 ### Activar GitHub Pages (una vez)
 
@@ -209,6 +210,7 @@ En CI, `messages.ndjson` usa `skipAttachments: true` (pocos MB). Las capturas va
 |---------|----------------|-----------|
 | **Verify MVPS QA token access** en rojo | MVPS no responde con token desde IP de GitHub | Comprobar secret `QAI_TOKEN_PARAM` (`npm run setup:github-actions`); si el token es correcto y sigue fallando, allowlist IP de GitHub Actions o runner self-hosted |
 | **Run fast suite** en rojo, preflight verde | Test SEO MVPS (ver **Summary** del job) | Revisar lista de fallos en el Summary; artefacto `playwright-report-fast` |
+| SEO MVPS falla por `logIn`, `mostUsedForm` o `/forms` ausente | Cabecera/grid todavía hidratando después de `domcontentloaded` o primera carga incompleta en CI | Usar los helpers de [`seoAbsoluteHrefs.ts`](../tests/helpers/seoAbsoluteHrefs.ts) y `openHome`; ver [SEO MVPS y ci-fast](ADDING_PLAYWRIGHT_TESTS.md#seo-mvps-y-ci-fast) |
 | Variable `PLAYWRIGHT_BASE_URL` mal puesta | Apunta a pdfhint u otro host sin token MVPS | Dejar la variable **sin definir** |
 | Pago falla con **ZIP inválido** / precios USD en regresión | Runner US sin `?ip=ES`; port Playwright sin ZIP para `@PDFEDITOR_PAYMENT_IP_US` | Confirmar `PLAYWRIGHT_DEFAULT_TEST_IP=ES` en workflow; escenarios US deben forzar `ip` en Gherkin |
 
