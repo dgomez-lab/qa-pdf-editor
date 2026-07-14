@@ -31,7 +31,7 @@
     "sync:legacy-elements": "node scripts/sync-legacy-elements.mjs",
     "setup:github-actions": "python3 scripts/setup-github-actions-env.py",
     "typecheck": "tsc --noEmit",
-    "test:unit": "playwright test --config=playwright.unit.config.ts",
+    "test:unit": "node --test scripts/*.spec.mjs && playwright test --config=playwright.unit.config.ts",
     "test:unit:crm-grid": "npm run test:unit"
   },
   "devDependencies": {
