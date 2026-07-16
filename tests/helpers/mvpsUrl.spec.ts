@@ -63,7 +63,7 @@ test.describe('MVPS marketing URLs', () => {
     await gotoMarketingPath(page, 'forms?ip=US')
 
     expect(navigatedUrl).toBe(
-      'https://red.mvps.website/forms?ip=US&x-token-qa=test%20token'
+      'https://red.mvps.website/forms?ip=US&x-token-qa=test+token'
     )
   })
 
