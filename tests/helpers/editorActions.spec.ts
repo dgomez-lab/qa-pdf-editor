@@ -8,6 +8,7 @@ test.describe('editor modal backdrop dismissal', () => {
         <div
           id="outside"
           class="BackScreen_overlay"
+          style="width: 10px; height: 10px"
           onclick="document.body.dataset.backdropClicks = String(Number(document.body.dataset.backdropClicks) + 1)"
         ></div>
       </body>
