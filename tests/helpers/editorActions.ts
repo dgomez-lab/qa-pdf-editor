@@ -19,7 +19,7 @@ export type ClickNextButtonOptions = {
   flow?: string
 }
 
-async function dismissModalBackdropIfPresent(page: Page): Promise<void> {
+export async function dismissModalBackdropIfPresent(page: Page): Promise<void> {
   const backdrop = page.locator(editor.modalBackdrop).first()
   if (await backdrop.isVisible().catch(() => false)) {
     await backdrop.click({ force: true }).catch(() => {})
