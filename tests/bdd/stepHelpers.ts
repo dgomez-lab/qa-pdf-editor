@@ -10,6 +10,18 @@ export async function closeCrmPageIfOpen(w: BddWorld): Promise<void> {
   w.crmPage = null
 }
 
+export function urlRegexForPage(pageName: string): RegExp {
+  const normalizedPageName = pageName.trim().toLowerCase()
+  if (normalizedPageName === 'home') return /\/([a-z]{2}\/)?($|\?)/i
+  if (normalizedPageName === 'login') return /\/login/i
+  if (normalizedPageName === 'editor') return /\/editor(\/|$|\?)/i
+  if (normalizedPageName === 'dashboard') return /\/dashboard/i
+  if (normalizedPageName === 'account') return /\/account/i
+  if (normalizedPageName === 'downloads') return /\/downloads/i
+  if (normalizedPageName === 'contact') return /\/contact/i
+  return new RegExp(normalizedPageName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+}
+
 export function bddPage(w: BddWorld, main: Page): Page {
   if ((w.currentPage === 'CrmCustomer' || w.currentPage === 'CrmCustomersTable' || w.currentPage === 'CrmHome') && w.crmPage && !w.crmPage.isClosed()) {
     return w.crmPage
