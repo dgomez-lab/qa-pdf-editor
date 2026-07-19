@@ -21,7 +21,13 @@ import {
   fillContactFormLikeLegacy
 } from '../pageFactory'
 import { getLocatorForPage } from '../elementRegistry'
-import { bddLocator, bddPage, screenshotOpts, visualSnapshotBaseForPageLabel } from '../stepHelpers'
+import {
+  bddLocator,
+  bddPage,
+  screenshotOpts,
+  urlRegexForPage,
+  visualSnapshotBaseForPageLabel
+} from '../stepHelpers'
 import { marketingPage } from '../activePage'
 import { logBrowserRefresh, logElementAction } from '../bddLogger'
 import { clickNextButton, createNewUserFromEditor, loginExistingUserFromEditor } from '../../helpers/editorActions'
@@ -79,18 +85,6 @@ import { collectPdfhintHeaderSeoErrors } from '../../helpers/pdfhintHeaderSeo'
 
 function normalized(s: string): string {
   return s.trim().toLowerCase()
-}
-
-function urlRegexForPage(pageName: string): RegExp {
-  const n = normalized(pageName)
-  if (n === 'home') return /\/([a-z]{2}\/)?($|\?)/i
-  if (n === 'login') return /\/login/i
-  if (n === 'editor') return /\/editor(\/|$|\?)/i
-  if (n === 'dashboard') return /\/dashboard/i
-  if (n === 'account') return /\/account/i
-  if (n === 'downloads') return /\/downloads/i
-  if (n === 'contact') return /\/contact/i
-  return new RegExp(n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
 }
 
 async function assertElementTextContainsFromStep(
