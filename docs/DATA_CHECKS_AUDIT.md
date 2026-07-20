@@ -44,11 +44,47 @@ Unit tests: [`tests/helpers/crmPaymentGrid.spec.ts`](../tests/helpers/crmPayment
 
 | Step | Legacy file | Playwright helper | Status |
 |------|-------------|-------------------|--------|
-| `the payment confirmation email contains the expected plan, amount, account and bank statement details` | `transactionalEmailSteps.ts` | `paymentConfirmationEmailStrictAssertions.ts` | OK |
-| `the account created email contains expected welcome content and get started CTA` | `accountCreatedEmailSteps.ts` | `accountCreatedEmailAssertions.ts` | OK |
-| `the magic link email is in the expected language` | headline per locale | `magicLinkEmailAssertions.ts` | **Fixed** |
-| `the subscription cancellation email contains expected localized content` | `unsubscribeEmailSteps.ts` | `subscriptionCancellationEmailAssertions.ts` | **Fixed** |
-| Document sent / download code / URL | `documentSentEmailSteps.ts` | `core.steps.ts` + `mailpitClient.ts` | OK |
+| `the payment confirmation email contains the expected plan, amount, account and bank statement details` | `transactionalEmailSteps.ts` | [`paymentConfirmationEmailStrictAssertions.ts`](../tests/helpers/paymentConfirmationEmailStrictAssertions.ts) | OK |
+| `the account created email contains expected welcome content and get started CTA` | `accountCreatedEmailSteps.ts` | [`accountCreatedEmailAssertions.ts`](../tests/helpers/accountCreatedEmailAssertions.ts) | OK |
+| `the magic link email is in the expected language` | headline per locale | [`magicLinkEmailAssertions.ts`](../tests/helpers/magicLinkEmailAssertions.ts) | **Fixed** |
+| `the subscription cancellation email contains expected localized content` | `unsubscribeEmailSteps.ts` | [`subscriptionCancellationEmailAssertions.ts`](../tests/helpers/subscriptionCancellationEmailAssertions.ts) | **Fixed** |
+| Document sent / download code / URL | `documentSentEmailSteps.ts` | [`core.steps.ts`](../tests/bdd/steps/core.steps.ts) + [`mailpitClient.ts`](../tests/helpers/mailpitClient.ts) | OK |
+
+### Mailpit execution contract
+
+The shared client is [`tests/helpers/mailpitClient.ts`](../tests/helpers/mailpitClient.ts). Configure secrets in `.env`; never add credentials to a feature or tracked configuration file.
+
+| Setting | Behavior |
+|---------|----------|
+| `PLAYWRIGHT_MAILPIT_URL` | Optional API v1 base URL; defaults to `https://mailpit.1ecorp.net/api/v1`. |
+| `PLAYWRIGHT_MAILPIT_USER` + `PLAYWRIGHT_MAILPIT_PASSWORD` | Both are required to send the Basic Auth header. If either is missing, no authorization header is sent; scenarios do not skip, so an API rejection surfaces as an HTTP error. |
+| Network access | Mailpit requires the appropriate corporate network/VPN. Public runners commonly return HTTP 401/403; see [GitHub regression — Mailpit and VPN](GITHUB_REGRESSION.md#mailpit-y-vpn-emails-transaccionales). |
+
+Polling follows the same workflow for magic-link, account-created, payment, document-sent, and cancellation emails:
+
+1. [`toCatcherEmail`](../tests/helpers/mailpitClient.ts) maps the registration address to the same local part at `catcher.1ecorp.net`.
+2. The client polls every 1.5 seconds, sorts messages newest-first, and requires an exact normalized recipient match.
+3. Locale-specific subject fragments narrow most searches. Magic-link, account-created, document-sent, and cancellation flows also reject messages older than the timestamp captured before the triggering action.
+4. The selected summary is fetched through `GET /message/{id}` before body assertions or link/code extraction.
+
+The BDD steps set explicit 120-second waits for magic-link and account-created mail, and 180 seconds for payment, document-sent, and cancellation mail. Payment confirmation matching has no `afterMs` cutoff; keep the default unique scenario email when possible. Reusing `PLAYWRIGHT_TEST_EMAIL` can select an older receipt with the same recipient and localized subject.
+
+| Email | Assertion inputs and constraints |
+|-------|----------------------------------|
+| Payment confirmation | Registration email, `testData.ip` (default `ES`), and locale (default `en`). Checks the Full Access plan, initial/monthly amount from [`currencyByIp.ts`](../tests/helpers/currencyByIp.ts), 10-digit account ID, `ch_…` transaction ID, date, and QA environment marker. |
+| Account created | Localized subject and welcome copy, normalized catcher email, and an absolute HTTPS “Get started” CTA. |
+| Magic link | Localized headline in the HTML/text body. |
+| Document sent | Locale-aware subject, first non-image HTTPS download URL, and a four-digit verification code recognized across supported languages. |
+| Subscription cancellation | Localized subject/opening, Full Access, normalized catcher email, and an access-until date seven days after the recorded purchase date. |
+
+Common failures:
+
+| Symptom | Check |
+|---------|-------|
+| `Mailpit list: HTTP 401` | Both Mailpit credentials are present and current. |
+| `Mailpit list: HTTP 403` | The runner has VPN/corporate network access. |
+| `sin mensaje ... en 120000ms` / `180000ms` | Catcher recipient, scenario locale, trigger action, and request timestamp. |
+| Assertions read an unexpected payment receipt | Remove a fixed `PLAYWRIGHT_TEST_EMAIL` or use a unique address for the run. |
 
 ---
 
@@ -82,8 +118,8 @@ Unit tests: [`tests/helpers/crmPaymentGrid.spec.ts`](../tests/helpers/crmPayment
 ## Env-dependent (not assertion logic)
 
 - **Recurrences** (`@PDFEDITOR_PAYMENT_RECURRENCE_LEGACY_14056`): fixed legacy customer email in feature; must exist in staging CRM.
-- **SEO** paths on `red.mvps.website` (e.g. `/most-used-forms` vs `/forms`).
-- **Payment / Mailpit**: require `PLAYWRIGHT_PAYMENT_SMOKE=1` and reachable Mailpit.
+- **SEO** on `red.mvps.website`: the header wait requires `mostUsedForm` to finish hydrating to `/forms`; a persistent `/most-used-forms` value is marketing content drift.
+- **Payment / Mailpit**: payment scenarios require working staging checkout; email checks require Mailpit credentials and network access. The Mailpit steps fail rather than skip when these are unavailable.
 
 ---
 
@@ -92,7 +128,9 @@ Unit tests: [`tests/helpers/crmPaymentGrid.spec.ts`](../tests/helpers/crmPayment
 ```bash
 npm run typecheck
 npx playwright test tests/helpers/crmPaymentGrid.spec.ts
-PLAYWRIGHT_PAYMENT_SMOKE=1 npm run test:tag -- @PDFEDITOR_PAYMENT_FIRST_VISA
+npm run test:tag -- @PDFEDITOR_PAYMENT_FIRST_VISA
+npm run test:tag -- @PDFEDITOR_TRANSACTIONAL_EMAIL_ACCOUNT_CREATED_EN
+npm run test:tag -- @PDFEDITOR_TRANSACTIONAL_EMAIL_PAYMENT_CONFIRMATION_EUR
 ```
 
 After a failing run, open Cucumber step report: `npm run test:report`.
