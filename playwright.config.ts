@@ -4,6 +4,7 @@ import { defineConfig, devices } from '@playwright/test'
 import { defineBddConfig, cucumberReporter } from 'playwright-bdd'
 import { isConfigurationJsonEnvKey, loadConfiguration } from './playwright/loadConfiguration'
 import { resolvePlaywrightBaseUrl } from './playwright/resolveBaseUrl'
+import { resolveCiRetries, resolveCiWorkers } from './playwright/runnerOptions'
 
 /**
  * Carga `.env` y `.env.local` (en ese orden) en `process.env` antes de
@@ -105,20 +106,11 @@ if (terminalStepsOn) {
   )
 }
 
-function resolveCiWorkers(): number {
-  const v = Number(process.env.PLAYWRIGHT_CI_WORKERS ?? '2')
-  return Number.isFinite(v) && v >= 1 ? Math.floor(v) : 2
-}
-
 export default defineConfig({
   testDir: bddTestDir,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI
-    ? (Number.isFinite(Number(process.env.PLAYWRIGHT_CI_RETRIES))
-        ? Math.max(0, Math.floor(Number(process.env.PLAYWRIGHT_CI_RETRIES)))
-        : 1)
-    : 0,
+  retries: process.env.CI ? resolveCiRetries() : 0,
   workers: process.env.CI ? resolveCiWorkers() : undefined,
   timeout: 180_000,
   snapshotDir: path.join(__dirname, 'tests', 'visual', 'baseline'),
