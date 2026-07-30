@@ -30,28 +30,23 @@ const CANCEL_PATH = '/api/v1/qa/cancel-subscription'
 const REFUND_PATH = '/api/v1/qa/refund'
 const BLOCK_PATH = '/api/v1/qa/customer/block'
 
-function projectBaseUrl(): string {
-  const overriden = process.env.PLAYWRIGHT_RECURRENCE_API_BASE_URL?.trim()
-  if (overriden) return stripQueryAndTrailing(overriden)
-  /**
-   * En pdfhint la QA API vive en `app.<host>` (el dominio marketing devuelve
-   * CloudFront 403 en estos endpoints). En mvps no hay split de subdominio,
-   * por lo que `resolveAppBaseUrl` devuelve el host original.
-   */
-  if (isPdfhintApp()) return stripQueryAndTrailing(resolveAppBaseUrl())
-  return stripQueryAndTrailing(resolvePlaywrightBaseUrl())
-}
-
-function stripQueryAndTrailing(url: string): string {
+export function stripQueryAndTrailing(url: string): string {
   const noQuery = url.split('?')[0]
   return noQuery.replace(/\/+$/, '')
 }
 
-function buildUrl(path: string): string {
-  return `${projectBaseUrl()}${path}`
+export function resolveRecurrenceApiBaseUrl(): string {
+  const overriden = process.env.PLAYWRIGHT_RECURRENCE_API_BASE_URL?.trim()
+  if (overriden) return stripQueryAndTrailing(overriden)
+  if (isPdfhintApp()) return stripQueryAndTrailing(resolveAppBaseUrl())
+  return stripQueryAndTrailing(resolvePlaywrightBaseUrl())
 }
 
-function qaHeaders(): Record<string, string> {
+function buildUrl(path: string): string {
+  return `${resolveRecurrenceApiBaseUrl()}${path}`
+}
+
+export function qaApiHeaders(): Record<string, string> {
   const key = process.env.PLAYWRIGHT_QA_API_KEY?.trim() || LEGACY_API_KEY
   return {
     'X-API-KEY': key,
@@ -60,34 +55,40 @@ function qaHeaders(): Record<string, string> {
   }
 }
 
-async function postQa(path: string, body: Record<string, unknown>): Promise<Response> {
-  const url = buildUrl(path)
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: qaHeaders(),
-    body: JSON.stringify(body)
-  })
-  return res
-}
-
-/**
- * Lanza el ciclo de recurrencias en QA. `kind` mapea al `errorType` del legacy:
- * - `success` → sin `errorType`
- * - `soft`    → `errorType: 'soft'`
- * - `hard`    → `errorType: 'hard'` (acepta 400 sin lanzar como en legacy)
- */
-export async function payLegacyRecurrence(subscriptionId: string | number, kind: RecurrenceKind): Promise<void> {
-  const path = process.env.PLAYWRIGHT_RECURRENCE_PAY_PATH?.trim() || RECURRENT_PATH
+export function buildPayRecurrenceBody(
+  subscriptionId: string | number,
+  kind: RecurrenceKind
+): Record<string, unknown> {
   const idNum = Number(subscriptionId)
   const body: Record<string, unknown> = {
     test: '1',
     subscriptionId: Number.isFinite(idNum) ? idNum : subscriptionId
   }
   if (kind === 'soft' || kind === 'hard') body.errorType = kind
+  return body
+}
+
+export function isAcceptableRecurrenceHttpFailure(kind: RecurrenceKind, status: number): boolean {
+  return kind === 'hard' && status === 400
+}
+
+async function postQa(path: string, body: Record<string, unknown>): Promise<Response> {
+  const url = buildUrl(path)
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: qaApiHeaders(),
+    body: JSON.stringify(body)
+  })
+  return res
+}
+
+export async function payLegacyRecurrence(subscriptionId: string | number, kind: RecurrenceKind): Promise<void> {
+  const path = process.env.PLAYWRIGHT_RECURRENCE_PAY_PATH?.trim() || RECURRENT_PATH
+  const body = buildPayRecurrenceBody(subscriptionId, kind)
 
   const res = await postQa(path, body)
   if (!res.ok) {
-    if (kind === 'hard' && res.status === 400) return
+    if (isAcceptableRecurrenceHttpFailure(kind, res.status)) return
     throw new Error(`payLegacyRecurrence ${kind}: HTTP ${res.status}`)
   }
 }
