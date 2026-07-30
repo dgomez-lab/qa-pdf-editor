@@ -43,7 +43,7 @@ function withEnv(values: Partial<Record<(typeof ENV_KEYS)[number], string | unde
 
 test.describe('recurrencesApi URL and payload helpers', () => {
   test('stripQueryAndTrailing drops query and trailing slashes', () => {
-    expect(stripQueryAndTrailing('https://app.staging.pdfhint.com/??x=1')).toBe(
+    expect(stripQueryAndTrailing('https://app.staging.pdfhint.com/?x=1')).toBe(
       'https://app.staging.pdfhint.com'
     )
     expect(stripQueryAndTrailing('https://red.mvps.website///')).toBe('https://red.mvps.website')
