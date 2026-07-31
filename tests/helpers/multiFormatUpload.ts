@@ -4,7 +4,9 @@ import type { Page } from '@playwright/test'
 import { home } from '../pages/editorSelectors'
 import { gotoMarketingPath } from './mvpsUrl'
 
-const fixturesDir = path.join(__dirname, '..', 'fixtures')
+const defaultFixturesDir = path.join(__dirname, '..', 'fixtures')
+
+export type UploadFixtureFormat = 'DOCX' | 'XLSX' | 'PPTX' | 'JPG' | 'JPEG' | 'PNG' | 'PDF'
 
 /**
  * Devuelve la ruta a la fixture del formato pedido. Si no existe en `tests/fixtures/`,
@@ -13,7 +15,11 @@ const fixturesDir = path.join(__dirname, '..', 'fixtures')
  * suele validar por tipo MIME, así que para casos negativos esto sirve; el caller debe
  * usar `skipIfMissing` si necesita un archivo realmente válido del formato).
  */
-export function fixturePathFor(format: 'DOCX' | 'XLSX' | 'PPTX' | 'JPG' | 'JPEG' | 'PNG' | 'PDF'): string | null {
+export function fixturePathFor(
+  format: UploadFixtureFormat,
+  options?: { fixturesDir?: string }
+): string | null {
+  const fixturesDir = options?.fixturesDir ?? defaultFixturesDir
   const ext = format.toLowerCase()
   const direct = path.join(fixturesDir, `sample.${ext}`)
   if (fs.existsSync(direct)) return direct
@@ -29,7 +35,7 @@ export function fixturePathFor(format: 'DOCX' | 'XLSX' | 'PPTX' | 'JPG' | 'JPEG'
   return null
 }
 
-export function fixturePathOrSkip(test: { skip: (cond: boolean, reason: string) => void }, format: Parameters<typeof fixturePathFor>[0]): string {
+export function fixturePathOrSkip(test: { skip: (cond: boolean, reason: string) => void }, format: UploadFixtureFormat): string {
   const p = fixturePathFor(format)
   if (!p) {
     test.skip(true, `Fixture sample.${format.toLowerCase()} ausente. Define PLAYWRIGHT_FIXTURE_${format} o copia el archivo a tests/fixtures/.`)
