@@ -23,13 +23,13 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
 
-function resolveLegacyRoot() {
+export function resolveLegacyRoot(root = repoRoot) {
   const env = process.env.LEGACY_REPO?.trim()
   if (env) return path.resolve(env)
-  return path.resolve(repoRoot, '..', 'qai-pa-pdf-editor')
+  return path.resolve(root, '..', 'qai-pa-pdf-editor')
 }
 
-function walkFiles(dir, pred, acc = []) {
+export function walkFiles(dir, pred, acc = []) {
   if (!fs.existsSync(dir)) return acc
   for (const name of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, name.name)
@@ -39,7 +39,7 @@ function walkFiles(dir, pred, acc = []) {
   return acc
 }
 
-function extractTags(content) {
+export function extractTags(content) {
   const out = new Set()
   const re = /@PDFEDITOR_[A-Z0-9_]+/g
   let m
@@ -47,7 +47,7 @@ function extractTags(content) {
   return out
 }
 
-function collectLegacyTags(featuresDir) {
+export function collectLegacyTags(featuresDir) {
   const files = walkFiles(featuresDir, (p) => p.endsWith('.feature'))
   const tags = new Set()
   for (const f of files) {
@@ -57,21 +57,21 @@ function collectLegacyTags(featuresDir) {
   return tags
 }
 
-function resolveFeaturesDir(legacyRoot, repoRoot) {
+export function resolveFeaturesDir(legacyRoot, currentRepoRoot) {
   const legacyFeatures = path.join(legacyRoot, 'features')
   if (fs.existsSync(legacyFeatures)) {
     return { featuresDir: legacyFeatures, featuresSource: 'legacy_clone' }
   }
-  const vendored = path.join(repoRoot, 'features')
+  const vendored = path.join(currentRepoRoot, 'features')
   if (fs.existsSync(vendored)) {
     return { featuresDir: vendored, featuresSource: 'vendored_repo_root' }
   }
   return { featuresDir: legacyFeatures, featuresSource: 'missing' }
 }
 
-function collectPlaywrightTags(repoRoot) {
-  const featuresDir = path.join(repoRoot, 'features')
-  const generatedDir = path.join(repoRoot, '.features-gen')
+export function collectPlaywrightTags(currentRepoRoot) {
+  const featuresDir = path.join(currentRepoRoot, 'features')
+  const generatedDir = path.join(currentRepoRoot, '.features-gen')
   const files = [
     ...walkFiles(featuresDir, (p) => p.endsWith('.feature')),
     ...walkFiles(generatedDir, (p) => p.endsWith('.spec.ts'))
@@ -84,14 +84,23 @@ function collectPlaywrightTags(repoRoot) {
   return tags
 }
 
+export function diffTagSets(legacy, ours) {
+  return {
+    missingFromPlaywright: [...legacy].filter((t) => !ours.has(t)).sort(),
+    extraInPlaywright: [...ours].filter((t) => !legacy.has(t)).sort()
+  }
+}
+
+export function shouldSkipMissingLegacyFeatures(env = process.env) {
+  const skip = env.SKIP_LEGACY_TAG_CHECK
+  return skip === '1' || skip === 'true' || skip === 'yes'
+}
+
 function main() {
   const legacyRoot = resolveLegacyRoot()
   const { featuresDir, featuresSource } = resolveFeaturesDir(legacyRoot, repoRoot)
   if (featuresSource === 'missing') {
-    const skip =
-      process.env.SKIP_LEGACY_TAG_CHECK === '1' ||
-      process.env.SKIP_LEGACY_TAG_CHECK === 'true' ||
-      process.env.SKIP_LEGACY_TAG_CHECK === 'yes'
+    const skip = shouldSkipMissingLegacyFeatures()
     if (skip) {
       console.warn(
         JSON.stringify(
@@ -116,9 +125,7 @@ function main() {
 
   const legacy = collectLegacyTags(featuresDir)
   const ours = collectPlaywrightTags(repoRoot)
-
-  const missing = [...legacy].filter((t) => !ours.has(t)).sort()
-  const extra = [...ours].filter((t) => !legacy.has(t)).sort()
+  const { missingFromPlaywright: missing, extraInPlaywright: extra } = diffTagSets(legacy, ours)
 
   const payload = {
     legacyRoot,
@@ -135,4 +142,10 @@ function main() {
   process.exitCode = missing.length === 0 ? 0 : 1
 }
 
-main()
+const isMain =
+  process.argv[1] &&
+  path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main()
+}
