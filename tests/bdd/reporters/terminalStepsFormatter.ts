@@ -1,4 +1,4 @@
-import type { Envelope, Pickle, TestStepFinished } from '@cucumber/messages'
+import type { Envelope, Pickle, PickleStep, TestStepFinished } from '@cucumber/messages'
 import { Formatter, type IFormatterOptions } from '@cucumber/cucumber'
 
 const STATUS_MARK: Record<string, string> = {
@@ -8,6 +8,22 @@ const STATUS_MARK: Record<string, string> = {
   PENDING: '-',
   AMBIGUOUS: '?',
   UNDEFINED: '?'
+}
+
+export function statusMarkFor(status: string | undefined): string {
+  if (!status) return STATUS_MARK.UNDEFINED
+  return STATUS_MARK[status] ?? '?'
+}
+
+export function gherkinKeywordForStepType(type: string | undefined): string {
+  if (type === 'Context') return 'Given '
+  if (type === 'Action') return 'When '
+  return 'Then '
+}
+
+export function formatPickleStepText(step: PickleStep | undefined): string | undefined {
+  if (!step?.text) return undefined
+  return `${gherkinKeywordForStepType(step.type)}${step.text}`.trim()
 }
 
 export default class TerminalStepsFormatter extends Formatter {
@@ -43,15 +59,12 @@ export default class TerminalStepsFormatter extends Formatter {
   private currentStepText(): string | undefined {
     if (!this.currentPickleId) return undefined
     const pickle = this.pickles.get(this.currentPickleId)
-    const step = pickle?.steps[this.stepIndex]
-    if (!step?.text) return undefined
-    const kw = step.type === 'Context' ? 'Given ' : step.type === 'Action' ? 'When ' : 'Then '
-    return `${kw}${step.text}`.trim()
+    return formatPickleStepText(pickle?.steps[this.stepIndex])
   }
 
   private printStepFinished(finished: TestStepFinished): void {
     const status = finished.testStepResult?.status ?? 'UNDEFINED'
-    const mark = STATUS_MARK[status] ?? '?'
+    const mark = statusMarkFor(status)
     const text = this.currentStepText() ?? finished.testStepId
     process.stdout.write(`  ${mark} ${text}\n`)
   }
