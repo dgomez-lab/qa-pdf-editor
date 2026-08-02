@@ -1,8 +1,4 @@
 #!/usr/bin/env node
-// Copia elements.json del legacy (src/pages) a tests/bdd/legacy-elements/.
-// Uso: npm run sync:legacy-elements
-//      LEGACY_REPO=/ruta/a/qai-pa-pdf-editor node scripts/sync-legacy-elements.mjs
-
 import * as fs from 'fs'
 import * as path from 'path'
 import { fileURLToPath } from 'url'
@@ -10,13 +6,13 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
 
-function resolveLegacyRoot() {
-  const env = process.env.LEGACY_REPO?.trim()
-  if (env) return path.resolve(env)
-  return path.resolve(repoRoot, '..', 'qai-pa-pdf-editor')
+export function resolveLegacyRoot(root = repoRoot, env = process.env) {
+  const legacyEnv = env.LEGACY_REPO?.trim()
+  if (legacyEnv) return path.resolve(legacyEnv)
+  return path.resolve(root, '..', 'qai-pa-pdf-editor')
 }
 
-function walkElementsJson(dir, acc = []) {
+export function walkElementsJson(dir, acc = []) {
   if (!fs.existsSync(dir)) return acc
   for (const name of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, name.name)
@@ -26,15 +22,16 @@ function walkElementsJson(dir, acc = []) {
   return acc
 }
 
-function main() {
-  const legacyPages = path.join(resolveLegacyRoot(), 'src', 'pages')
-  const destRoot = path.join(repoRoot, 'tests', 'bdd', 'legacy-elements')
+export function syncLegacyElements(options = {}) {
+  const root = options.repoRoot ?? repoRoot
+  const legacyRoot = options.legacyRoot ?? resolveLegacyRoot(root, options.env ?? process.env)
+  const legacyPages = path.join(legacyRoot, 'src', 'pages')
+  const destRoot = path.join(root, 'tests', 'bdd', 'legacy-elements')
   const commonSrc = path.join(legacyPages, 'components', 'pdfCommonPageElements.json')
   const commonDst = path.join(destRoot, 'components', 'pdfCommonPageElements.json')
 
   if (!fs.existsSync(legacyPages)) {
-    console.error(`Legacy pages not found: ${legacyPages}`)
-    process.exit(1)
+    return { ok: false, legacyPages, destRoot, copied: 0, error: `Legacy pages not found: ${legacyPages}` }
   }
 
   let copied = 0
@@ -52,7 +49,22 @@ function main() {
     copied += 1
   }
 
-  console.log(JSON.stringify({ legacyPages, destRoot, copied }, null, 2))
+  return { ok: true, legacyPages, destRoot, copied }
 }
 
-main()
+function main() {
+  const result = syncLegacyElements()
+  if (!result.ok) {
+    console.error(result.error)
+    process.exit(1)
+  }
+  console.log(JSON.stringify({ legacyPages: result.legacyPages, destRoot: result.destRoot, copied: result.copied }, null, 2))
+}
+
+const isMain =
+  process.argv[1] &&
+  fileURLToPath(import.meta.url) === path.resolve(process.argv[1])
+
+if (isMain) {
+  main()
+}

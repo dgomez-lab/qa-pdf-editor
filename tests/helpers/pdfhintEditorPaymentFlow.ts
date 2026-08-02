@@ -25,6 +25,10 @@ export type EditorPaymentOptions = {
 const declineMessageRe =
   /declined|rechazad|declin[ée]|abgelehnt|rifiutat|recusad|your card (has been|was)|card (couldn't be|cannot be)|payment failed|pago.*fall|insufficient|insuffisant|insuficiente|unzureichend|non sufficienti|insufficiente|expired|expiration|expir[ée]|ablauf|caducad|scadut|만료|期限切れ|lost|stolen|perdue|robada|furto|verloren|gestolen|incorrect.*cvc|cvc.*invalid|invalid.*cvc|security code|sicherheitscode|codice.*sicurezza/i
 
+export function matchesStripeDeclineMessage(text: string): boolean {
+  return declineMessageRe.test(text)
+}
+
 async function runEditorDirectUploadAndOpenPayment(
   page: Page,
   opts: Pick<EditorPaymentOptions, 'email' | 'homeQuery' | 'homeLocale' | 'prePaymentEditorContains'>
@@ -66,7 +70,7 @@ async function runEditorDirectUploadAndOpenPayment(
 async function anyFrameBodyMatchesDecline(page: Page): Promise<boolean> {
   for (const frame of page.frames()) {
     const txt = await frame.locator('body').innerText().catch(() => '')
-    if (declineMessageRe.test(txt)) return true
+    if (matchesStripeDeclineMessage(txt)) return true
   }
   return false
 }
