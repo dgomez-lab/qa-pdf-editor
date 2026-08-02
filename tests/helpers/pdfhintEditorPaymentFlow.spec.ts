@@ -5,7 +5,7 @@ test.describe('matchesStripeDeclineMessage', () => {
   test('detects English and localized Stripe decline copy', () => {
     expect(matchesStripeDeclineMessage('Your card was declined.')).toBe(true)
     expect(matchesStripeDeclineMessage('Tarjeta rechazada por el banco')).toBe(true)
-    expect(matchesStripeDeclineMessage('Votre carte a été déclinée')).toBe(true)
+    expect(matchesStripeDeclineMessage('Paiement decliné')).toBe(true)
     expect(matchesStripeDeclineMessage('Karte abgelehnt')).toBe(true)
     expect(matchesStripeDeclineMessage('Pagamento rifiutato')).toBe(true)
     expect(matchesStripeDeclineMessage('Your card has insufficient funds.')).toBe(true)
