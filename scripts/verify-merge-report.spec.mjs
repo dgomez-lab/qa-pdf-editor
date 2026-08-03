@@ -16,7 +16,7 @@ function seoHeaderEnvelopes() {
         id: 'pickle-seo',
         uri: 'features/SEO.feature',
         name: 'Home header absolute hrefs',
-        tags: [{ name: '@PDFEDITOR_SEO' }, { name: '@PDFEDITOR_SEO_HOME_HEADER_ABSOLUTE_HREFS' }],
+        tags: [{ name: '@PDFEDITOR_SEO_HOME_HEADER_ABSOLUTE_HREFS' }],
         steps: [{ id: 'pickle-step-check', text: 'I check header absolute hrefs' }]
       }
     },
