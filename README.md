@@ -109,10 +109,10 @@ Equivalente remoto a un `allTests` en QAI Dogs: un solo disparo con suite funcio
 
 1. Configura **variables** y **secrets** en el repo (tablas en [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md); plantilla [`.env.example`](.env.example)).
 2. **Actions** → **Playwright** → **Run workflow** → profile **`regression`**.
-3. Tras **ci-fast**: **regression-setup** → **10 jobs funcionales en paralelo** (shards, estilo QAI Dogs) + **2 visual** en paralelo.
-4. Informe: dashboard en **GitHub Pages** (`runs/<run_id>/`); artefactos por shard: `cucumber-messages-*`, `failure-screenshots-*`, `blob-report-*`.
+3. En PR: **ci-fast** corre en paralelo con **regression-setup** → **14 jobs funcionales** + **4 visuales** (shards, estilo QAI Dogs) → **Regression gate**.
+4. Informe: dashboard en **GitHub Pages** (`runs/<run_id>/`); artefactos por shard: `cucumber-messages-*`, `failure-artifacts-*`, `blob-report-*`.
 
-Cada **PR** a `main`/`master` ejecuta **fast** (~1–2 min) y luego regresión paralela (**10** shards funcionales + **2** visual, ~35–45 min). **Push** a `main`/`master` solo ejecuta **fast**. Manual: **Run workflow** con perfil **`regression`** (por defecto). Ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md).
+Cada **PR** a `main`/`master` ejecuta **fast** (~1–2 min) y regresión paralela (**14** shards funcionales + **4** visuales, tope 40 min/shard), publica informe y falla el check en **Regression gate** si algún shard falla. **Push** a `main`/`master` solo ejecuta **fast**. Manual: **Run workflow** con perfil **`regression`** (por defecto). Ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md).
 
 Si staging exige allowlist de IP, los runners `ubuntu-latest` de GitHub pueden necesitar excepción en infra o un runner self-hosted (ver [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md)).
 
@@ -130,12 +130,17 @@ gh workflow run playwright.yml -f profile=regression --ref main
 | `npm run test:pdfhint-smoke` | Pdfhint (`configuration.pdfhint.json`) + tags `@PDFEDITOR_PDFHINT_SMOKE*` (hook `@PDFHINT` en el feature). |
 | `npm run sync:legacy-elements` | Copia selectores desde `../qai-pa-pdf-editor` a `tests/bdd/legacy-elements/`. |
 | `npm run test:pdfhint-tag -- @TAG` | Igual con perfil pdfhint y tag arbitrario. |
+| `npm run setup:github-actions` | Crea/actualiza secrets y variables de GitHub Actions desde `.env` con `GH_TOKEN`. |
 | `npm run test:ci-fast` | Gate rápido CI: solo SEO MVPS (`@PDFEDITOR_SEO`; pdfhint en regresión completa o local con VPN). |
+| `npm run test:ci-fast-run` | Solo ejecución Playwright del gate rápido; CI lo usa después de `bddgen`. |
 | `npm run test:ci-full` | Suite funcional CI (excluye `@MANUAL_SCREEN_CAPTURE`). |
 | `npm run test:ci-regression` | Funcional + visual local (sin sharding). |
-| `npm run test:ci-regression-functional-shard -- --shard=1/10` | Un shard funcional (CI usa 10 en paralelo). |
+| `npm run test:ci-regression-functional-shard -- --shard=1/14` | Un shard funcional (CI usa 14 en paralelo). |
+| `npm run test:ci-regression-visual-shard -- --shard=1/4` | Un shard visual (CI usa 4 en paralelo). |
 | `npm run test:ci-regression-visual` | Solo visual (requiere `bddgen` previo). |
 | `npm run test:ci-visual` | Solo visual por tag `@PDFEDITOR_VISUAL*`. |
+| `npm run report:shard-summary` | Resume pasos Gherkin fallidos de un shard en logs y Summary. |
+| `npm run test:unit` | Unit tests de helpers/scripts (`playwright.unit.config.ts`). |
 | `npm run typecheck` | Verificación TypeScript (`tsc --noEmit`). |
 | `npm run porting:stats` | Estadísticas de escenarios/tags vendored en `features/`. |
 | `npm run porting:tags` | Comparador de tags legacy vs vendored/generated. |
@@ -157,6 +162,8 @@ Tras ejecutar tests, puedes ver **qué paso Gherkin falló** en:
 | Contexto del fallo (snapshot de accesibilidad) | `test-results/**/error-context.md` |
 | Screenshot / video | `test-results/**/` |
 
+Para flakes SEO en MVPS, revisa primero la hidratación de cabecera/grid y los reintentos diferenciados de CI en [docs/ADDING_PLAYWRIGHT_TESTS.md#seo-mvps-y-ci-fast](docs/ADDING_PLAYWRIGHT_TESTS.md#seo-mvps-y-ci-fast). Comportamiento del runner (`.env`, retries, traces): [docs/PLAYWRIGHT_RUNNER.md](docs/PLAYWRIGHT_RUNNER.md).
+
 Logs en consola (activos por defecto en local con `npm test` / `npm run test:tag`):
 
 ```bash
@@ -170,10 +177,12 @@ BDD_LOG_LEVEL=SILENT BDD_TERMINAL_STEPS=0 npm run test:tag -- @TAG
 - [docs/MIGRATION_INVENTORY.md](docs/MIGRATION_INVENTORY.md) — inventario del repo Cucumber/Selenium.
 - [docs/PORTING_STATUS.md](docs/PORTING_STATUS.md) — escenarios por feature y estado del port.
 - [docs/ADDING_PLAYWRIGHT_TESTS.md](docs/ADDING_PLAYWRIGHT_TESTS.md) — **cómo añadir escenarios** (Gherkin, pasos BDD, tags, `bddgen`).
+- [docs/PLAYWRIGHT_RUNNER.md](docs/PLAYWRIGHT_RUNNER.md) — carga de env, `baseURL`, retries, traces y diferencias local/CI.
+- [docs/GITHUB_REGRESSION.md](docs/GITHUB_REGRESSION.md) — runbook de regresión en GitHub Actions.
 
 ## Paridad con Bitbucket (resumen)
 
-- **Tag parity: 215/215 (100%)** — verificable con `npm run porting:tags` (`missingFromPlaywright: []`). Los mismos `.feature` del legacy están en [`features/`](features/) (vendored).
+- **Tag parity: 219/219 (100%)** — verificable con `npm run porting:tags` (`missingFromPlaywright: []`). Los mismos `.feature` del legacy están en [`features/`](features/) (vendored).
 - 9 features Cucumber portadas vía Playwright-BDD: SEO, PDFhint, Users, Dashboard, FirstPayment (refund, IP, UTM, cancel), TransactionalEmails (Mailpit), Recurrences, Visual + VisualCapture documentado.
 - Pago Stripe: helper [`tests/helpers/stripePayment.ts`](tests/helpers/stripePayment.ts) (unificado, `#payment-element`, split, recorrido de frames `stripe.com`).
 - CRM staging: helpers [`tests/helpers/crmStaging.ts`](tests/helpers/crmStaging.ts) con `refund`, `unsubscribe`, `blockCustomer`, `confirmSubscriptionCancellation`, `expectLastTransactionMatches`.

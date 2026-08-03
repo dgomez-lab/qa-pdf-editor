@@ -10,7 +10,7 @@ La migración quedó consolidada en modo **big-bang**:
 ## Métrica oficial de paridad
 
 - `npm run porting:tags` compara tags `@PDFEDITOR_*` entre legacy y esta base.
-- Resultado esperado: `missingFromPlaywright: []`.
+- Resultado esperado: `missingFromPlaywright: []` (actual verificado: **219/219** con `SKIP_LEGACY_TAG_CHECK=1` sobre features vendored).
 - El análisis toma tags desde `features/` y opcionalmente `.features-gen`.
 
 ## Flujo de ejecución
