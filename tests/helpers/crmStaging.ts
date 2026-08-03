@@ -312,11 +312,14 @@ export async function unsubscribeCustomer(page: Page): Promise<void> {
  * Lee el subscription ID desde el detalle del cliente CRM (texto
  * `Subscription ID: <number>` en `[data-id="subscriptionId"]`).
  */
+export function parseCustomerSubscriptionId(raw: string): string {
+  return raw.replace(/^Subscription ID:\s*/i, '').trim()
+}
+
 export async function readCustomerSubscriptionId(page: Page): Promise<string> {
   const el = page.locator('[data-id="subscriptionId"], [data-id="customerSubscriptionId"]').first()
   await el.waitFor({ state: 'visible', timeout: 30_000 })
-  const raw = (await el.innerText()).trim()
-  return raw.replace(/^Subscription ID:\s*/i, '').trim()
+  return parseCustomerSubscriptionId(await el.innerText())
 }
 
 /**
