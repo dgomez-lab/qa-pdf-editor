@@ -71,6 +71,44 @@ Los tags `@PDFEDITOR_*` en los `.feature` son los que filtra `playwright test --
 
 Pago real en sandbox: `PLAYWRIGHT_PAYMENT_SMOKE=1` (y credenciales CRM/Mailpit donde el escenario lo requiera).
 
+## Datos de escenario (`bddWorld.testData`)
+
+El paso `I set this test to start with the following data:` ([`data.steps.ts`](../tests/bdd/steps/data.steps.ts)) rellena `bddWorld.testData` vía [`mergeTestDataFromTable`](../tests/bdd/bddTestData.ts). [`pageFactory.ts`](../tests/bdd/pageFactory.ts) y los helpers leen esas claves al cargar páginas y pagar.
+
+| Clave | Efecto | Fuente |
+|-------|--------|--------|
+| `flow` | Rama de carga (`Default`, `Direct`, `Dashboard`, `Forms`, …) en Login/Editor/Dashboard | `pageFactory.ts` |
+| `ip` | Query `?ip=` en Home/Editor; billing Stripe US + ZIP `90210` solo si `ip === 'US'` | [`testIpQuery.ts`](../tests/helpers/testIpQuery.ts), [`stripePayment.ts`](../tests/helpers/stripePayment.ts) |
+| `locale` | Path localizado en pdfhint (`/es/`, …); `en` → `/` | `openHome({ locale })` |
+| `card` | Nombre de tarjeta de prueba Stripe (`Visa`, …); también `I set a random success payment card` | `core.steps.ts` |
+| `skipUploadInEditorLoadPage` | `true`/`yes` evita upload al cargar Editor desde flujo Dashboard | `pageFactory.ts` |
+| `email` | Se copia a `bddWorld.email` | `bddTestData.ts` |
+
+En CI, si el Gherkin no fija `ip`, [`resolveDefaultTestIp`](../tests/helpers/testIpQuery.ts) usa `PLAYWRIGHT_DEFAULT_TEST_IP` o **`ES`** para evitar checkout USD en runners US.
+
+## Uploads multi-formato
+
+[`fixturePathFor`](../tests/helpers/multiFormatUpload.ts) busca `tests/fixtures/sample.<ext>` y, si falta, `PLAYWRIGHT_FIXTURE_<FORMAT>` (ruta absoluta). El repo ya incluye `sample.pdf`, `docx`, `xlsx`, `pptx`, `jpg`, `jpeg` y `png`. Si un formato nuevo no tiene fixture, usa `fixturePathOrSkip` (o falla con error claro); no inventes archivos inválidos en el paso.
+
+## SEO MVPS y ci-fast
+
+Los escenarios `@PDFEDITOR_SEO` de MVPS validan enlaces de marketing sobre `red.mvps.website` y son el gate rápido de push/PR. La página puede terminar `domcontentloaded` antes de que la cabecera y el grid de formularios tengan los `href` finales, así que las aserciones SEO no deben leer el DOM inmediatamente después de navegar.
+
+| Necesidad | Usar | Cubierto por |
+|-----------|------|--------------|
+| Abrir Home MVPS con token QA y esperar UI útil | [`openHome`](../tests/helpers/navigation.ts) | `gotoMarketingPath`, cierre de cookies, espera de logo/file input/main y recarga extra en CI si la primera carga no queda lista |
+| Validar cabecera `logIn` / `mostUsedForm` | [`collectHeaderAbsoluteHrefErrors`](../tests/helpers/seoAbsoluteHrefs.ts) | `waitForMvpsHeaderHydration` antes de evaluar y una recarga si quedan errores en MVPS |
+| Validar `/forms` | [`collectFormsPageAbsoluteHrefErrors`](../tests/helpers/seoAbsoluteHrefs.ts) | `waitForMvpsFormsGridHydration` antes de leer los anchors del grid |
+| Validar pdfhint | [`collectPdfhintHeaderSeoErrors`](../tests/helpers/pdfhintHeaderSeo.ts) | Busca primero el enlace visible "Log in" por rol y luego `a[data-id="logIn"]` como fallback |
+
+Restricciones al añadir o tocar pasos SEO:
+
+- Reutiliza los helpers anteriores desde `tests/bdd/steps/core.steps.ts`; no dupliques esperas con `page.waitForTimeout`.
+- Mantén `gotoMarketingPath` para rutas MVPS: añade el token QA y conserva `BASE_URL` normalizado.
+- Si un test local pasa y **ci-fast** falla, compara el Summary del job y el artefacto `playwright-report-fast`; en CI `openHome` usa ventanas de espera más largas y puede recargar una vez antes de fallar.
+- Los reintentos son intencionalmente distintos: **ci-fast** usa `PLAYWRIGHT_CI_RETRIES=2`, los shards de regresión en PR usan `0`, y `workflow_dispatch` de regresión usa `1`.
+- Si el fallo aparece antes del test, revisa **Verify MVPS QA token access** y el secret `QAI_TOKEN_PARAM`; si pasa el preflight, el problema ya está dentro de navegación/hidratación/aserciones SEO.
+
 ## Dónde ver los tests generados
 
 Tras `npm run bddgen`, los archivos ejecutables aparecen bajo [`.features-gen/`](../.features-gen/) (gitignored). La fuente de verdad sigue siendo `features/**/*.feature`.
