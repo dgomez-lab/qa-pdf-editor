@@ -54,19 +54,33 @@ export async function closeOnboardingOnce(page: Page): Promise<void> {
   await closeOnboarding(page)
 }
 
+export function authenticatedAppPath(kind: 'dashboard' | 'account' | 'login'): string {
+  if (isPdfhintApp()) {
+    if (kind === 'dashboard') return '/en/dashboard'
+    if (kind === 'account') return '/en/account'
+    return '/en/login'
+  }
+  if (kind === 'dashboard') return '/dashboard'
+  if (kind === 'account') return '/account'
+  return '/login'
+}
+
 export async function gotoDashboard(page: Page): Promise<void> {
-  const path = isPdfhintApp() ? '/en/dashboard' : '/dashboard'
-  await gotoMarketingPath(page, appUrl(path), { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, appUrl(authenticatedAppPath('dashboard')), {
+    waitUntil: 'domcontentloaded'
+  })
 }
 
 export async function gotoAccount(page: Page): Promise<void> {
-  const path = isPdfhintApp() ? '/en/account' : '/account'
-  await gotoMarketingPath(page, appUrl(path), { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, appUrl(authenticatedAppPath('account')), {
+    waitUntil: 'domcontentloaded'
+  })
 }
 
 export async function gotoLogin(page: Page): Promise<void> {
-  const path = isPdfhintApp() ? '/en/login' : '/login'
-  await gotoMarketingPath(page, appUrl(path), { waitUntil: 'domcontentloaded' })
+  await gotoMarketingPath(page, appUrl(authenticatedAppPath('login')), {
+    waitUntil: 'domcontentloaded'
+  })
 }
 
 export async function expectUploadDocumentButton(page: Page): Promise<void> {
