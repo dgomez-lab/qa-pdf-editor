@@ -96,8 +96,12 @@ function normalizeEmailForApp(email: string): string {
   return `${normalizedLocal}@${domain}`
 }
 
+export function resolveCrmCustomerSearchEmail(email: string): string {
+  return email.includes('@catcher.1ecorp.net') ? normalizeEmailForApp(email) : email
+}
+
 export async function filterCrmCustomersByEmail(page: Page, email: string): Promise<void> {
-  const effective = email.includes('@catcher.1ecorp.net') ? normalizeEmailForApp(email) : email
+  const effective = resolveCrmCustomerSearchEmail(email)
   logElementAction('Filling', 'customers email search input', '[data-id="emailFilterCustomers"]')
   await page.locator('[data-id="emailFilterCustomers"]').fill(effective)
   logElementAction('Clicking', 'customers search button', '[data-id="searchButton"]')

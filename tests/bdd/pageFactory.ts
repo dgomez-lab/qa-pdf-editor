@@ -233,9 +233,11 @@ async function waitForHomeUploadIdle(page: Page): Promise<void> {
     .catch(() => {})
 }
 
-export async function uploadDocumentForFormat(page: Page, w: BddWorld, format: string): Promise<void> {
+export type UploadFixtureFormat = 'PDF' | 'DOCX' | 'PNG' | 'JPG' | 'XLSX' | 'PPTX'
+
+export function resolveUploadFormatKey(format: string): UploadFixtureFormat {
   const upper = format.toUpperCase()
-  const map: Record<string, 'PDF' | 'DOCX' | 'PNG' | 'JPG' | 'XLSX' | 'PPTX'> = {
+  const map: Record<string, UploadFixtureFormat> = {
     PDF: 'PDF',
     DOCX: 'DOCX',
     PNG: 'PNG',
@@ -244,7 +246,11 @@ export async function uploadDocumentForFormat(page: Page, w: BddWorld, format: s
     XLSX: 'XLSX',
     PPTX: 'PPTX'
   }
-  const key = map[upper] ?? 'PDF'
+  return map[upper] ?? 'PDF'
+}
+
+export async function uploadDocumentForFormat(page: Page, w: BddWorld, format: string): Promise<void> {
+  const key = resolveUploadFormatKey(format)
   const filePath = fixturePathFor(key)
   if (!filePath) throw new Error(`No fixture for format ${format}`)
   await waitForHomeUploadIdle(page)
