@@ -1,25 +1,32 @@
-type LogLevel = 'SILENT' | 'INFO' | 'DEBUG'
+export type BddLogLevel = 'SILENT' | 'INFO' | 'DEBUG'
 
-function resolveLevel(): LogLevel {
-  const explicit = process.env.BDD_LOG_LEVEL?.trim()
+export function resolveBddLogLevel(
+  env: NodeJS.ProcessEnv = process.env
+): BddLogLevel {
+  const explicit = env.BDD_LOG_LEVEL?.trim()
   if (explicit) {
     const v = explicit.toUpperCase()
     if (v === 'DEBUG') return 'DEBUG'
     if (v === 'SILENT' || v === 'OFF' || v === '0') return 'SILENT'
     return 'INFO'
   }
-  return process.env.CI ? 'INFO' : 'DEBUG'
+  return env.CI ? 'INFO' : 'DEBUG'
 }
 
 let configLogged = false
 let bannerPrinted = false
 
+export function resetBddLoggerStateForTests(): void {
+  configLogged = false
+  bannerPrinted = false
+}
+
 function ts(): string {
   return new Date().toISOString().replace('T', ' ').slice(0, 19)
 }
 
-function level(): LogLevel {
-  return resolveLevel()
+function level(): BddLogLevel {
+  return resolveBddLogLevel()
 }
 
 export const bddLog = {

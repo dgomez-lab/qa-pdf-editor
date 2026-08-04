@@ -26,12 +26,13 @@ export type BddWorld = {
   popup: Page | null
 }
 
-const BLOCKED_REQUEST = /google-analytics|googletagmanager|g\.doubleclick|connect\.facebook|hotjar|segment\.io|sentry\.io/i
+export const BLOCKED_THIRD_PARTY_REQUEST =
+  /google-analytics|googletagmanager|g\.doubleclick|connect\.facebook|hotjar|segment\.io|sentry\.io/i
 
 export const test = base.extend<{ bddWorld: BddWorld }>({
   context: async ({ context }, use) => {
     await context.route('**/*', (route) => {
-      if (BLOCKED_REQUEST.test(route.request().url())) return route.abort()
+      if (BLOCKED_THIRD_PARTY_REQUEST.test(route.request().url())) return route.abort()
       return route.continue()
     })
     await use(context)
