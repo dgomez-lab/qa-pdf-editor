@@ -11,8 +11,6 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from nacl import encoding, public
-
 OWNER = "dgomez-lab"
 REPO = "qa-pdf-editor"
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -85,6 +83,8 @@ def api(method: str, path: str, body: dict | None = None) -> dict | None:
 
 
 def encrypt_secret(public_key_b64: str, secret_value: str) -> str:
+    from nacl import encoding, public
+
     pk = public.PublicKey(public_key_b64.encode("utf-8"), encoding.Base64Encoder())
     sealed = public.SealedBox(pk)
     encrypted = sealed.encrypt(secret_value.encode("utf-8"))
